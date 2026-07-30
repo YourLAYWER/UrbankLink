@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ticketBooking"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#121212"
+    tools:context=".TicketBooking">
+
+        <!-- Bottom Navigation -->
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNav"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="#121212"
+            app:itemIconTint="#FFFFFF"
+            app:itemTextColor="#FFFFFF"
+            app:menu="@menu/bottom_nav_menu"
+            />
+
+        <!-- Main Scrollable Content -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/bottomNav"
+            android:fillViewport="true">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
+                <!-- Header Section -->
+                <ImageView
+                    android:id="@+id/btnBack"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="12dp"
+                    android:src="@android:drawable/ic_menu_revert"
+                    app:tint="#FFFFFF" />
+
+                <TextView
+                    android:id="@+id/txtTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/btnBack"
+                    android:layout_marginStart="24dp"
+                    android:layout_alignTop="@id/btnBack"
+                    android:layout_alignBottom="@id/btnBack"
+                    android:gravity="center_vertical"
+                    android:text="Select Departure"
+                    android:textColor="#FFFFFF"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/imgProfile"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignTop="@id/btnBack"
+                    android:background="@android:drawable/ic_menu_myplaces" />
+
+                <!-- Location Subtitle -->
+                <LinearLayout
+                    android:id="@+id/locationContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/txtTitle"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@android:drawable/ic_menu_mylocation"
+                        app:tint="#A0A0A0" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Sydenham Station → Summerstrand"
+                        android:textColor="#C0C0C0"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <!-- Time Filters Scroll Row -->
+                <HorizontalScrollView
+                    android:id="@+id/timeFiltersScroll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/locationContainer"
+                    android:layout_marginTop="20dp"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <!-- Leave Now Active Button -->
+                        <com.google.android.material.button.MaterialButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Leave Now"
+                            android:textColor="#000000"
+                            app:backgroundTint="#00FFFF"
+                            app:cornerRadius="24dp"
+                            app:icon="@android:drawable/ic_menu_compass"
+                            app:iconTint="#000000" />
+
+                        <!-- Afternoon Button -->
+                        <com.google.android.material.button.MaterialButton
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:text="Afternoon"
+                            android:textColor="#FFFFFF"
+                            app:cornerRadius="24dp"
+                            app:strokeColor="#555555" />
+
+                        <!-- Evening Button -->
+                        <com.google.android.material.button.MaterialButton
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:text="Evening"
+                            android:textColor="#FFFFFF"
+                            app:cornerRadius="24dp"
+                            app:strokeColor="#555555" />
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+                <!-- Route Cards Vertical List -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/timeFiltersScroll"
+                    android:layout_marginTop="24dp"
+                    android:orientation="vertical">
+
+                    <!-- CARD 1: Fastest Route -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        app:cardBackgroundColor="#1E1E1E"
+                        app:cardCornerRadius="12dp"
+                        app:strokeColor="#333333"
+                        app:strokeWidth="1dp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:id="@+id/txtTime1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:text="15:15 - 16:05"
+                                android:textColor="#FFFFFF"
+                                android:textSize="26sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignBaseline="@id/txtTime1"
+                                android:text="R21.50"
+                                android:textColor="#FFFFFF"
+                                android:textSize="26sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/txtDuration1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/txtTime1"
+                                android:layout_marginTop="4dp"
+                                android:text="(50 MINS)"
+                                android:textColor="#A0A0A0"
+                                android:textSize="12sp"
+                                android:fontFamily="monospace" />
+
+                            <!-- Transport Badges -->
+                            <LinearLayout
+                                android:id="@+id/badges1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/txtDuration1"
+                                android:layout_marginTop="20dp"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="#2A2A2A"
+                                    android:paddingStart="12dp"
+                                    android:paddingEnd="12dp"
+                                    android:paddingTop="6dp"
+                                    android:paddingBottom="6dp"
+                                    android:text="METRO A"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="12dp"
+                                    android:layout_marginEnd="12dp"
+                                    android:text="→"
+                                    android:textColor="#A0A0A0" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="#2A2A2A"
+                                    android:paddingStart="12dp"
+                                    android:paddingEnd="12dp"
+                                    android:paddingTop="6dp"
+                                    android:paddingBottom="6dp"
+                                    android:text="BUS 402"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <!-- Highlights & Notes -->
+                            <TextView
+                                android:id="@+id/tagFastest"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/badges1"
+                                android:layout_marginTop="24dp"
+                                android:background="#0A4A4A"
+                                android:paddingStart="10dp"
+                                android:paddingEnd="10dp"
+                                android:paddingTop="4dp"
+                                android:paddingBottom="4dp"
+                                android:text="FASTEST ROUTE"
+                                android:textColor="#00FFFF"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/tagFastest"
+                                android:layout_marginTop="12dp"
+                                android:text="Perfect connection at PE Station."
+                                android:textColor="#C0C0C0"
+                                android:textSize="14sp" />
+                        </RelativeLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- CARD 2: Cheapest Route -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        app:cardBackgroundColor="#1E1E1E"
+                        app:cardCornerRadius="12dp"
+                        app:strokeColor="#333333"
+                        app:strokeWidth="1dp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:id="@+id/txtTime2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:text="16:00 - 17:15"
+                                android:textColor="#FFFFFF"
+                                android:textSize="26sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignBaseline="@id/txtTime2"
+                                android:text="R19.00"
+                                android:textColor="#FFFFFF"
+                                android:textSize="26sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/txtDuration2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/txtTime2"
+                                android:layout_marginTop="4dp"
+                                android:text="(1H 15M)"
+                                android:textColor="#A0A0A0"
+                                android:textSize="12sp"
+                                android:fontFamily="monospace" />
+
+                            <LinearLayout
+                                android:id="@+id/badges2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/txtDuration2"
+                                android:layout_marginTop="20dp"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="#2A2A2A"
+                                    android:paddingStart="12dp"
+                                    android:paddingEnd="12dp"
+                                    android:paddingTop="6dp"
+                                    android:paddingBottom="6dp"
+                                    android:text="BUS 12"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="12dp"
+                                    android:layout_marginEnd="12dp"
+                                    android:text="→"
+                                    android:textColor="#A0A0A0" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="#2A2A2A"
+                                    android:paddingStart="12dp"
+                                    android:paddingEnd="12dp"
+                                    android:paddingTop="6dp"
+                                    android:paddingBottom="6dp"
+                                    android:text="BUS 402"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tagCheapest"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/badges2"
+                                android:layout_marginTop="24dp"
+                                android:background="#0A331A"
+                                android:paddingStart="10dp"
+                                android:paddingEnd="10dp"
+                                android:paddingTop="4dp"
+                                android:paddingBottom="4dp"
+                                android:text="CHEAPEST"
+                                android:textColor="#00FF7F"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/tagCheapest"
+                                android:layout_marginTop="12dp"
+                                android:text="Requires 12 min walk between transfers."
+                                android:textColor="#C0C0C0"
+                                android:textSize="14sp" />
+                        </RelativeLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+            </RelativeLayout>
+        </ScrollView>
+    </RelativeLayout>

@@ -1,0 +1,641 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ticketDetails"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#121212"
+    tools:context=".Ticket_details">
+
+        <!-- Fixed Bottom Checkout Bar -->
+        <LinearLayout
+            android:id="@+id/bottomCheckoutBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="#1A1A1A"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:elevation="8dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnConfirmPay"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="Confirm &amp; Pay R21.50"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:backgroundTint="#00FFFF"
+                app:cornerRadius="30dp"
+                app:icon="@android:drawable/ic_secure"
+                app:iconGravity="textStart"
+                app:iconTint="#000000" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:text="SECURE ENCRYPTED TRANSACTION BY URBANLINK"
+                android:textColor="#808080"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Scrollable Main Content -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/bottomCheckoutBar"
+            android:fillViewport="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="20dp">
+
+                <!-- Header -->
+                <ImageView
+                    android:id="@+id/btnBack"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@android:drawable/ic_menu_revert"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="#FFFFFF" />
+
+                <TextView
+                    android:id="@+id/txtHeaderTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Journey &amp; Checkout"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/btnBack"
+                    app:layout_constraintStart_toEndOf="@id/btnBack"
+                    app:layout_constraintTop_toTopOf="@id/btnBack" />
+
+                <ImageView
+                    android:id="@+id/imgProfile"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@android:drawable/ic_menu_myplaces"
+                    app:layout_constraintBottom_toBottomOf="@id/btnBack"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/btnBack" />
+
+                <!-- Estimated Arrival Info -->
+                <TextView
+                    android:id="@+id/lblEstimated"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:letterSpacing="0.1"
+                    android:text="ESTIMATED ARRIVAL"
+                    android:textColor="#A0A0A0"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/btnBack" />
+
+                <TextView
+                    android:id="@+id/txtTotalTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Total Time: 50 mins"
+                    android:textColor="#00FFFF"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lblEstimated" />
+
+                <!-- Route Details Header -->
+                <TextView
+                    android:id="@+id/lblRouteDetails"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:text="Route Details"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/txtTotalTime" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@android:drawable/ic_menu_directions"
+                    app:layout_constraintBottom_toBottomOf="@id/lblRouteDetails"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/lblRouteDetails"
+                    app:tint="#A0A0A0" />
+
+                <!-- TIMELINE SECTION -->
+
+                <!-- Node 1: Sydenham Station -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/node1"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginTop="24dp"
+                    app:cardBackgroundColor="#00FFFF"
+                    app:cardCornerRadius="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lblRouteDetails" />
+
+                <TextView
+                    android:id="@+id/time1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="08:40"
+                    android:textColor="#A0A0A0"
+                    android:textSize="12sp"
+                    android:fontFamily="monospace"
+                    app:layout_constraintBottom_toBottomOf="@id/node1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/node1" />
+
+                <TextView
+                    android:id="@+id/title1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Sydenham Station"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/node1"
+                    app:layout_constraintStart_toEndOf="@id/node1"
+                    app:layout_constraintTop_toTopOf="@id/node1" />
+
+                <TextView
+                    android:id="@+id/sub1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="PRASA Train • Line S1"
+                    android:textColor="#A0A0A0"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="@id/title1"
+                    app:layout_constraintTop_toBottomOf="@id/title1" />
+
+                <!-- Timeline Line 1 -->
+                <View
+                    android:id="@+id/line1"
+                    android:layout_width="2dp"
+                    android:layout_height="0dp"
+                    android:background="#00FFFF"
+                    app:layout_constraintBottom_toTopOf="@id/node2"
+                    app:layout_constraintEnd_toEndOf="@id/node1"
+                    app:layout_constraintStart_toStartOf="@id/node1"
+                    app:layout_constraintTop_toBottomOf="@id/node1" />
+
+                <!-- Node 2: Port Elizabeth Station -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/node2"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginTop="48dp"
+                    app:cardBackgroundColor="#333333"
+                    app:cardCornerRadius="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/sub1" />
+
+                <TextView
+                    android:id="@+id/time2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="08:55"
+                    android:textColor="#A0A0A0"
+                    android:textSize="12sp"
+                    android:fontFamily="monospace"
+                    app:layout_constraintBottom_toBottomOf="@id/node2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/node2" />
+
+                <TextView
+                    android:id="@+id/title2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Port Elizabeth Station"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/node2"
+                    app:layout_constraintStart_toEndOf="@id/node2"
+                    app:layout_constraintTop_toTopOf="@id/node2" />
+
+                <!-- Transfer Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/transferCard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    app:cardBackgroundColor="#1A1A1A"
+                    app:cardCornerRadius="8dp"
+                    app:strokeColor="#333333"
+                    app:strokeWidth="1dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/title2"
+                    app:layout_constraintTop_toBottomOf="@id/title2">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="12dp"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@android:drawable/ic_menu_directions"
+                            app:tint="#00FFFF" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Walk 200m to MSB Platform 4"
+                                android:textColor="#FFFFFF"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="20m layover • Efficient connection"
+                                android:textColor="#00FF7F"
+                                android:textSize="12sp"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Timeline Line 2 -->
+                <View
+                    android:id="@+id/line2"
+                    android:layout_width="2dp"
+                    android:layout_height="0dp"
+                    android:background="#00FFFF"
+                    app:layout_constraintBottom_toTopOf="@id/node3"
+                    app:layout_constraintEnd_toEndOf="@id/node2"
+                    app:layout_constraintStart_toStartOf="@id/node2"
+                    app:layout_constraintTop_toBottomOf="@id/node2" />
+
+                <!-- Node 3: Summerstrand / NMU -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/node3"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginTop="32dp"
+                    app:cardBackgroundColor="#00FFFF"
+                    app:cardCornerRadius="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/transferCard" />
+
+                <TextView
+                    android:id="@+id/time3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="09:30"
+                    android:textColor="#A0A0A0"
+                    android:textSize="12sp"
+                    android:fontFamily="monospace"
+                    app:layout_constraintBottom_toBottomOf="@id/node3"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/node3" />
+
+                <TextView
+                    android:id="@+id/title3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Summerstrand / NMU"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/node3"
+                    app:layout_constraintStart_toEndOf="@id/node3"
+                    app:layout_constraintTop_toTopOf="@id/node3" />
+
+                <TextView
+                    android:id="@+id/sub3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Algoa Bus • Route 0"
+                    android:textColor="#A0A0A0"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="@id/title3"
+                    app:layout_constraintTop_toBottomOf="@id/title3" />
+
+                <!-- Horizontal Divider 1 -->
+                <View
+                    android:id="@+id/div1"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="32dp"
+                    android:background="#222222"
+                    app:layout_constraintTop_toBottomOf="@id/sub3" />
+
+                <!-- Passenger Details Section -->
+                <ImageView
+                    android:id="@+id/icUser"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/ic_launcher_background"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/div1" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="@id/icUser"
+                    app:layout_constraintStart_toEndOf="@id/icUser"
+                    app:layout_constraintTop_toTopOf="@id/icUser">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1 Adult"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Standard Fare"
+                        android:textColor="#A0A0A0"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="0.1"
+                    android:text="EDIT"
+                    android:textColor="#00FFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/icUser"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/icUser" />
+
+                <!-- Horizontal Divider 2 -->
+                <View
+                    android:id="@+id/div2"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="20dp"
+                    android:background="#222222"
+                    app:layout_constraintTop_toBottomOf="@id/icUser" />
+
+                <!-- Student Pass Section -->
+                <ImageView
+                    android:id="@+id/icPass"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/ic_launcher_background"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/div2" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="@id/icPass"
+                    app:layout_constraintStart_toEndOf="@id/icPass"
+                    app:layout_constraintTop_toTopOf="@id/icPass">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Apply Student Pass"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Valid until Dec 2024"
+                        android:textColor="#A0A0A0"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    app:layout_constraintBottom_toBottomOf="@id/icPass"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/icPass"
+                    app:thumbTint="#000000"
+                    app:trackTint="#00FFFF" />
+
+                <!-- Horizontal Divider 3 -->
+                <View
+                    android:id="@+id/div3"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="24dp"
+                    android:background="#222222"
+                    app:layout_constraintTop_toBottomOf="@id/icPass" />
+
+                <!-- Payment Method Section -->
+                <ImageView
+                    android:id="@+id/icPayment"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/ic_launcher_background"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/div3" />
+
+                <LinearLayout
+                    android:id="@+id/paymentDetails"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="@id/icPayment"
+                    app:layout_constraintEnd_toStartOf="@id/icChevron"
+                    app:layout_constraintStart_toEndOf="@id/icPayment"
+                    app:layout_constraintTop_toTopOf="@id/icPayment">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Visa ending in 4242"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Primary Payment Method"
+                        android:textColor="#A0A0A0"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- Chevron Down Icon -->
+                <ImageView
+                    android:id="@+id/icChevron"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/arrow_down_float"
+                    app:tint="#A0A0A0"
+                    app:layout_constraintBottom_toBottomOf="@id/icPayment"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/icPayment" />
+
+                <!-- Fare Breakdown Header -->
+                <TextView
+                    android:id="@+id/lblFareBreakdown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:letterSpacing="0.1"
+                    android:text="FARE BREAKDOWN"
+                    android:textColor="#A0A0A0"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/paymentDetails" />
+
+                <!-- Fare Items Container -->
+                <LinearLayout
+                    android:id="@+id/fareDetailsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toBottomOf="@id/lblFareBreakdown">
+
+                    <!-- Train Fare Row -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:text="Train Fare"
+                            android:textColor="#D0D0D0"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:text="R9.50"
+                            android:textColor="#D0D0D0"
+                            android:textSize="15sp" />
+                    </RelativeLayout>
+
+                    <!-- Bus Fare Row -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:text="Bus Fare"
+                            android:textColor="#D0D0D0"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:text="R16.00"
+                            android:textColor="#D0D0D0"
+                            android:textSize="15sp" />
+                    </RelativeLayout>
+
+                    <!-- Student Discount Row -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:text="Student Discount"
+                            android:textColor="#00FF7F"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:text="-R4.00"
+                            android:textColor="#00FF7F"
+                            android:textSize="15sp" />
+                    </RelativeLayout>
+
+                    <!-- Divider Line -->
+                    <!-- Note: standard Android XML does not support dashed lines natively in a View tag. -->
+                    <!-- A solid dark line is used here. For a true dashed line, you would create a custom drawable. -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="#222222" />
+
+                    <!-- Total Due Row -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="24dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:text="Total Due"
+                            android:textColor="#FFFFFF"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:text="R21.50"
+                            android:textColor="#00FFFF"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
+    </RelativeLayout>
