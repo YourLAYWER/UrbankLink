@@ -36,6 +36,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.activity.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -43,4 +44,10 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    // Use the matching 3.0.0 version for both core and converter
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+
+// Retrofit 3 requires an upgraded OkHttp 4.x environment
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 }
