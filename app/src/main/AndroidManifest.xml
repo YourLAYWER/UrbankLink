@@ -24,16 +24,19 @@
         <activity
             android:name=".TicketBooking"
             android:exported="false" />
-
-        <!-- MainActivity is no longer the launcher, so exported is false -->
         <activity
             android:name=".MainActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false" />
 
-        <!-- LoginActivity is now the launcher, so exported MUST be true -->
+        <!-- LoginActivity is no longer the launcher, so exported is false -->
         <activity
             android:name=".LoginActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- SplashActivity is now the launcher, so exported MUST be true -->
+        <activity
+            android:name=".SplashActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
 
@@ -42,7 +45,6 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
     </application>
 
