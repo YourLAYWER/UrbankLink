@@ -302,15 +302,33 @@
                 app:strokeWidth="1dp" />
 
             <!-- Footer -->
-            <TextView
+            <LinearLayout
                 android:id="@+id/tvSignIn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="40dp"
+                android:orientation="horizontal"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="16dp"
-                android:text="Already have an account? Sign In"
-                android:textColor="#A0A5B1"
-                android:textSize="14sp" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Already have an account? "
+                    android:textColor="#A0A0A0"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/txtCreateAccount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sign In"
+                    android:textColor="#00FF7F"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
