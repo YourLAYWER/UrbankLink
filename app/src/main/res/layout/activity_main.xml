@@ -111,6 +111,7 @@
                             app:boxCornerRadiusBottomEnd="8dp"
                             android:hint="Leaving from...">
                             <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etStartLocation"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textColor="#FFFFFF"/>
@@ -127,6 +128,7 @@
                             app:boxCornerRadiusBottomEnd="8dp"
                             android:hint="Going to...">
                             <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etEndLocation"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textColor="#FFFFFF"/>
