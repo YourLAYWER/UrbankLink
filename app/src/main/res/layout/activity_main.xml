@@ -100,6 +100,7 @@
                             android:textSize="18sp"
                             android:textStyle="bold"/>
 
+                        <!-- Leaving From -->
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -110,13 +111,19 @@
                             app:boxCornerRadiusBottomStart="8dp"
                             app:boxCornerRadiusBottomEnd="8dp"
                             android:hint="Leaving from...">
-                            <com.google.android.material.textfield.TextInputEditText
+
+                            <!-- Swapped to AutoCompleteTextView -->
+                            <AutoCompleteTextView
                                 android:id="@+id/etStartLocation"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:textColor="#FFFFFF"/>
+                                android:textColor="#FFFFFF"
+                                android:completionThreshold="2"
+                                android:inputType="textNoSuggestions" />
+                            <!-- completionThreshold="2" means it waits for 2 letters before searching -->
                         </com.google.android.material.textfield.TextInputLayout>
 
+                        <!-- Going To -->
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -127,11 +134,15 @@
                             app:boxCornerRadiusBottomStart="8dp"
                             app:boxCornerRadiusBottomEnd="8dp"
                             android:hint="Going to...">
-                            <com.google.android.material.textfield.TextInputEditText
+
+                            <!-- Swapped to AutoCompleteTextView -->
+                            <AutoCompleteTextView
                                 android:id="@+id/etEndLocation"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:textColor="#FFFFFF"/>
+                                android:textColor="#FFFFFF"
+                                android:completionThreshold="2"
+                                android:inputType="textNoSuggestions" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.button.MaterialButton

@@ -1,5 +1,7 @@
 package com.example.urbanklink;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -14,4 +16,7 @@ interface UrbanLinkApiService {
 
     @GET("api/user/me")
     Call<UserProfileResponse> getUserProfile(@Header("Authorization") String authHeader);
+
+    @GET("api/stops")
+    Call<List<Stop>> getAllStops();
 }
