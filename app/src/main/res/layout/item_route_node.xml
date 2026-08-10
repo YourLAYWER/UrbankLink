@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="12dp">
+
+    <!-- The Dot -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/nodeDot"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        app:cardBackgroundColor="#00FFFF"
+        app:cardCornerRadius="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- The Connecting Line -->
+    <View
+        android:id="@+id/nodeLine"
+        android:layout_width="2dp"
+        android:layout_height="50dp"
+        android:background="#00FFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/nodeDot"
+        app:layout_constraintStart_toStartOf="@id/nodeDot"
+        app:layout_constraintTop_toBottomOf="@id/nodeDot" />
+
+    <!-- Time -->
+    <TextView
+        android:id="@+id/txtTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="monospace"
+        android:text="08:40"
+        android:textColor="#A0A0A0"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/nodeDot"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/nodeDot" />
+
+    <!-- Stop Name -->
+    <TextView
+        android:id="@+id/txtStopName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:text="Station Name"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/nodeDot"
+        app:layout_constraintEnd_toStartOf="@id/txtTime"
+        app:layout_constraintStart_toEndOf="@id/nodeDot"
+        app:layout_constraintTop_toTopOf="@id/nodeDot" />
+
+    <!-- Transit Line Details -->
+    <TextView
+        android:id="@+id/txtTransitLine"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="PRASA Train"
+        android:textColor="#A0A0A0"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/txtStopName"
+        app:layout_constraintTop_toBottomOf="@id/txtStopName" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

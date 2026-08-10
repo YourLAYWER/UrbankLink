@@ -7,9 +7,8 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -28,10 +27,10 @@ public class Ticket_details extends AppCompatActivity {
     private MaterialButton btnConfirmPay;
     private SwitchMaterial switchStudentPass;
 
-    // Timeline Elements
-    private TextView time1, title1, sub1;
-    private TextView time2, title2;
-    private TextView time3, title3, sub3;
+    // NEW: Timeline Elements (Replaced all the hardcoded time1, title1, etc.)
+    private RecyclerView rvTimeline;
+    private RouteTimelineAdapter timelineAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,20 +62,15 @@ public class Ticket_details extends AppCompatActivity {
 
     private void initializeUI() {
         txtTotalTime = findViewById(R.id.txtTotalTime);
-        txtTotalDue = findViewById(R.id.txtTotalDue); // Ensure you added this ID to XML!
+        txtTotalDue = findViewById(R.id.txtTotalDue);
         btnConfirmPay = findViewById(R.id.btnConfirmPay);
-        switchStudentPass = findViewById(R.id.switchStudentPass); // Ensure you added this ID to XML!
+        switchStudentPass = findViewById(R.id.switchStudentPass);
 
-        time1 = findViewById(R.id.time1);
-        title1 = findViewById(R.id.title1);
-        sub1 = findViewById(R.id.sub1);
-
-        time2 = findViewById(R.id.time2);
-        title2 = findViewById(R.id.title2);
-
-        time3 = findViewById(R.id.time3);
-        title3 = findViewById(R.id.title3);
-        sub3 = findViewById(R.id.sub3);
+        // NEW: Setup the RecyclerView
+        rvTimeline = findViewById(R.id.rvTimeline);
+        rvTimeline.setLayoutManager(new LinearLayoutManager(this));
+        timelineAdapter = new RouteTimelineAdapter();
+        rvTimeline.setAdapter(timelineAdapter);
     }
 
     private void fetchRouteDetails(int start, int end) {
@@ -96,21 +90,9 @@ public class Ticket_details extends AppCompatActivity {
                     // Trigger the UI price update based on the default switch state
                     updatePricingDisplay(switchStudentPass.isChecked());
 
-                    // Populate Timeline (Assuming exactly 3 segments for this specific XML layout)
-                    if (data.getSegments().size() >= 3) {
-                        RouteSegmentDto seg1 = data.getSegments().get(0);
-                        time1.setText(seg1.getArrivalTime());
-                        title1.setText(seg1.getStopName());
-                        sub1.setText(seg1.getTransitLine());
-
-                        RouteSegmentDto seg2 = data.getSegments().get(1);
-                        time2.setText(seg2.getArrivalTime());
-                        title2.setText(seg2.getStopName());
-
-                        RouteSegmentDto seg3 = data.getSegments().get(2);
-                        time3.setText(seg3.getArrivalTime());
-                        title3.setText(seg3.getStopName());
-                        sub3.setText(seg3.getTransitLine());
+                    // NEW: Pass the list of segments directly to the RecyclerView adapter
+                    if (data.getSegments() != null) {
+                        timelineAdapter.setSegments(data.getSegments());
                     }
                 } else {
                     Toast.makeText(Ticket_details.this, "Failed to calculate route.", Toast.LENGTH_SHORT).show();
@@ -118,11 +100,12 @@ public class Ticket_details extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call call, Throwable t) {
+            public void onFailure(Call<RouteCalculateResponse> call, Throwable t) { // Fixed generic type here
                 Toast.makeText(Ticket_details.this, "Network error", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
     private void updatePricingDisplay(boolean isStudentPassActive) {
         double finalPrice = currentBaseCost;
         if (isStudentPassActive) {
