@@ -19,4 +19,7 @@ interface UrbanLinkApiService {
 
     @GET("api/stops")
     Call<List<Stop>> getAllStops();
+
+    @POST("api/Journey/calculate")
+    Call<RouteCalculateResponse> calculateRoute(@Body RouteCalculateRequest request);
 }

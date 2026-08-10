@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
     // 2. Declare variables to secretly hold the integer IDs for your Dijkstra algorithm
     private int selectedStartId = -1;
     private int selectedDestinationId = -1;
+
+    // ---> ADD THIS: A global list to hold all stops so the button can search it <---
+    private List<Stop> allStops = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +54,52 @@ public class MainActivity extends AppCompatActivity {
         etDestination = findViewById(R.id.etEndLocation);
         findRouteBtn = findViewById(R.id.findRouteBtn);
         checkAndSyncStops();
+
+
+        findRouteBtn.setOnClickListener(v -> {
+            // 1. Grab whatever text the user typed in the boxes
+            String startInput = etStartLocation.getText().toString().trim().toLowerCase();
+            String destInput = etDestination.getText().toString().trim().toLowerCase();
+
+            // 2. Reset the IDs to -1 in case they changed their mind
+            selectedStartId = -1;
+            selectedDestinationId = -1;
+
+            // 3. Manually scan the list for a match!
+            for (Stop stop : allStops) {
+                String dbStopName = stop.getName().toLowerCase();
+
+                // If the database name starts with whatever they typed (e.g. "Boardwa" matches "Boardwalk")
+                if (selectedStartId == -1 && dbStopName.startsWith(startInput) && !startInput.isEmpty()) {
+                    selectedStartId = stop.getStopId();
+                    // Optional: Auto-correct the text in the UI to the full name
+                    etStartLocation.setText(stop.getName(), false);
+                }
+
+                if (selectedDestinationId == -1 && dbStopName.startsWith(destInput) && !destInput.isEmpty()) {
+                    selectedDestinationId = stop.getStopId();
+                    // Optional: Auto-correct the text in the UI to the full name
+                    etDestination.setText(stop.getName(), false);
+                }
+            }
+
+            // 4. Now run your validation checks
+            if (selectedStartId == -1 || selectedDestinationId == -1) {
+                Toast.makeText(this, "Please select valid stops from the list", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (selectedStartId == selectedDestinationId) {
+                Toast.makeText(this, "Start and destination cannot be the same", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // 5. Fire the Intent to the Ticket Details screen
+            Intent intent = new Intent(MainActivity.this, Ticket_details.class);
+            intent.putExtra("START_ID", selectedStartId);
+            intent.putExtra("DEST_ID", selectedDestinationId);
+            startActivity(intent);
+        });
     }
     private void loadStopsIntoUI() {
         // 1. Create a background thread to read from Room
@@ -59,30 +110,71 @@ public class MainActivity extends AppCompatActivity {
             UrbanLinkDatabase db = UrbanLinkDatabase.getInstance(getApplicationContext());
             List<Stop> localStops = db.stopDao().getAllStops();
 
+            // ---> NEW STEP: Create a list of JUST STRINGS for the UI <---
+            List<String> stopNames = new ArrayList<>();
+            for (Stop stop : localStops) {
+                stopNames.add(stop.getName());
+            }
+
             // 3. Switch back to the Main UI Thread to update the screen
             runOnUiThread(() -> {
 
-                // 4. Build the Adapter using your custom dark-themed layout
-                ArrayAdapter<Stop> adapter = new ArrayAdapter<>(
-                        this, // Use 'this' if in MainActivity
-                        R.layout.item_dropdown,      // The XML file we created earlier
-                        localStops
+                // ---> ADD THIS LINE: Save the stops so the button can read them later
+                allStops = localStops;
+
+                // 4. Build the Adapter using the STRING list, not the Stop objects
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        MainActivity.this,
+                        R.layout.item_dropdown,
+                        stopNames // <--- Passed the Strings!
                 );
 
                 // 5. Attach the adapter to the Material UI components
                 etStartLocation.setAdapter(adapter);
                 etDestination.setAdapter(adapter);
 
-                // 6. Capture the hidden Stop ID when the user selects a Start Location
+                // 6. Upgraded Start Location Listener
                 etStartLocation.setOnItemClickListener((parent, view, position, id) -> {
-                    Stop selectedStop = (Stop) parent.getItemAtPosition(position);
-                    selectedStartId = selectedStop.getStopId();
+                    // Grab the raw String the user tapped
+                    String selectedName = (String) parent.getItemAtPosition(position);
+
+                    // Look up that name in our original database list to find the ID
+                    for (Stop stop : localStops) {
+                        if (stop.getName().equals(selectedName)) {
+                            selectedStartId = stop.getStopId();
+
+                            // VISUAL PROOF!
+                            Toast.makeText(MainActivity.this, "Start Saved: " + selectedStartId, Toast.LENGTH_SHORT).show();
+                            break;
+                        }
+                    }
+
+                    // UX Magic: Hide the keyboard so they can see the Find Route button
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    etStartLocation.clearFocus();
                 });
 
-                // 7. Capture the hidden Stop ID when the user selects a Destination
+                // 7. Upgraded Destination Listener
                 etDestination.setOnItemClickListener((parent, view, position, id) -> {
-                    Stop selectedStop = (Stop) parent.getItemAtPosition(position);
-                    selectedDestinationId = selectedStop.getStopId();
+                    // Grab the raw String the user tapped
+                    String selectedName = (String) parent.getItemAtPosition(position);
+
+                    // Look up that name in our original database list to find the ID
+                    for (Stop stop : localStops) {
+                        if (stop.getName().equals(selectedName)) {
+                            selectedDestinationId = stop.getStopId();
+
+                            // VISUAL PROOF!
+                            Toast.makeText(MainActivity.this, "Dest Saved: " + selectedDestinationId, Toast.LENGTH_SHORT).show();
+                            break;
+                        }
+                    }
+
+                    // UX Magic: Hide the keyboard
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    etDestination.clearFocus();
                 });
             });
         });

@@ -442,6 +442,7 @@
                 </LinearLayout>
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchStudentPass"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
@@ -626,6 +627,7 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/txtTotalDue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
