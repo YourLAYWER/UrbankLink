@@ -1,5 +1,8 @@
 package com.example.urbanklink;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,8 +23,12 @@ import retrofit2.Response;
 public class Ticket_details extends AppCompatActivity {
 
     private double currentBaseCost = 0.0;
+    private double currentFinalCost = 0.0; // NEW: Tracks the exact amount to charge
     private final double STUDENT_DISCOUNT = 4.00;
 
+    // NEW: Save these globally so the button can access them
+    private int startId = -1;
+    private int destId = -1;
     // UI Elements
     private TextView txtTotalTime, txtTotalDue, txtBaseFare;
     private MaterialButton btnConfirmPay;
@@ -40,8 +47,8 @@ public class Ticket_details extends AppCompatActivity {
         initializeUI();
 
         // 1. Get the IDs from the Intent
-        int startId = getIntent().getIntExtra("START_ID", -1);
-        int destId = getIntent().getIntExtra("DEST_ID", -1);
+        startId = getIntent().getIntExtra("START_ID", -1);
+        destId = getIntent().getIntExtra("DEST_ID", -1);
 
         if (startId != -1 && destId != -1) {
             fetchRouteDetails(startId, destId);
@@ -53,6 +60,9 @@ public class Ticket_details extends AppCompatActivity {
         // 2. Make the Back button work
         ImageView btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> finish());
+
+        // NEW: Wire up the Pay button
+        btnConfirmPay.setOnClickListener(v -> processPayment());
 
         // 3. Make the Student Pass switch recalculate the price instantly
         switchStudentPass.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -121,5 +131,75 @@ public class Ticket_details extends AppCompatActivity {
 
         txtTotalDue.setText(formattedPrice);
         btnConfirmPay.setText("Confirm & Pay " + formattedPrice);
+    }
+
+    // NEW: The method that executes the purchase
+    private void processPayment() {
+        // 1. Disable button so user doesn't double-click and get charged twice
+        btnConfirmPay.setEnabled(false);
+        btnConfirmPay.setText("Processing...");
+
+        // 2. Grab the JWT Token
+        SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", Context.MODE_PRIVATE);
+        String token = prefs.getString("JWT_TOKEN", null);
+
+        if (token == null) {
+            Toast.makeText(this, "Authentication error. Please log in again.", Toast.LENGTH_LONG).show();
+            btnConfirmPay.setEnabled(true);
+            return;
+        }
+
+        String authHeader = "Bearer " + token.replace("\"", "").trim();
+
+        // 3. Build the Request
+//        BookTicketRequest request = new BookTicketRequest(
+//                startId,
+//                destId,
+//                currentFinalCost,
+//                switchStudentPass.isChecked()
+//        );
+
+        // 3. Build the Request
+        BookTicketRequest request = new BookTicketRequest(startId,destId);
+
+        // 4. Send to C#
+        UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+
+        apiService.bookJourney(authHeader, request).enqueue(new Callback<JourneyResponse>() {
+            @Override
+            public void onResponse(Call<JourneyResponse> call, Response<JourneyResponse> response) {
+                btnConfirmPay.setEnabled(true); // Re-enable button
+
+                if (response.isSuccessful() && response.body() != null) {
+                    // SUCCESS!
+                    Toast.makeText(Ticket_details.this, "Ticket Confirmed! ID: " + response.body().getJourneyId(), Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(Ticket_details.this, TicketScreen.class);
+                    startActivity(intent);
+                    // You would typically navigate to a "Ticket QR Code" screen here
+                    finish();
+
+                } else {
+                    Toast.makeText(Ticket_details.this, "Payment failed. Please try again.", Toast.LENGTH_LONG).show();
+                    try {
+                        // Grab the exact error message the C# server sent back
+                        String serverError = response.errorBody() != null ? response.errorBody().string() : "No error message";
+
+                        // Print it to the Logcat
+                        android.util.Log.e("PAYMENT_ERROR", "HTTP Code: " + response.code() + " | Reason: " + serverError);
+
+                        // Show the HTTP code on the screen
+                        Toast.makeText(Ticket_details.this, "Failed! Code: " + response.code(), Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JourneyResponse> call, Throwable t) {
+                btnConfirmPay.setEnabled(true);
+                Toast.makeText(Ticket_details.this, "Network error during checkout.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

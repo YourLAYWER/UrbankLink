@@ -22,4 +22,10 @@ interface UrbanLinkApiService {
 
     @POST("api/Journey/calculate")
     Call<RouteCalculateResponse> calculateRoute(@Body RouteCalculateRequest request);
+
+    @POST("api/Journey/book")
+    Call<JourneyResponse> bookJourney(
+            @Header("Authorization") String token,
+            @Body BookTicketRequest request
+    );
 }
