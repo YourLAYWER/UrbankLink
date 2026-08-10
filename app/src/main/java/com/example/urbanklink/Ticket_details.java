@@ -23,7 +23,7 @@ public class Ticket_details extends AppCompatActivity {
     private final double STUDENT_DISCOUNT = 4.00;
 
     // UI Elements
-    private TextView txtTotalTime, txtTotalDue;
+    private TextView txtTotalTime, txtTotalDue, txtBaseFare;
     private MaterialButton btnConfirmPay;
     private SwitchMaterial switchStudentPass;
 
@@ -64,6 +64,7 @@ public class Ticket_details extends AppCompatActivity {
         txtTotalTime = findViewById(R.id.txtTotalTime);
         txtTotalDue = findViewById(R.id.txtTotalDue);
         btnConfirmPay = findViewById(R.id.btnConfirmPay);
+        txtBaseFare = findViewById(R.id.txtBaseFare);
         switchStudentPass = findViewById(R.id.switchStudentPass);
 
         // NEW: Setup the RecyclerView
@@ -85,6 +86,7 @@ public class Ticket_details extends AppCompatActivity {
 
                     // Populate Cost & Time
                     currentBaseCost = data.getBaseCost();
+                    txtBaseFare.setText(String.format("R%.2f", currentBaseCost));
                     txtTotalTime.setText("Total Time: " + data.getEstimatedDurationMinutes() + " mins");
 
                     // Trigger the UI price update based on the default switch state
