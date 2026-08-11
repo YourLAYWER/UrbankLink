@@ -10,6 +10,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
@@ -35,6 +36,12 @@ public class TicketScreen extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Ticket Reference missing!", Toast.LENGTH_SHORT).show();
         }
+
+        // Set up your views
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+
+        // Use the utility class, telling it that "Tickets" is the active tab
+        NavigationUtils.setupBottomNavigation(this, bottomNav, R.id.nav_tickets);
 
     }
 

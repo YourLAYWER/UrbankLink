@@ -22,8 +22,8 @@ public class NavigationUtils {
             }
             else if (itemId == R.id.nav_tickets) {
                 // Uncomment when you have this screen ready
-                // activity.startActivity(new Intent(activity, Ticket_details.class));
-                // activity.overridePendingTransition(0, 0);
+                activity.startActivity(new Intent(activity, TicketScreen.class));
+                activity.overridePendingTransition(0, 0);
             }
             else if (itemId == R.id.nav_profile) {
                 // Uncomment when you have this screen ready

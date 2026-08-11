@@ -9,16 +9,18 @@
     tools:context=".TicketScreen">
 
         <!-- Fixed Bottom Navigation -->
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNav"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="#121212"
-            app:itemIconTint="#FFFFFF"
-            app:itemTextColor="#FFFFFF"
-            app:menu="@menu/bottom_nav_menu"
-            />
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/CustomBottomNav"
+        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
+        android:background="#121212"
+        app:itemIconTint="@color/nav_item_colors"
+        app:itemTextColor="@color/nav_item_colors"
+        app:menu="@menu/bottom_nav_menu"
+        />
 
         <!-- Scrollable Main Content -->
         <ScrollView

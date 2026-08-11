@@ -100,6 +100,11 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("DEST_ID", selectedDestinationId);
             startActivity(intent);
         });
+        // Set up your views
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+
+        // Use the utility class, telling it that "Home" is the active tab
+        NavigationUtils.setupBottomNavigation(this, bottomNav, R.id.nav_home);
     }
     private void loadStopsIntoUI() {
         // 1. Create a background thread to read from Room
