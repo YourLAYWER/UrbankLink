@@ -16,6 +16,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
@@ -48,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
 
         txtGreeting = findViewById(R.id.greetingTitle);
         fetchUserData();
-
         // 3. Link them to the IDs in your XML file
         etStartLocation = findViewById(R.id.etStartLocation);
         etDestination = findViewById(R.id.etEndLocation);

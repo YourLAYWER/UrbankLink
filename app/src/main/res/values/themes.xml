@@ -4,6 +4,15 @@
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
+    <!-- Add this to your themes.xml or styles.xml -->
+    <style name="CustomBottomNav" parent="Widget.Material3.BottomNavigationView">
+        <!-- Points to the style below to change the circle color -->
+        <item name="itemActiveIndicatorStyle">@style/CustomIndicator</item>
+    </style>
 
+    <style name="CustomIndicator">
+        <!-- This is the color of the circle (Your UrbanLink Green) -->
+        <item name="android:color">#00F5A0</item>
+    </style>
     <style name="Theme.UrbankLink" parent="Base.Theme.UrbankLink" />
 </resources>
