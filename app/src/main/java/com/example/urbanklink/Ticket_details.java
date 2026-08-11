@@ -172,7 +172,7 @@ public class Ticket_details extends AppCompatActivity {
 
                 if (response.isSuccessful() && response.body() != null) {
                     // SUCCESS!
-                    Toast.makeText(Ticket_details.this, "Ticket Confirmed! ID: " + response.body().getJourneyId(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(Ticket_details.this, "Payment Successful!", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(Ticket_details.this, TicketScreen.class);
                     startActivity(intent);
                     // You would typically navigate to a "Ticket QR Code" screen here

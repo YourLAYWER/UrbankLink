@@ -9,6 +9,9 @@ public class JourneyResponse {
     @SerializedName("journeyId")
     private Integer journeyId;
 
+    @SerializedName("ticketReference")
+    private String ticketReference;
+
     @SerializedName("totalCost")
     private Double totalCost;
 
@@ -24,6 +27,10 @@ public class JourneyResponse {
     // THIS is the method your Ticket_details screen is looking for!
     public Integer getJourneyId() {
         return journeyId;
+    }
+
+    public String getTicketReference() {
+        return ticketReference;
     }
 
     public Double getTotalCost() {
