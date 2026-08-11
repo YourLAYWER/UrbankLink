@@ -14,6 +14,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class TicketScreen extends AppCompatActivity {
 
     private ImageView imgQrCode;
@@ -34,7 +37,9 @@ public class TicketScreen extends AppCompatActivity {
         if (ticketRef != null && !ticketRef.isEmpty()) {
             generateQRCode(ticketRef);
         } else {
-            Toast.makeText(this, "Ticket Reference missing!", Toast.LENGTH_SHORT).show();
+            // Offline path: User opened the app from the menu, check the local database
+            loadActiveTicketFromDatabase();
+            Toast.makeText(this, "You are offline (:", Toast.LENGTH_SHORT).show();
         }
 
         // Set up your views
@@ -43,6 +48,27 @@ public class TicketScreen extends AppCompatActivity {
         // Use the utility class, telling it that "Tickets" is the active tab
         NavigationUtils.setupBottomNavigation(this, bottomNav, R.id.nav_tickets);
 
+    }
+    private void loadActiveTicketFromDatabase() {
+        // Create a background thread so we don't freeze the app
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        executor.execute(() -> {
+            // 1. Ask Room for the latest unclaimed ticket
+            UrbanLinkDatabase db = UrbanLinkDatabase.getInstance(TicketScreen.this);
+            LocalTicket activeTicket = db.ticketDao().getActiveTicket();
+
+            // 2. Hop back to the Main UI Thread to draw the graphics
+            runOnUiThread(() -> {
+                if (activeTicket != null && activeTicket.ticketReference != null) {
+                    generateQRCode(activeTicket.ticketReference);
+                    Toast.makeText(TicketScreen.this, "Loaded offline ticket", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(TicketScreen.this, "No active tickets found.", Toast.LENGTH_LONG).show();
+                    // Optional: You could show a placeholder image here instead of a blank square
+                }
+            });
+        });
     }
 
     // 2. Change the parameter to accept a String

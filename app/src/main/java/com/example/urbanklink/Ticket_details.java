@@ -92,7 +92,7 @@ public class Ticket_details extends AppCompatActivity {
             @Override
             public void onResponse(Call<RouteCalculateResponse> call, Response<RouteCalculateResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    RouteCalculateResponse data = response.body();
+                    RouteCalculateResponse data = response.body();;
 
                     // Populate Cost & Time
                     currentBaseCost = data.getBaseCost();
@@ -171,6 +171,26 @@ public class Ticket_details extends AppCompatActivity {
                 btnConfirmPay.setEnabled(true); // Re-enable button
 
                 if (response.isSuccessful() && response.body() != null) {
+
+                    JourneyResponse data = response.body();
+
+
+                    // 1. Create the offline ticket record
+                    LocalTicket newTicket = new LocalTicket(
+                            data.getTicketReference(),
+                            data.getJourneyId(),
+                            data.getTotalCost(),
+                            System.currentTimeMillis() // Current time
+                    );
+
+                    // 2. Save to Room database on a background thread (Room crashes if run on the main UI thread)
+                    java.util.concurrent.Executors.newSingleThreadExecutor().execute(() -> {
+                        UrbanLinkDatabase.getInstance(Ticket_details.this).ticketDao().insertTicket(newTicket);
+                    });
+
+                    // 3. Show Toast and Navigate to QR Screen
+                    Toast.makeText(Ticket_details.this, "Ticket Confirmed & Saved Offline!", Toast.LENGTH_LONG).show();
+
                     // SUCCESS!
                     Toast.makeText(Ticket_details.this, "Payment Successful!", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(Ticket_details.this, TicketScreen.class);
