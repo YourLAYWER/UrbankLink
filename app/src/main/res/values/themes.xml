@@ -14,5 +14,9 @@
         <!-- This is the color of the circle (Your UrbanLink Green) -->
         <item name="android:color">#00F5A0</item>
     </style>
+    <style name="CircleImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
     <style name="Theme.UrbankLink" parent="Base.Theme.UrbankLink" />
 </resources>

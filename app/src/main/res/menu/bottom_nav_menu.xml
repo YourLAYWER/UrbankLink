@@ -11,10 +11,6 @@
         android:icon="@drawable/ic_ticket"
         android:title="Tickets" />
 
-    <item
-        android:id="@+id/nav_cart"
-        android:icon="@android:drawable/ic_menu_manage"
-        android:title="Cart" />
 
     <item
         android:id="@+id/nav_profile"

@@ -8,251 +8,227 @@
     android:background="#1E1E1E"
     tools:context=".TicketScreen">
 
-        <!-- Fixed Bottom Navigation -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNav"
+    <!-- 1. Fixed Top Header -->
+    <!-- Moved OUTSIDE the ScrollView so it spans edge-to-edge and doesn't scroll away -->
+    <include
+        android:id="@+id/topHeader"
+        layout="@layout/layout_top_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true" />
+
+    <!-- 2. Fixed Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
         style="@style/CustomBottomNav"
-        android:layout_gravity="bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="#121212"
         app:itemIconTint="@color/nav_item_colors"
         app:itemTextColor="@color/nav_item_colors"
-        app:menu="@menu/bottom_nav_menu"
-        />
+        app:menu="@menu/bottom_nav_menu" />
 
-        <!-- Scrollable Main Content -->
-        <ScrollView
+    <!-- 3. Scrollable Main Content -->
+    <!-- Placed strictly between the Top Header and Bottom Nav -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottomNav"
+        android:layout_below="@+id/topHeader"
+        android:fillViewport="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/bottomNav"
-            android:fillViewport="true">
+            android:layout_height="wrap_content"
+            android:padding="24dp">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <!-- MAP PLACEHOLDER -->
+            <!-- Changed constraint to parent top since the header is no longer in this view -->
+            <FrameLayout
+                android:id="@+id/mapPlaceholder"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:background="#2A2A2A"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Map View Placeholder"
+                    android:textColor="#888888"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+            <!-- Live Updates Indicator -->
+            <ImageView
+                android:id="@+id/dotLive"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginTop="24dp"
+                android:src="@android:drawable/presence_online"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/mapPlaceholder"
+                app:tint="#00FF7F" />
+
+            <TextView
+                android:id="@+id/txtLiveUpdates"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:letterSpacing="0.1"
+                android:text="LIVE UPDATES"
+                android:textColor="#00FF7F"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/dotLive"
+                app:layout_constraintStart_toEndOf="@id/dotLive"
+                app:layout_constraintTop_toTopOf="@id/dotLive" />
+
+            <!-- Bus Badge -->
+            <TextView
+                android:id="@+id/badgeBus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#1A00FFFF"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:text="🚍 B24"
+                android:textColor="#00FFFF"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/txtLiveUpdates"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/txtLiveUpdates" />
+
+            <!-- Main Arrival Title -->
+            <TextView
+                android:id="@+id/txtArrivalTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="Algoa Bus arriving in\n2 mins."
+                android:textColor="#E0FFFF"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtLiveUpdates" />
+
+            <!-- Current Leg Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/legCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="24dp">
+                android:layout_marginTop="24dp"
+                app:cardBackgroundColor="#222222"
+                app:cardCornerRadius="12dp"
+                app:layout_constraintTop_toBottomOf="@id/txtArrivalTitle"
+                app:strokeColor="#333333"
+                app:strokeWidth="1dp">
 
-                <!-- Header -->
-                <ImageView
-                    android:id="@+id/btnBack"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:src="@android:drawable/ic_menu_revert"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:tint="#FFFFFF" />
-
-                <TextView
-                    android:id="@+id/appTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:text="UrbanLink"
-                    android:textColor="#00FFFF"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@id/btnBack"
-                    app:layout_constraintStart_toEndOf="@id/btnBack"
-                    app:layout_constraintTop_toTopOf="@id/btnBack" />
-
-                <ImageView
-                    android:id="@+id/profileImage"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:background="@android:drawable/ic_menu_myplaces"
-                    app:layout_constraintBottom_toBottomOf="@id/btnBack"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/btnBack" />
-
-                <!-- MAP PLACEHOLDER -->
-                <FrameLayout
-                    android:id="@+id/mapPlaceholder"
-                    android:layout_width="match_parent"
-                    android:layout_height="280dp"
-                    android:layout_marginTop="24dp"
-                    android:background="#2A2A2A"
-                    app:layout_constraintTop_toBottomOf="@id/btnBack">
-
-                    <!-- Temporary text to show where the map goes -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="Map View Placeholder"
-                        android:textColor="#888888"
-                        android:textStyle="bold" />
-                </FrameLayout>
-
-                <!-- Live Updates Indicator -->
-                <ImageView
-                    android:id="@+id/dotLive"
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
-                    android:layout_marginTop="24dp"
-                    android:src="@android:drawable/presence_online"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/mapPlaceholder"
-                    app:tint="#00FF7F" />
-
-                <TextView
-                    android:id="@+id/txtLiveUpdates"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:letterSpacing="0.1"
-                    android:text="LIVE UPDATES"
-                    android:textColor="#00FF7F"
-                    android:textSize="10sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@id/dotLive"
-                    app:layout_constraintStart_toEndOf="@id/dotLive"
-                    app:layout_constraintTop_toTopOf="@id/dotLive" />
-
-                <!-- Bus Badge -->
-                <TextView
-                    android:id="@+id/badgeBus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="#1A00FFFF"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="6dp"
-                    android:text="🚍 B24"
-                    android:textColor="#00FFFF"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@id/txtLiveUpdates"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/txtLiveUpdates" />
-
-                <!-- Main Arrival Title -->
-                <TextView
-                    android:id="@+id/txtArrivalTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:text="Algoa Bus arriving in\n2 mins."
-                    android:textColor="#E0FFFF"
-                    android:textSize="28sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/txtLiveUpdates" />
-
-                <!-- Current Leg Card -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/legCard"
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    app:cardBackgroundColor="#222222"
-                    app:cardCornerRadius="12dp"
-                    app:layout_constraintTop_toBottomOf="@id/txtArrivalTitle"
-                    app:strokeColor="#333333"
-                    app:strokeWidth="1dp">
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp">
-
-                        <ImageView
-                            android:id="@+id/icStart"
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:layout_marginTop="8dp"
-                            android:src="@android:drawable/ic_menu_help"
-                            app:tint="#00FFFF" />
-
-                        <View
-                            android:id="@+id/timelineLine"
-                            android:layout_width="2dp"
-                            android:layout_height="32dp"
-                            android:layout_alignStart="@id/icStart"
-                            android:layout_alignEnd="@id/icStart"
-                            android:layout_below="@id/icStart"
-                            android:background="#444444" />
-
-                        <ImageView
-                            android:id="@+id/icEnd"
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:layout_below="@id/timelineLine"
-                            android:src="@android:drawable/ic_menu_mylocation"
-                            app:tint="#A0A0A0" />
-
-                        <TextView
-                            android:id="@+id/lblCurrentLeg"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_toEndOf="@id/icStart"
-                            android:letterSpacing="0.1"
-                            android:text="CURRENT LEG"
-                            android:textColor="#A0A0A0"
-                            android:textSize="10sp" />
-
-                        <TextView
-                            android:id="@+id/txtCurrentLeg"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignStart="@id/lblCurrentLeg"
-                            android:layout_below="@id/lblCurrentLeg"
-                            android:layout_marginTop="2dp"
-                            android:text="City Center to Station"
-                            android:textColor="#FFFFFF"
-                            android:textSize="16sp" />
-
-                        <TextView
-                            android:id="@+id/lblEstimated"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignStart="@id/lblCurrentLeg"
-                            android:layout_below="@id/txtCurrentLeg"
-                            android:layout_marginTop="16dp"
-                            android:letterSpacing="0.1"
-                            android:text="ESTIMATED ARRIVAL"
-                            android:textColor="#A0A0A0"
-                            android:textSize="10sp" />
-
-                        <TextView
-                            android:id="@+id/txtEstimated"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignStart="@id/lblCurrentLeg"
-                            android:layout_below="@id/lblEstimated"
-                            android:layout_marginTop="2dp"
-                            android:text="14:42 • Platform 4"
-                            android:textColor="#FFFFFF"
-                            android:textSize="16sp" />
-                    </RelativeLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- QR Code Container -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/qrCodeCard"
-                    android:layout_width="220dp"
-                    android:layout_height="220dp"
-                    android:layout_marginTop="40dp"
-                    android:layout_marginBottom="32dp"
-                    app:cardBackgroundColor="#FFFFFF"
-                    app:cardCornerRadius="16dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/legCard">
+                    android:padding="16dp">
 
                     <ImageView
-                        android:id="@+id/imgQrCode"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:padding="16dp"
-                        android:scaleType="fitCenter"
-                        android:src="@android:drawable/ic_dialog_info" />
-                </com.google.android.material.card.MaterialCardView>
+                        android:id="@+id/icStart"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginTop="8dp"
+                        android:src="@android:drawable/ic_menu_help"
+                        app:tint="#00FFFF" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </ScrollView>
-    </RelativeLayout>
+                    <View
+                        android:id="@+id/timelineLine"
+                        android:layout_width="2dp"
+                        android:layout_height="32dp"
+                        android:layout_alignStart="@id/icStart"
+                        android:layout_alignEnd="@id/icStart"
+                        android:layout_below="@id/icStart"
+                        android:background="#444444" />
+
+                    <ImageView
+                        android:id="@+id/icEnd"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_below="@id/timelineLine"
+                        android:src="@android:drawable/ic_menu_mylocation"
+                        app:tint="#A0A0A0" />
+
+                    <TextView
+                        android:id="@+id/lblCurrentLeg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_toEndOf="@id/icStart"
+                        android:letterSpacing="0.1"
+                        android:text="CURRENT LEG"
+                        android:textColor="#A0A0A0"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/txtCurrentLeg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignStart="@id/lblCurrentLeg"
+                        android:layout_below="@id/lblCurrentLeg"
+                        android:layout_marginTop="2dp"
+                        android:text="City Center to Station"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/lblEstimated"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignStart="@id/lblCurrentLeg"
+                        android:layout_below="@id/txtCurrentLeg"
+                        android:layout_marginTop="16dp"
+                        android:letterSpacing="0.1"
+                        android:text="ESTIMATED ARRIVAL"
+                        android:textColor="#A0A0A0"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/txtEstimated"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignStart="@id/lblCurrentLeg"
+                        android:layout_below="@id/lblEstimated"
+                        android:layout_marginTop="2dp"
+                        android:text="14:42 • Platform 4"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp" />
+                </RelativeLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- QR Code Container -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/qrCodeCard"
+                android:layout_width="220dp"
+                android:layout_height="220dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="32dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/legCard">
+
+                <ImageView
+                    android:id="@+id/imgQrCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="16dp"
+                    android:scaleType="fitCenter"
+                    android:src="@android:drawable/ic_dialog_info" />
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</RelativeLayout>

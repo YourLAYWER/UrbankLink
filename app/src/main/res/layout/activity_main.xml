@@ -20,35 +20,10 @@
                 android:padding="20dp">
 
                 <!-- Top Header -->
-                <ImageView
-                    android:id="@+id/menuIcon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@android:drawable/ic_menu_sort_by_size"
-                    app:tint="#00FFFF"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"/>
-
-                <TextView
-                    android:id="@+id/appTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="UrbanLink"
-                    android:textColor="#00FFFF"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:layout_marginStart="12dp"
-                    app:layout_constraintTop_toTopOf="@id/menuIcon"
-                    app:layout_constraintBottom_toBottomOf="@id/menuIcon"
-                    app:layout_constraintStart_toEndOf="@id/menuIcon"/>
-
-                <ImageView
-                    android:id="@+id/profileImage"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="@android:drawable/ic_menu_myplaces"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                <include
+                    android:id="@+id/topHeader"
+                    layout="@layout/layout_top_header"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <!-- Greeting -->
                 <TextView
@@ -60,7 +35,7 @@
                     android:textSize="28sp"
                     android:textStyle="bold"
                     android:layout_marginTop="32dp"
-                    app:layout_constraintTop_toBottomOf="@id/appTitle"
+                    app:layout_constraintTop_toBottomOf="@id/topHeader"
                     app:layout_constraintStart_toStartOf="parent"/>
 
                 <TextView
