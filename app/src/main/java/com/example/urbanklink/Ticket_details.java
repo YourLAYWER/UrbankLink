@@ -174,6 +174,7 @@ public class Ticket_details extends AppCompatActivity {
                     // SUCCESS!
                     Toast.makeText(Ticket_details.this, "Payment Successful!", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(Ticket_details.this, TicketScreen.class);
+                    intent.putExtra("TICKET_REF", response.body().getTicketReference());
                     startActivity(intent);
                     // You would typically navigate to a "Ticket QR Code" screen here
                     finish();
