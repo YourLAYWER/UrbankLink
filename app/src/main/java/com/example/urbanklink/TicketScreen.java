@@ -31,7 +31,7 @@ public class TicketScreen extends AppCompatActivity {
 
         //btnBack.setOnClickListener(v -> finish());
         // ACTIVATE THE BACK BUTTON! (true = show the button)
-        HeaderUtils.setupHeader(this, true);
+        HeaderUtils.setupHeader(this, true, false);
 
         // 1. Grab the GUID String instead of the int
         String ticketRef = getIntent().getStringExtra("TICKET_REF");

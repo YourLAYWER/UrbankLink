@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Set up the shared top header (false = hides the back button since this is a main tab)
-        HeaderUtils.setupHeader(this, false);
+        HeaderUtils.setupHeader(this, false, true);
 
         txtGreeting = findViewById(R.id.greetingTitle);
         fetchUserData();
