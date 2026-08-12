@@ -30,7 +30,7 @@ public class NavigationUtils {
                 // activity.startActivity(new Intent(activity, ProfileActivity.class));
                 // activity.overridePendingTransition(0, 0);
             }
-            return true;
+            return false;
         });
     }
 }
