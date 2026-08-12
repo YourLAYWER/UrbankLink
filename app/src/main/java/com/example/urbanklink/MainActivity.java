@@ -47,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
+        // Set up the shared top header (false = hides the back button since this is a main tab)
+        HeaderUtils.setupHeader(this, false);
+
         txtGreeting = findViewById(R.id.greetingTitle);
         fetchUserData();
         // 3. Link them to the IDs in your XML file

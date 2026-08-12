@@ -1,50 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mainTicket"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1E1E1E"
-    tools:context=".TicketScreen">
+    android:background="#121212"
+    tools:context=".TicketScreen"
+    android:fitsSystemWindows="true">
 
-    <!-- 1. Fixed Top Header -->
-    <!-- Moved OUTSIDE the ScrollView so it spans edge-to-edge and doesn't scroll away -->
-    <include
-        android:id="@+id/topHeader"
-        layout="@layout/layout_top_header"
+    <!-- 1. FIXED TOP HEADER -->
+    <!-- Wrapped in AppBarLayout so it locks to the top of the screen and ignores inner padding -->
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true" />
+        android:background="@android:color/transparent"
+        app:elevation="0dp"
+        >
 
-    <!-- 2. Fixed Bottom Navigation -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNav"
-        style="@style/CustomBottomNav"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="#121212"
-        app:itemIconTint="@color/nav_item_colors"
-        app:itemTextColor="@color/nav_item_colors"
-        app:menu="@menu/bottom_nav_menu" />
+        <include
+            android:id="@+id/topHeader"
+            layout="@layout/layout_top_header"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"/>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- 3. Scrollable Main Content -->
-    <!-- Placed strictly between the Top Header and Bottom Nav -->
-    <ScrollView
+    <!-- 2. SCROLLABLE MIDDLE CONTENT -->
+    <!-- The layout_behavior tag tells this view to sit exactly below the AppBarLayout -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottomNav"
-        android:layout_below="@+id/topHeader"
-        android:fillViewport="true">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:clipToPadding="false"
+        android:paddingBottom="80dp"> <!-- Prevents content from hiding behind the bottom nav -->
 
+        <!-- Inner content container with your standard padding -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="24dp">
 
             <!-- MAP PLACEHOLDER -->
-            <!-- Changed constraint to parent top since the header is no longer in this view -->
             <FrameLayout
                 android:id="@+id/mapPlaceholder"
                 android:layout_width="match_parent"
@@ -230,5 +226,18 @@
             </com.google.android.material.card.MaterialCardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
-</RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- 3. FIXED BOTTOM NAVIGATION -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        style="@style/CustomBottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="#121212"
+        app:itemIconTint="@color/nav_item_colors"
+        app:itemTextColor="@color/nav_item_colors"
+        app:menu="@menu/bottom_nav_menu" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

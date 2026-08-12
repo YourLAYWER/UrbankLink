@@ -29,7 +29,9 @@ public class TicketScreen extends AppCompatActivity {
         imgQrCode = findViewById(R.id.imgQrCode);
         ImageView btnBack = findViewById(R.id.btnBack);
 
-        btnBack.setOnClickListener(v -> finish());
+        //btnBack.setOnClickListener(v -> finish());
+        // ACTIVATE THE BACK BUTTON! (true = show the button)
+        HeaderUtils.setupHeader(this, true);
 
         // 1. Grab the GUID String instead of the int
         String ticketRef = getIntent().getStringExtra("TICKET_REF");

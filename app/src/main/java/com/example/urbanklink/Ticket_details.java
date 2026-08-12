@@ -59,7 +59,9 @@ public class Ticket_details extends AppCompatActivity {
 
         // 2. Make the Back button work
         ImageView btnBack = findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(v -> finish());
+        //btnBack.setOnClickListener(v -> finish());
+        // ACTIVATE THE BACK BUTTON! (true = show the button)
+        HeaderUtils.setupHeader(this, true);
 
         // NEW: Wire up the Pay button
         btnConfirmPay.setOnClickListener(v -> processPayment());
