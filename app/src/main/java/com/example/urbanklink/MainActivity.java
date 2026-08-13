@@ -276,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
 
                     // Extract the name and update the UI
-                    String fullName = response.body().getFullName();
+                    String fullName = response.body().getName();
 
                     // Extract just the first name for a friendly greeting
                     String firstName = fullName;

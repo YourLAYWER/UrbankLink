@@ -1,13 +1,22 @@
 package com.example.urbanklink;
 
+import com.google.gson.annotations.SerializedName;
+
 public class UserProfileResponse {
-    private String fullName;
+    @SerializedName("id")
+    private int id;
+
+    @SerializedName("name") // Matches C# exactly
+    private String name;
+
+    @SerializedName("email")
     private String email;
 
-    public String getFullName(){
-        return fullName;
-    }
-    public String getEmail(){
-        return email;
-    }
+    @SerializedName("commuterProfile")
+    private String commuterProfile;
+
+    public int getId() { return id; }
+    public String getName() { return name; } // <--- You will use this now
+    public String getEmail() { return email; }
+    public String getCommuterProfile() { return commuterProfile; }
 }
