@@ -302,7 +302,7 @@
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
-                                android:src="@android:drawable/ic_secure"
+                                android:src="@drawable/ic_wallet"
                                 app:tint="#E0E0E0" />
 
                             <TextView
@@ -395,7 +395,7 @@
                                 android:layout_height="24dp"
                                 android:layout_alignParentEnd="true"
                                 android:layout_centerVertical="true"
-                                android:src="@android:drawable/ic_media_next"
+                                android:src="@drawable/ic_right_arrow"
                                 app:tint="#888888" />
                         </RelativeLayout>
 
@@ -452,7 +452,7 @@
                     android:textColor="#FF8A8A"
                     android:textSize="16sp"
                     app:backgroundTint="@android:color/transparent"
-                    app:icon="@android:drawable/ic_lock_power_off"
+                    app:icon="@drawable/ic_logout"
                     app:iconGravity="textStart"
                     app:iconTint="#FF8A8A"
                     app:strokeColor="#33FF8A8A"
