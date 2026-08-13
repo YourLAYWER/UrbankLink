@@ -27,8 +27,8 @@ public class NavigationUtils {
             }
             else if (itemId == R.id.nav_profile) {
                 // Uncomment when you have this screen ready
-                // activity.startActivity(new Intent(activity, ProfileActivity.class));
-                // activity.overridePendingTransition(0, 0);
+                activity.startActivity(new Intent(activity, ProfileActivity.class));
+                activity.overridePendingTransition(0, 0);
             }
             return false;
         });

@@ -30,7 +30,7 @@
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:clipToPadding="false"
-            android:paddingBottom="80dp">
+            android:paddingBottom="120dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -91,7 +91,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/bg_pill_dark"
                     android:paddingHorizontal="16dp"
                     android:paddingVertical="6dp"
                     android:text="Student Commuter - Gqeberha"
@@ -473,16 +472,15 @@
         </androidx.core.widget.NestedScrollView>
 
         <!-- 3. FIXED BOTTOM NAVIGATION -->
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNav"
-            style="@style/CustomBottomNav"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="#121212"
-            app:itemActiveIndicatorEnabled="false"
-            app:itemIconTint="@color/nav_item_colors"
-            app:itemTextColor="@color/nav_item_colors"
-            app:menu="@menu/bottom_nav_menu" />
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        style="@style/CustomBottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="#121212"
+        app:itemIconTint="@color/nav_item_colors"
+        app:itemTextColor="@color/nav_item_colors"
+        app:menu="@menu/bottom_nav_menu" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
