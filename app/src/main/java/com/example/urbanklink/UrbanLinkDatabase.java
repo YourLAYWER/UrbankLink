@@ -7,13 +7,14 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 // If you add a Tickets table later, it becomes: entities = {Stop.class, Ticket.class}
-@Database(entities = {Stop.class, LocalTicket.class}, version = 2, exportSchema = false)
+@Database(entities = {Stop.class, LocalTicket.class,LocalUser.class}, version = 3, exportSchema = false)
 public abstract class UrbanLinkDatabase extends RoomDatabase {
     private static UrbanLinkDatabase instance;
 
     // Links the DAO to the database
     public abstract StopDao stopDao();
     public abstract TicketDao ticketDao();
+    public abstract UserDao userDao();
 
     // Singleton pattern to prevent memory leaks
     public static synchronized UrbanLinkDatabase getInstance(Context context) {
