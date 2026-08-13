@@ -125,7 +125,7 @@
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
-                                android:src="@android:drawable/ic_dialog_map"
+                                android:src="@drawable/ic_train"
                                 app:tint="#00FFFF" />
 
                             <TextView
