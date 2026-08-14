@@ -57,4 +57,7 @@ dependencies {
     annotationProcessor("androidx.room:room-compiler:$room_version")
 
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+
+    // Google Maps API
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
 }

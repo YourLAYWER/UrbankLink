@@ -14,6 +14,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.UrbankLink"
         android:usesCleartextTraffic="true">
+
+        <!-- ADD THIS METADATA TAG -->
+        <meta-data
+            android:name="com.google.android.gms.maps.API_KEY"
+            android:value="AIzaSyCEMADDL4FWQw0q8Qh5mVYCkfIzOd2QQSA" />
+
         <activity
             android:name=".TicketScreen"
             android:exported="false" />

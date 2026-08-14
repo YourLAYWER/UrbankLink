@@ -10,13 +10,11 @@
     android:fitsSystemWindows="true">
 
     <!-- 1. FIXED TOP HEADER -->
-    <!-- Wrapped in AppBarLayout so it locks to the top of the screen and ignores inner padding -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        app:elevation="0dp"
-        >
+        app:elevation="0dp">
 
         <include
             android:id="@+id/topHeader"
@@ -26,35 +24,32 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <!-- 2. SCROLLABLE MIDDLE CONTENT -->
-    <!-- The layout_behavior tag tells this view to sit exactly below the AppBarLayout -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:clipToPadding="false"
-        android:paddingBottom="80dp"> <!-- Prevents content from hiding behind the bottom nav -->
+        android:paddingBottom="80dp">
 
-        <!-- Inner content container with your standard padding -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="24dp">
 
-            <!-- MAP PLACEHOLDER -->
+            <!-- REAL MAP FRAGMENT -->
             <FrameLayout
-                android:id="@+id/mapPlaceholder"
+                android:id="@+id/mapContainer"
                 android:layout_width="match_parent"
                 android:layout_height="280dp"
                 android:background="#2A2A2A"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="Map View Placeholder"
-                    android:textColor="#888888"
-                    android:textStyle="bold" />
+                <!-- Google Maps Fragment replacing the TextView -->
+                <fragment
+                    android:id="@+id/mapFragment"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
             </FrameLayout>
 
             <!-- Live Updates Indicator -->
@@ -65,7 +60,7 @@
                 android:layout_marginTop="24dp"
                 android:src="@android:drawable/presence_online"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/mapPlaceholder"
+                app:layout_constraintTop_toBottomOf="@id/mapContainer"
                 app:tint="#00FF7F" />
 
             <TextView
