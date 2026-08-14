@@ -24,4 +24,8 @@ public interface StopDao {
     // Clears the table (useful if you want to wipe and resync)
     @Query("DELETE FROM stops_table")
     void clearAllStops();
+
+    //  Look up for stop base on ID
+    @Query("SELECT * FROM stops_table WHERE stop_id = :stopId LIMIT 1")
+    Stop getStopById(int stopId);
 }

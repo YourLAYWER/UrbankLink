@@ -182,7 +182,9 @@ public class Ticket_details extends AppCompatActivity {
                             data.getTicketReference(),
                             data.getJourneyId(),
                             data.getTotalCost(),
-                            System.currentTimeMillis() // Current time
+                            System.currentTimeMillis(),// Current time
+                            startId,
+                            destId
                     );
 
                     // 2. Save to Room database on a background thread (Room crashes if run on the main UI thread)

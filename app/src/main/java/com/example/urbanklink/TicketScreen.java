@@ -6,9 +6,6 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.zxing.BarcodeFormat;
@@ -17,9 +14,22 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class TicketScreen extends AppCompatActivity {
+import android.widget.TextView;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+public class TicketScreen extends AppCompatActivity implements OnMapReadyCallback{
 
     private ImageView imgQrCode;
+    private GoogleMap mMap; // NEW: The live map object
+    private LatLng startStopCoord, destStopCoord; // Hold coords
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +54,31 @@ public class TicketScreen extends AppCompatActivity {
             Toast.makeText(this, "You are offline (:", Toast.LENGTH_SHORT).show();
         }
 
+        // 2. Initialize the Map Fragment
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.mapFragment);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this); // Tell Android to initialize map when ready
+        }
+
+        // 3. Load data (as discussed before, prefer offline path for consistency)
+        loadActiveTicketFromDatabase();
+    }
+
+    // 4. Implement what happens when the map is finished loading
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Optional styling (makes the map dark to fit your theme)
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.getUiSettings().setMapToolbarEnabled(false); // Hide the standard navigation icons
+
+        // If data loaded before map, plot it now
+        if (startStopCoord != null && destStopCoord != null) {
+            drawStopsOnMap();
+        }
+
         // Set up your views
         BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
 
@@ -51,25 +86,77 @@ public class TicketScreen extends AppCompatActivity {
         NavigationUtils.setupBottomNavigation(this, bottomNav, R.id.nav_tickets);
 
     }
+
+    private void drawStopsOnMap() {
+        if (mMap == null || startStopCoord == null || destStopCoord == null) return;
+
+        mMap.clear(); // Clear existing markers
+
+        // 1. Plot Start (Boarding) stop in Cyan (#00FFFF)
+        mMap.addMarker(new MarkerOptions()
+                .position(startStopCoord)
+                .title("Boarding Stop")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+
+        // 2. Plot End (Offboarding) stop in default Red
+        mMap.addMarker(new MarkerOptions()
+                .position(destStopCoord)
+                .title("Destination Stop"));
+
+        // 3. AUTO-ZOOM to fit BOTH stops on the screen perfectly
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        builder.include(startStopCoord);
+        builder.include(destStopCoord);
+        LatLngBounds bounds = builder.build();
+
+        int padding = 120; // in pixels, space between markers and edge
+        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+    }
     private void loadActiveTicketFromDatabase() {
         // Create a background thread so we don't freeze the app
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
         executor.execute(() -> {
-            // 1. Ask Room for the latest unclaimed ticket
             UrbanLinkDatabase db = UrbanLinkDatabase.getInstance(TicketScreen.this);
+
+            // 1. Ask Room for the latest unclaimed ticket
             LocalTicket activeTicket = db.ticketDao().getActiveTicket();
 
-            // 2. Hop back to the Main UI Thread to draw the graphics
-            runOnUiThread(() -> {
-                if (activeTicket != null && activeTicket.ticketReference != null) {
+            if (activeTicket != null && activeTicket.ticketReference != null) {
+                // 2. Fetch the actual Stop objects using the IDs saved in the ticket
+                // (Make sure you added startStopId and destStopId to your LocalTicket class!)
+                Stop startStop = db.stopDao().getStopById(activeTicket.startStopId);
+                Stop destStop = db.stopDao().getStopById(activeTicket.destStopId);
+
+                // 3. Hop back to the Main UI Thread to draw the graphics
+                runOnUiThread(() -> {
+                    // A. Draw the QR Code
                     generateQRCode(activeTicket.ticketReference);
+
+                    // B. If we successfully found the stops, update the Map and UI
+                    if (startStop != null && destStop != null) {
+                        // Dynamically update the Current Leg card text
+                        TextView txtCurrentLeg = findViewById(R.id.txtCurrentLeg);
+                        txtCurrentLeg.setText(startStop.getName() + " to " + destStop.getName());
+
+                        // Extract coordinates for Google Maps
+                        startStopCoord = new LatLng(startStop.getLatitude(), startStop.getLongitude());
+                        destStopCoord = new LatLng(destStop.getLatitude(), destStop.getLongitude());
+
+                        // If the Google Map finished initializing before this data loaded, draw the pins now!
+                        if (mMap != null) {
+                            drawStopsOnMap();
+                        }
+                    }
+
                     Toast.makeText(TicketScreen.this, "Loaded offline ticket", Toast.LENGTH_SHORT).show();
-                } else {
+                });
+            } else {
+                runOnUiThread(() -> {
                     Toast.makeText(TicketScreen.this, "No active tickets found.", Toast.LENGTH_LONG).show();
                     // Optional: You could show a placeholder image here instead of a blank square
-                }
-            });
+                });
+            }
         });
     }
 
