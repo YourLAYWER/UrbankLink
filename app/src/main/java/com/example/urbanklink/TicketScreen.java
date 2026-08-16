@@ -1,6 +1,7 @@
 package com.example.urbanklink;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -39,6 +40,7 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
         imgQrCode = findViewById(R.id.imgQrCode);
         ImageView btnBack = findViewById(R.id.btnBack);
 
+
         //btnBack.setOnClickListener(v -> finish());
         // ACTIVATE THE BACK BUTTON! (true = show the button)
         HeaderUtils.setupHeader(this, true, false);
@@ -60,6 +62,7 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
         if (mapFragment != null) {
             mapFragment.getMapAsync(this); // Tell Android to initialize map when ready
         }
+
 
         // 3. Load data (as discussed before, prefer offline path for consistency)
         loadActiveTicketFromDatabase();

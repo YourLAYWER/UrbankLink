@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardBackgroundColor="#2A2A2A"
+    app:cardCornerRadius="12dp"
+    app:strokeColor="#444444"
+    app:strokeWidth="1dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Date & Time -->
+        <TextView
+            android:id="@+id/txtDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="15 Aug 2026 • 08:30"
+            android:textColor="#A0A0A0"
+            android:textSize="12sp" />
+
+        <!-- Cost -->
+        <TextView
+            android:id="@+id/txtCost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="R15.00"
+            android:textColor="#00FF7F"
+            android:textStyle="bold"
+            android:textSize="14sp" />
+
+        <!-- Route Details -->
+        <TextView
+            android:id="@+id/txtRoute"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtDate"
+            android:layout_marginTop="8dp"
+            android:text="Greenacres → NMU South"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <!-- Status -->
+        <TextView
+            android:id="@+id/txtStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txtRoute"
+            android:layout_marginTop="8dp"
+            android:background="#1AFFFFFF"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:text="REDEEMED"
+            android:textColor="#E0E0E0"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>

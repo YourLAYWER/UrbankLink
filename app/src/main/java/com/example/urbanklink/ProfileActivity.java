@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -45,6 +46,14 @@ public class ProfileActivity extends AppCompatActivity {
         btnLogout = findViewById(R.id.btnLogout);
 
         btnLogout.setOnClickListener(v -> logoutUser());
+
+        View btnTransactionHistory = findViewById(R.id.btnTransactionHistory);
+
+        btnTransactionHistory.setOnClickListener(v -> {
+            // This pops up the bottom sheet!
+            HistoryBottomSheet bottomSheet = new HistoryBottomSheet();
+            bottomSheet.show(getSupportFragmentManager(), "HistoryBottomSheet");
+        });
 
         // 1. Instantly load from local database (Offline support + speed)
         loadLocalProfile();

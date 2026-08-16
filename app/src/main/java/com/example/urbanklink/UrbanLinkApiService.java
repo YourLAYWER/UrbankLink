@@ -28,4 +28,7 @@ interface UrbanLinkApiService {
             @Header("Authorization") String token,
             @Body BookTicketRequest request
     );
+
+    @GET("api/Journey/history")
+    Call<List<JourneyHistory>> getJourneyHistory(@Header("Authorization") String authHeader);
 }
