@@ -1,6 +1,8 @@
 package com.example.urbanklink;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,6 +47,20 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         } else {
             holder.txtStatus.setTextColor(Color.parseColor("#00FF7F")); // Bright green for ACTIVE
         }
+
+        // ==========================================
+        // NEW: MAKE THE ITEM CLICKABLE
+        // ==========================================
+        holder.itemView.setOnClickListener(v -> {
+            // If the ticket is expired or redeemed, you might want to prevent opening it,
+            // or open it but show a "USED" watermark. For now, let's open them all!
+
+            Intent intent = new Intent(v.getContext(), TicketScreen.class);
+            intent.putExtra("TICKET_REF", item.getTicketReference());
+
+            // Start the TicketScreen Activity
+            v.getContext().startActivity(intent);
+        });
     }
 
     @Override
