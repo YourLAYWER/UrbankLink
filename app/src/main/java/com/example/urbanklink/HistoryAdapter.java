@@ -52,13 +52,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         // NEW: MAKE THE ITEM CLICKABLE
         // ==========================================
         holder.itemView.setOnClickListener(v -> {
-            // If the ticket is expired or redeemed, you might want to prevent opening it,
-            // or open it but show a "USED" watermark. For now, let's open them all!
-
             Intent intent = new Intent(v.getContext(), TicketScreen.class);
+
+            // Pass the GUID as usual
             intent.putExtra("TICKET_REF", item.getTicketReference());
 
-            // Start the TicketScreen Activity
+            // NEW: Pass the status and route so the TicketScreen knows what to hide!
+            intent.putExtra("TICKET_STATUS", item.getStatus());
+            intent.putExtra("TICKET_ROUTE", item.getRouteSummary());
+
             v.getContext().startActivity(intent);
         });
     }

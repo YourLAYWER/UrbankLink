@@ -28,9 +28,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class TicketScreen extends AppCompatActivity implements OnMapReadyCallback{
 
     private ImageView imgQrCode;
-    private GoogleMap mMap; // NEW: The live map object
+    private GoogleMap mMap; // The live map object
     private LatLng startStopCoord, destStopCoord; // Hold coords
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,139 +41,165 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
         imgQrCode = findViewById(R.id.imgQrCode);
         ImageView btnBack = findViewById(R.id.btnBack);
 
-
-        //btnBack.setOnClickListener(v -> finish());
         // ACTIVATE THE BACK BUTTON! (true = show the button)
         HeaderUtils.setupHeader(this, true, false);
 
-        // 1. Grab the GUID String instead of the int
+        // 1. Grab the Extra Data from the Intent
         String ticketRef = getIntent().getStringExtra("TICKET_REF");
+        String ticketStatus = getIntent().getStringExtra("TICKET_STATUS");
+        String ticketRoute = getIntent().getStringExtra("TICKET_ROUTE"); // If you passed it from the adapter
 
         if (ticketRef != null && !ticketRef.isEmpty()) {
-            generateQRCode(ticketRef);
+
+            // SCENARIO A: User clicked from History OR just bought a ticket
+            if (ticketStatus == null) ticketStatus = "ACTIVE"; // Default for fresh purchases
+
+            generateQRCode(ticketRef, ticketStatus);
+
+            // Update the text at the top of the screen if we passed it
+            if (ticketRoute != null) {
+                TextView txtCurrentLeg = findViewById(R.id.txtCurrentLeg);
+                if (txtCurrentLeg != null) txtCurrentLeg.setText(ticketRoute);
+            }
+
+            // Try to load this specific ticket's map coordinates from the DB
+            loadSpecificTicketFromDatabase(ticketRef);
+
         } else {
-            // Offline path: User opened the app from the menu, check the local database
+            // SCENARIO B: Offline path (User opened the app from the menu)
             loadActiveTicketFromDatabase();
-            Toast.makeText(this, "You are offline (:", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Loading offline ticket...", Toast.LENGTH_SHORT).show();
         }
 
         // 2. Initialize the Map Fragment
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapFragment);
         if (mapFragment != null) {
-            mapFragment.getMapAsync(this); // Tell Android to initialize map when ready
+            mapFragment.getMapAsync(this);
         }
 
-
-        // 3. Load data (as discussed before, prefer offline path for consistency)
-        loadActiveTicketFromDatabase();
+        // REMOVED THE DUPLICATE `loadActiveTicketFromDatabase()` CALL HERE!
     }
 
-    // 4. Implement what happens when the map is finished loading
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Optional styling (makes the map dark to fit your theme)
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.getUiSettings().setMapToolbarEnabled(false); // Hide the standard navigation icons
+        mMap.getUiSettings().setMapToolbarEnabled(false);
 
-        // If data loaded before map, plot it now
         if (startStopCoord != null && destStopCoord != null) {
             drawStopsOnMap();
         }
 
-        // Set up your views
         BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
-
-        // Use the utility class, telling it that "Tickets" is the active tab
         NavigationUtils.setupBottomNavigation(this, bottomNav, R.id.nav_tickets);
-
     }
 
     private void drawStopsOnMap() {
         if (mMap == null || startStopCoord == null || destStopCoord == null) return;
 
-        mMap.clear(); // Clear existing markers
+        mMap.clear();
 
-        // 1. Plot Start (Boarding) stop in Cyan (#00FFFF)
         mMap.addMarker(new MarkerOptions()
                 .position(startStopCoord)
                 .title("Boarding Stop")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
 
-        // 2. Plot End (Offboarding) stop in default Red
         mMap.addMarker(new MarkerOptions()
                 .position(destStopCoord)
                 .title("Destination Stop"));
 
-        // 3. AUTO-ZOOM to fit BOTH stops on the screen perfectly
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         builder.include(startStopCoord);
         builder.include(destStopCoord);
         LatLngBounds bounds = builder.build();
 
-        int padding = 120; // in pixels, space between markers and edge
+        int padding = 120;
         mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
     }
-    private void loadActiveTicketFromDatabase() {
-        // Create a background thread so we don't freeze the app
-        ExecutorService executor = Executors.newSingleThreadExecutor();
 
+    // NEW METHOD: Used for History and Fresh Purchases
+    private void loadSpecificTicketFromDatabase(String specificTicketRef) {
         executor.execute(() -> {
             UrbanLinkDatabase db = UrbanLinkDatabase.getInstance(TicketScreen.this);
 
-            // 1. Ask Room for the latest unclaimed ticket
-            LocalTicket activeTicket = db.ticketDao().getActiveTicket();
+            // Assuming you have a way to fetch all tickets, we'll just try to find the active one
+            // NOTE: If you have a specific method in your DAO like getTicketByRef(String), use that instead!
+            LocalTicket ticket = db.ticketDao().getActiveTicket();
 
-            if (activeTicket != null && activeTicket.ticketReference != null) {
-                // 2. Fetch the actual Stop objects using the IDs saved in the ticket
-                // (Make sure you added startStopId and destStopId to your LocalTicket class!)
-                Stop startStop = db.stopDao().getStopById(activeTicket.startStopId);
-                Stop destStop = db.stopDao().getStopById(activeTicket.destStopId);
+            // If the specific ticket is in our local DB, plot it!
+            if (ticket != null && specificTicketRef.equals(ticket.ticketReference)) {
+                Stop startStop = db.stopDao().getStopById(ticket.startStopId);
+                Stop destStop = db.stopDao().getStopById(ticket.destStopId);
 
-                // 3. Hop back to the Main UI Thread to draw the graphics
                 runOnUiThread(() -> {
-                    // A. Draw the QR Code
-                    generateQRCode(activeTicket.ticketReference);
-
-                    // B. If we successfully found the stops, update the Map and UI
                     if (startStop != null && destStop != null) {
-                        // Dynamically update the Current Leg card text
                         TextView txtCurrentLeg = findViewById(R.id.txtCurrentLeg);
                         txtCurrentLeg.setText(startStop.getName() + " to " + destStop.getName());
 
-                        // Extract coordinates for Google Maps
                         startStopCoord = new LatLng(startStop.getLatitude(), startStop.getLongitude());
                         destStopCoord = new LatLng(destStop.getLatitude(), destStop.getLongitude());
 
-                        // If the Google Map finished initializing before this data loaded, draw the pins now!
                         if (mMap != null) {
                             drawStopsOnMap();
                         }
                     }
-
-                    Toast.makeText(TicketScreen.this, "Loaded offline ticket", Toast.LENGTH_SHORT).show();
-                });
-            } else {
-                runOnUiThread(() -> {
-                    Toast.makeText(TicketScreen.this, "No active tickets found.", Toast.LENGTH_LONG).show();
-                    // Optional: You could show a placeholder image here instead of a blank square
                 });
             }
         });
     }
 
-    // 2. Change the parameter to accept a String
-    private void generateQRCode(String ticketRef) {
+    // ORIGINAL METHOD: Used for Offline Startup
+    private void loadActiveTicketFromDatabase() {
+        executor.execute(() -> {
+            UrbanLinkDatabase db = UrbanLinkDatabase.getInstance(TicketScreen.this);
+            LocalTicket activeTicket = db.ticketDao().getActiveTicket();
+
+            if (activeTicket != null && activeTicket.ticketReference != null) {
+                Stop startStop = db.stopDao().getStopById(activeTicket.startStopId);
+                Stop destStop = db.stopDao().getStopById(activeTicket.destStopId);
+
+                runOnUiThread(() -> {
+                    // Generate QR as ACTIVE
+                    generateQRCode(activeTicket.ticketReference, "ACTIVE");
+
+                    if (startStop != null && destStop != null) {
+                        TextView txtCurrentLeg = findViewById(R.id.txtCurrentLeg);
+                        txtCurrentLeg.setText(startStop.getName() + " to " + destStop.getName());
+
+                        startStopCoord = new LatLng(startStop.getLatitude(), startStop.getLongitude());
+                        destStopCoord = new LatLng(destStop.getLatitude(), destStop.getLongitude());
+
+                        if (mMap != null) {
+                            drawStopsOnMap();
+                        }
+                    }
+                });
+            } else {
+                runOnUiThread(() -> {
+                    Toast.makeText(TicketScreen.this, "No active tickets found.", Toast.LENGTH_LONG).show();
+                });
+            }
+        });
+    }
+
+    // UPDATED: Now takes status to dim the QR code
+    private void generateQRCode(String ticketRef, String status) {
         try {
-            // The string the bus driver's scanner will read (e.g., URBANLINK-A1B2C3D4...)
             String ticketData = "URBANLINK-" + ticketRef.toUpperCase();
 
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             android.graphics.Bitmap bitmap = barcodeEncoder.encodeBitmap(ticketData, BarcodeFormat.QR_CODE, 600, 600);
 
             imgQrCode.setImageBitmap(bitmap);
+
+            // Visual Watermark: Dim the QR code if it is old so the driver knows instantly
+            if (status.equalsIgnoreCase("REDEEMED") || status.equalsIgnoreCase("EXPIRED")) {
+                imgQrCode.setAlpha(0.3f);
+            } else {
+                imgQrCode.setAlpha(1.0f); // Full brightness for active
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
