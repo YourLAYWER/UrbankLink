@@ -18,6 +18,9 @@ public class JourneyResponse {
     @SerializedName("estimatedDurationMinutes")
     private int estimatedDurationMinutes;
 
+    @SerializedName("estimatedArrivalTime")
+    private String estimatedArrivalTime;
+
     // --- GETTERS ---
 
     public String getMessage() {
@@ -40,4 +43,6 @@ public class JourneyResponse {
     public Integer getEstimatedDurationMinutes() {
         return estimatedDurationMinutes;
     }
+
+    public String getEstimatedArrivalTime() {return estimatedArrivalTime;};
 }

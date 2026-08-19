@@ -79,6 +79,7 @@ public class Ticket_details extends AppCompatActivity {
         txtBaseFare = findViewById(R.id.txtBaseFare);
         switchStudentPass = findViewById(R.id.switchStudentPass);
 
+
         // NEW: Setup the RecyclerView
         rvTimeline = findViewById(R.id.rvTimeline);
         rvTimeline.setLayoutManager(new LinearLayoutManager(this));
@@ -183,6 +184,7 @@ public class Ticket_details extends AppCompatActivity {
                             data.getJourneyId(),
                             data.getTotalCost(),
                             System.currentTimeMillis(),// Current time
+                            data.getEstimatedArrivalTime(),
                             startId,
                             destId
                     );
