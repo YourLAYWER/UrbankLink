@@ -25,6 +25,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.w3c.dom.Text;
+
 public class TicketScreen extends AppCompatActivity implements OnMapReadyCallback{
 
     private ImageView imgQrCode;
@@ -136,7 +138,9 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
                 runOnUiThread(() -> {
                     if (startStop != null && destStop != null) {
                         TextView txtCurrentLeg = findViewById(R.id.txtCurrentLeg);
+                        TextView txtArrivalTime = findViewById(R.id.txtEstimated);
                         txtCurrentLeg.setText(startStop.getName() + " to " + destStop.getName());
+                        txtArrivalTime.setText(ticket.estimatedArrivalTime);
 
                         startStopCoord = new LatLng(startStop.getLatitude(), startStop.getLongitude());
                         destStopCoord = new LatLng(destStop.getLatitude(), destStop.getLongitude());
@@ -167,6 +171,9 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
                     if (startStop != null && destStop != null) {
                         TextView txtCurrentLeg = findViewById(R.id.txtCurrentLeg);
                         txtCurrentLeg.setText(startStop.getName() + " to " + destStop.getName());
+                        TextView txtArrivalTime = findViewById(R.id.txtEstimated);
+                        txtCurrentLeg.setText(startStop.getName() + " to " + destStop.getName());
+                        txtArrivalTime.setText(activeTicket.estimatedArrivalTime);
 
                         startStopCoord = new LatLng(startStop.getLatitude(), startStop.getLongitude());
                         destStopCoord = new LatLng(destStop.getLatitude(), destStop.getLongitude());
