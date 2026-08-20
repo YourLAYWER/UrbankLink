@@ -40,7 +40,7 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_ticket_screen);
 
-        imgQrCode = findViewById(R.id.imgQrCode);
+        imgQrCode = findViewById(R.id.ic_qr);
         ImageView btnBack = findViewById(R.id.btnBack);
 
         // ACTIVATE THE BACK BUTTON! (true = show the button)

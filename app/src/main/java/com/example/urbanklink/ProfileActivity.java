@@ -3,12 +3,14 @@ package com.example.urbanklink;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -16,6 +18,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,7 +48,7 @@ public class ProfileActivity extends AppCompatActivity {
         txtUserStatus = findViewById(R.id.txtUserStatus);
         btnLogout = findViewById(R.id.btnLogout);
 
-        btnLogout.setOnClickListener(v -> logoutUser());
+        btnLogout.setOnClickListener(v -> showLogoutConfirmationDialog());
 
         View btnTransactionHistory = findViewById(R.id.btnTransactionHistory);
 
@@ -126,5 +129,29 @@ public class ProfileActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
+    }
+
+    private void showLogoutConfirmationDialog() {
+        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+                .setTitle("Log Out of UrbanLink?")
+                .setMessage("Are you sure you want to log out? You will need an active internet connection to log back in and retrieve your commuter passes.")
+                // ADDED: A built-in warning triangle icon to draw attention
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton("Log Out", (d, which) -> {
+                    logoutUser();
+                })
+                .setNegativeButton("Cancel", (d, which) -> {
+                    d.dismiss();
+                })
+                .create(); // Create it first
+
+        dialog.show();
+
+        // ADDED: Custom styling for the buttons to match app's theme
+        // Makes "Log Out" bright red to indicate a destructive action
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor("#FF8A8A"));
+
+        // Make "Cancel" a subtle grey so it doesn't compete for attention
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor("#A0A0A0"));
     }
 }
