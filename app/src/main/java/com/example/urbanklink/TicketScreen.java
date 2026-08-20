@@ -202,10 +202,35 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
             imgQrCode.setImageBitmap(bitmap);
 
             // Visual Watermark: Dim the QR code if it is old so the driver knows instantly
-            if (status.equalsIgnoreCase("REDEEMED") || status.equalsIgnoreCase("EXPIRED")) {
+//            if (status.equalsIgnoreCase("REDEEMED") || status.equalsIgnoreCase("EXPIRED")) {
+//                imgQrCode.setAlpha(0.3f);
+//            } else {
+//                imgQrCode.setAlpha(1.0f); // Full brightness for active
+//            }
+
+            // Binding Badge
+            TextView txtTicketStatus = findViewById(R.id.txtTicketStatus);
+
+            // Ensure status isn't null to prevent crashes
+            String safeStatus = (status != null) ? status.toUpperCase() : "UNKNOWN";
+            txtTicketStatus.setText(safeStatus);
+
+            // Dynamic UI Logic
+            if (safeStatus.equals("EXPIRED")) {
                 imgQrCode.setAlpha(0.3f);
+                txtTicketStatus.setTextColor(android.graphics.Color.parseColor("#FF5252")); // Red text
+                txtTicketStatus.setBackgroundColor(android.graphics.Color.parseColor("#1AFF5252")); // Light red bg
+
+            } else if (safeStatus.equals("REDEEMED")) {
+                imgQrCode.setAlpha(0.3f);
+                txtTicketStatus.setTextColor(android.graphics.Color.parseColor("#9E9E9E")); // Grey text
+                txtTicketStatus.setBackgroundColor(android.graphics.Color.parseColor("#1A9E9E9E")); // Light grey bg
+
             } else {
-                imgQrCode.setAlpha(1.0f); // Full brightness for active
+                // ACTIVE
+                imgQrCode.setAlpha(1.0f);
+                txtTicketStatus.setTextColor(android.graphics.Color.parseColor("#00FF7F")); // Green text
+                txtTicketStatus.setBackgroundColor(android.graphics.Color.parseColor("#1A00FF7F")); // Light green bg
             }
 
         } catch (Exception e) {

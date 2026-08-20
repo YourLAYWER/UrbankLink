@@ -186,7 +186,8 @@ public class Ticket_details extends AppCompatActivity {
                             System.currentTimeMillis(),// Current time
                             data.getEstimatedArrivalTime(),
                             startId,
-                            destId
+                            destId,
+                            data.getTicketStatus()
                     );
 
                     // 2. Save to Room database on a background thread (Room crashes if run on the main UI thread)
@@ -201,6 +202,7 @@ public class Ticket_details extends AppCompatActivity {
                     Toast.makeText(Ticket_details.this, "Payment Successful!", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(Ticket_details.this, TicketScreen.class);
                     intent.putExtra("TICKET_REF", response.body().getTicketReference());
+                    intent.putExtra("TICKET_STATUS", response.body().getTicketStatus());
                     startActivity(intent);
                     // You would typically navigate to a "Ticket QR Code" screen here
                     finish();

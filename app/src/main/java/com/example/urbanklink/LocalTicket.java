@@ -17,17 +17,20 @@ public class LocalTicket {
 
     public String estimatedArrivalTime;
 
+    public String ticketStatus;
+
     public int startStopId;
     public int destStopId;
 
     // Constructor
-    public LocalTicket(@NonNull String ticketReference, int journeyId, double totalCost, long purchaseDate, String estimatedArrivalTime, int startStopId, int destStopId) {
+    public LocalTicket(@NonNull String ticketReference, int journeyId, double totalCost, long purchaseDate, String estimatedArrivalTime, int startStopId, int destStopId, String ticketStatus) {
         this.ticketReference = ticketReference;
         this.journeyId = journeyId;
         this.totalCost = totalCost;
         this.purchaseDate = purchaseDate;
         this.isClaimed = false; // Always false when first bought
         this.estimatedArrivalTime = estimatedArrivalTime;
+        this.ticketStatus = ticketStatus;
         this.destStopId = destStopId;
         this.startStopId = startStopId;
     }
