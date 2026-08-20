@@ -56,7 +56,7 @@ public class Ticket_details extends AppCompatActivity {
         if (startId != -1 && destId != -1) {
             fetchRouteDetails(startId, destId);
         } else {
-            Toast.makeText(this, "Error: Invalid stops selected", Toast.LENGTH_SHORT).show();
+            showErrorSnackbar("Error: Invalid Stops selected.");
             finish();
         }
 
@@ -113,13 +113,13 @@ public class Ticket_details extends AppCompatActivity {
                         timelineAdapter.setSegments(data.getSegments());
                     }
                 } else {
-                    Toast.makeText(Ticket_details.this, "Failed to calculate route.", Toast.LENGTH_SHORT).show();
+                    showSnackbar("Failed to calculate route. Please ensure internet connection");
                 }
             }
 
             @Override
-            public void onFailure(Call<RouteCalculateResponse> call, Throwable t) { // Fixed generic type here
-                Toast.makeText(Ticket_details.this, "Network error", Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<RouteCalculateResponse> call, Throwable t) {
+                showErrorSnackbar("Network error! It's not your fault.");
             }
         });
     }
@@ -216,7 +216,7 @@ public class Ticket_details extends AppCompatActivity {
                     showSnackbar("Payment Successful! Ticket Saved.");
 
                     // SUCCESS!
-                    Toast.makeText(Ticket_details.this, "Payment Successful!", Toast.LENGTH_LONG).show();
+                    showSnackbar("Payment Successful!");
                     Intent intent = new Intent(Ticket_details.this, TicketScreen.class);
                     intent.putExtra("TICKET_REF", response.body().getTicketReference());
                     intent.putExtra("TICKET_STATUS", response.body().getTicketStatus());
