@@ -3,7 +3,9 @@ package com.example.urbanklink;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import retrofit2.Call;
@@ -136,6 +139,27 @@ public class Ticket_details extends AppCompatActivity {
         btnConfirmPay.setText("Confirm & Pay " + formattedPrice);
     }
 
+    // ==========================================
+    // SNACKBAR HELPER METHODS
+    // ==========================================
+
+    private void showSnackbar(String message) {
+        // android.R.id.content automatically finds the root view of your activity
+        View rootView = findViewById(android.R.id.content);
+        Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show();
+    }
+
+    private void showErrorSnackbar(String message) {
+        View rootView = findViewById(android.R.id.content);
+        Snackbar snackbar = Snackbar.make(rootView, message, Snackbar.LENGTH_LONG);
+        // Make the background red for critical errors
+        snackbar.getView().setBackgroundColor(Color.parseColor("#FF4C4C"));
+        snackbar.setTextColor(Color.WHITE);
+        snackbar.show();
+    }
+
+    // ==========================================
+
     // NEW: The method that executes the purchase
     private void processPayment() {
         // 1. Disable button so user doesn't double-click and get charged twice
@@ -147,20 +171,13 @@ public class Ticket_details extends AppCompatActivity {
         String token = prefs.getString("JWT_TOKEN", null);
 
         if (token == null) {
-            Toast.makeText(this, "Authentication error. Please log in again.", Toast.LENGTH_LONG).show();
+            showErrorSnackbar("Authentication error. Please log in again.");
             btnConfirmPay.setEnabled(true);
+            btnConfirmPay.setText("Confirm & Pay");
             return;
         }
 
         String authHeader = "Bearer " + token.replace("\"", "").trim();
-
-        // 3. Build the Request
-//        BookTicketRequest request = new BookTicketRequest(
-//                startId,
-//                destId,
-//                currentFinalCost,
-//                switchStudentPass.isChecked()
-//        );
 
         // 3. Build the Request
         BookTicketRequest request = new BookTicketRequest(startId,destId);
@@ -196,7 +213,7 @@ public class Ticket_details extends AppCompatActivity {
                     });
 
                     // 3. Show Toast and Navigate to QR Screen
-                    Toast.makeText(Ticket_details.this, "Ticket Confirmed & Saved Offline!", Toast.LENGTH_LONG).show();
+                    showSnackbar("Payment Successful! Ticket Saved.");
 
                     // SUCCESS!
                     Toast.makeText(Ticket_details.this, "Payment Successful!", Toast.LENGTH_LONG).show();
@@ -208,7 +225,7 @@ public class Ticket_details extends AppCompatActivity {
                     finish();
 
                 } else {
-                    Toast.makeText(Ticket_details.this, "Payment failed. Please try again.", Toast.LENGTH_LONG).show();
+                    btnConfirmPay.setText("Confirm & Pay");
                     try {
                         // Grab the exact error message the C# server sent back
                         String serverError = response.errorBody() != null ? response.errorBody().string() : "No error message";
@@ -217,9 +234,11 @@ public class Ticket_details extends AppCompatActivity {
                         android.util.Log.e("PAYMENT_ERROR", "HTTP Code: " + response.code() + " | Reason: " + serverError);
 
                         // Show the HTTP code on the screen
-                        Toast.makeText(Ticket_details.this, "Failed! Code: " + response.code(), Toast.LENGTH_LONG).show();
+                        //Toast.makeText(Ticket_details.this, "Failed! Code: " + response.code(), Toast.LENGTH_LONG).show();
+                        showErrorSnackbar("Payment failed (Code: " + response.code() + "). Please try again.");
                     } catch (Exception e) {
                         e.printStackTrace();
+                        showErrorSnackbar("Payment failed. Please try again.");
                     }
                 }
             }
@@ -227,7 +246,8 @@ public class Ticket_details extends AppCompatActivity {
             @Override
             public void onFailure(Call<JourneyResponse> call, Throwable t) {
                 btnConfirmPay.setEnabled(true);
-                Toast.makeText(Ticket_details.this, "Network error during checkout.", Toast.LENGTH_SHORT).show();
+                btnConfirmPay.setText("Confirm & Pay");
+                showErrorSnackbar("Network error during checkout.");
             }
         });
     }
