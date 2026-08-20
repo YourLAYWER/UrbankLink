@@ -1,5 +1,6 @@
 package com.example.urbanklink;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,6 +10,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
@@ -70,7 +72,7 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
         } else {
             // SCENARIO B: Offline path (User opened the app from the menu)
             loadActiveTicketFromDatabase();
-            Toast.makeText(this, "Loading offline ticket...", Toast.LENGTH_SHORT).show();
+            showSnackbar("Offline Ticket Loaded");
         }
 
         // 2. Initialize the Map Fragment
@@ -82,6 +84,27 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
 
         // REMOVED THE DUPLICATE `loadActiveTicketFromDatabase()` CALL HERE!
     }
+
+    // ==========================================
+    // SNACKBAR HELPER METHODS
+    // ==========================================
+
+    private void showSnackbar(String message) {
+        // android.R.id.content automatically finds the root view of your activity
+        View rootView = findViewById(android.R.id.content);
+        Snackbar.make(rootView, message, Snackbar.LENGTH_LONG).show();
+    }
+
+    private void showErrorSnackbar(String message) {
+        View rootView = findViewById(android.R.id.content);
+        Snackbar snackbar = Snackbar.make(rootView, message, Snackbar.LENGTH_LONG);
+        // Make the background red for critical errors
+        snackbar.getView().setBackgroundColor(Color.parseColor("#FF4C4C"));
+        snackbar.setTextColor(Color.WHITE);
+        snackbar.show();
+    }
+
+    // ==========================================
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -185,7 +208,7 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
                 });
             } else {
                 runOnUiThread(() -> {
-                    Toast.makeText(TicketScreen.this, "No active tickets found.", Toast.LENGTH_LONG).show();
+                    showErrorSnackbar("No active tickets found.");
                 });
             }
         });
@@ -200,13 +223,6 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
             android.graphics.Bitmap bitmap = barcodeEncoder.encodeBitmap(ticketData, BarcodeFormat.QR_CODE, 600, 600);
 
             imgQrCode.setImageBitmap(bitmap);
-
-            // Visual Watermark: Dim the QR code if it is old so the driver knows instantly
-//            if (status.equalsIgnoreCase("REDEEMED") || status.equalsIgnoreCase("EXPIRED")) {
-//                imgQrCode.setAlpha(0.3f);
-//            } else {
-//                imgQrCode.setAlpha(1.0f); // Full brightness for active
-//            }
 
             // Binding Badge
             TextView txtTicketStatus = findViewById(R.id.txtTicketStatus);
@@ -235,7 +251,7 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
 
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this, "Failed to generate QR Code", Toast.LENGTH_SHORT).show();
+            showErrorSnackbar("Failed to generate QR Code");
         }
     }
 }
