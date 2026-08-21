@@ -1,569 +1,412 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#121212"
-    tools:context=".MainActivity">
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:fitsSystemWindows="true"
+        tools:context=".MainActivity">
 
-        <androidx.core.widget.NestedScrollView
+        <!-- ========================================== -->
+        <!-- THE SMART LAYOUT (Map & Bottom Sheet)      -->
+        <!-- Restricted to sit ABOVE the bottom nav     -->
+        <!-- ========================================== -->
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingBottom="80dp"
-            android:clipToPadding="false">
+            android:layout_above="@id/bottomNav">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <!-- 1. FIXED TOP HEADER -->
+            <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="20dp">
+                android:background="@android:color/transparent"
+                app:elevation="0dp">
 
-                <!-- Top Header -->
                 <include
                     android:id="@+id/topHeader"
                     layout="@layout/layout_top_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp" />
+            </com.google.android.material.appbar.AppBarLayout>
+
+            <!-- 2. THE MAP BACKGROUND -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/mapFragment"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <com.google.android.material.chip.Chip
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Network Cached"
+                    android:textColor="#E0E0E0"
+                    app:chipBackgroundColor="#CC121212"
+                    app:chipIcon="@drawable/ic_wifi"
+                    app:chipIconTint="#00FF7F"
+                    app:chipStrokeWidth="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <!-- Greeting -->
-                <TextView
-                    android:id="@+id/greetingTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Good morning, Alex"
-                    android:textColor="#FFFFFF"
-                    android:textSize="28sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="32dp"
-                    app:layout_constraintTop_toBottomOf="@id/topHeader"
-                    app:layout_constraintStart_toStartOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <TextView
-                    android:id="@+id/greetingSubtitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Your next bus arrives in 4 minutes."
-                    android:textColor="#A0A0A0"
-                    android:textSize="16sp"
-                    android:layout_marginTop="4dp"
-                    app:layout_constraintTop_toBottomOf="@id/greetingTitle"
-                    app:layout_constraintStart_toStartOf="parent"/>
+            <!-- 3. THE EXPANDABLE BOTTOM SHEET -->
+            <!-- Padding removed since it no longer hides behind the nav bar -->
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/bottomSheet"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_bottom_sheet_rounded"
+                android:elevation="16dp"
+                app:behavior_hideable="false"
+                app:behavior_peekHeight="80dp"
+                app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-                <!-- Plan a Journey Card -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/journeyCard"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    app:cardBackgroundColor="#1E1E1E"
-                    app:cardCornerRadius="16dp"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="#333333"
-                    app:layout_constraintTop_toBottomOf="@id/greetingSubtitle">
+                    android:paddingBottom="40dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
+                    <!-- Drag Handle -->
+                    <View
+                        android:id="@+id/dragHandle"
+                        android:layout_width="40dp"
+                        android:layout_height="4dp"
+                        android:layout_marginTop="12dp"
+                        android:background="#424242"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Plan a Journey"
-                            android:textColor="#FFFFFF"
-                            android:textSize="18sp"
-                            android:textStyle="bold"/>
-
-                        <!-- Leaving From -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            app:boxBackgroundColor="#121212"
-                            app:boxCornerRadiusTopStart="8dp"
-                            app:boxCornerRadiusTopEnd="8dp"
-                            app:boxCornerRadiusBottomStart="8dp"
-                            app:boxCornerRadiusBottomEnd="8dp"
-                            android:hint="Leaving from...">
-
-                            <!-- Swapped to AutoCompleteTextView -->
-                            <AutoCompleteTextView
-                                android:id="@+id/etStartLocation"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textColor="#FFFFFF"
-                                android:completionThreshold="2"
-                                android:inputType="textNoSuggestions" />
-                            <!-- completionThreshold="2" means it waits for 2 letters before searching -->
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <!-- Going To -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            app:boxBackgroundColor="#121212"
-                            app:boxCornerRadiusTopStart="8dp"
-                            app:boxCornerRadiusTopEnd="8dp"
-                            app:boxCornerRadiusBottomStart="8dp"
-                            app:boxCornerRadiusBottomEnd="8dp"
-                            android:hint="Going to...">
-
-                            <!-- Swapped to AutoCompleteTextView -->
-                            <AutoCompleteTextView
-                                android:id="@+id/etEndLocation"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textColor="#FFFFFF"
-                                android:completionThreshold="2"
-                                android:inputType="textNoSuggestions" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/findRouteBtn"
-                            android:layout_width="match_parent"
-                            android:layout_height="60dp"
-                            android:layout_marginTop="20dp"
-                            android:text="Find Route"
-                            android:textColor="#000000"
-                            app:backgroundTint="#00FFFF"
-                            app:cornerRadius="30dp"/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Recent Routes -->
-                <TextView
-                    android:id="@+id/recentRoutesLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="RECENT ROUTES"
-                    android:textColor="#A0A0A0"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="32dp"
-                    app:layout_constraintTop_toBottomOf="@id/journeyCard"
-                    app:layout_constraintStart_toStartOf="parent"/>
-
-                <HorizontalScrollView
-                    android:id="@+id/recentRoutesScroll"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:scrollbars="none"
-                    app:layout_constraintTop_toBottomOf="@id/recentRoutesLabel">
-
-                    <LinearLayout
+                    <!-- Greeting -->
+                    <TextView
+                        android:id="@+id/greetingTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:text="Hello, Commuter"
+                        android:textColor="#FFFFFF"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/dragHandle" />
 
-                        <!-- Route Card 1 -->
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="160dp"
+                    <!-- PLAN A JOURNEY CARD -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardPlanJourney"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginTop="16dp"
+                        app:cardBackgroundColor="#151515"
+                        app:cardCornerRadius="16dp"
+                        app:strokeColor="#2C2C2C"
+                        app:strokeWidth="1dp"
+                        app:layout_constraintTop_toBottomOf="@id/greetingTitle">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="12dp"
-                            app:cardBackgroundColor="#1E1E1E"
-                            app:cardCornerRadius="16dp">
+                            android:padding="20dp">
+
+                            <ImageView
+                                android:id="@+id/iconJourney"
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:background="@drawable/bg_circle_dark"
+                                android:padding="6dp"
+                                android:src="@drawable/ic_route"
+                                app:tint="#00E5FF"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/txtPlanTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:text="Plan a Journey"
+                                android:textColor="#FFFFFF"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                app:layout_constraintBottom_toBottomOf="@id/iconJourney"
+                                app:layout_constraintStart_toEndOf="@id/iconJourney"
+                                app:layout_constraintTop_toTopOf="@id/iconJourney" />
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/inputsContainer"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="20dp"
+                                app:layout_constraintTop_toBottomOf="@id/iconJourney">
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:id="@+id/inputLayoutLeaving"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Current Location"
+                                    app:boxBackgroundColor="#1A1A1A"
+                                    app:boxCornerRadiusBottomEnd="12dp"
+                                    app:boxCornerRadiusBottomStart="12dp"
+                                    app:boxCornerRadiusTopEnd="12dp"
+                                    app:boxCornerRadiusTopStart="12dp"
+                                    app:boxStrokeColor="#333333"
+                                    app:hintTextColor="#9E9E9E"
+                                    app:startIconDrawable="@drawable/ic_my_location"
+                                    app:startIconTint="#9E9E9E"
+                                    app:layout_constraintTop_toTopOf="parent">
+
+                                    <AutoCompleteTextView
+                                        android:id="@+id/etStartLocation"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="#FFFFFF"
+                                        android:completionThreshold="2"
+                                        android:inputType="textNoSuggestions" />
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:id="@+id/inputLayoutGoing"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:hint="Going to..."
+                                    app:boxBackgroundColor="#1A1A1A"
+                                    app:boxCornerRadiusBottomEnd="12dp"
+                                    app:boxCornerRadiusBottomStart="12dp"
+                                    app:boxCornerRadiusTopEnd="12dp"
+                                    app:boxCornerRadiusTopStart="12dp"
+                                    app:boxStrokeColor="#333333"
+                                    app:hintTextColor="#9E9E9E"
+                                    app:startIconDrawable="@drawable/ic_location_on"
+                                    app:startIconTint="#00E5FF"
+                                    app:layout_constraintTop_toBottomOf="@id/inputLayoutLeaving">
+
+                                    <AutoCompleteTextView
+                                        android:id="@+id/etEndLocation"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="#FFFFFF"
+                                        android:completionThreshold="2"
+                                        android:inputType="textNoSuggestions" />
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginStart="24dp"
+                                    android:background="#333333"
+                                    app:layout_constraintBottom_toTopOf="@id/inputLayoutGoing"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@id/inputLayoutLeaving" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/findRouteBtn"
+                                android:layout_width="match_parent"
+                                android:layout_height="60dp"
+                                android:layout_marginTop="20dp"
+                                android:text="Find Route"
+                                android:textAllCaps="false"
+                                android:textColor="#000000"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                app:backgroundTint="#00E5FF"
+                                app:cornerRadius="30dp"
+                                app:icon="@drawable/ic_arrow_forward"
+                                app:iconGravity="textEnd"
+                                app:iconTint="#000000"
+                                app:layout_constraintTop_toBottomOf="@id/inputsContainer" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- SCHEDULE CARDS -->
+                    <LinearLayout
+                        android:id="@+id/scheduleContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginTop="16dp"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal"
+                        app:layout_constraintTop_toBottomOf="@id/cardPlanJourney">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="1"
+                            android:clickable="true"
+                            android:focusable="true"
+                            app:cardBackgroundColor="#151515"
+                            app:cardCornerRadius="16dp"
+                            app:strokeColor="#2C2C2C"
+                            app:strokeWidth="1dp">
+
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:gravity="center"
                                 android:orientation="vertical"
-                                android:padding="16dp">
+                                android:padding="24dp">
+
+                                <ImageView
+                                    android:layout_width="48dp"
+                                    android:layout_height="48dp"
+                                    android:background="@drawable/bg_circle_dark"
+                                    android:padding="12dp"
+                                    android:src="@drawable/ic_bus"
+                                    app:tint="#00E5FF" />
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Line 42"
-                                    android:textColor="#A0A0A0"
-                                    android:background="#333333"
-                                    android:padding="4dp"/>
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="University"
+                                    android:layout_marginTop="12dp"
+                                    android:text="Bus\nSchedules"
+                                    android:textAlignment="center"
                                     android:textColor="#FFFFFF"
-                                    android:textSize="18sp"
-                                    android:textStyle="bold"
-                                    android:layout_marginTop="12dp"/>
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Last trip: 2h ago"
-                                    android:textColor="#A0A0A0"
-                                    android:layout_marginTop="8dp"/>
+                                    android:textSize="16sp"
+                                    android:textStyle="bold" />
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
 
-                        <!-- Route Card 2 -->
                         <com.google.android.material.card.MaterialCardView
-                            android:layout_width="160dp"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            app:cardBackgroundColor="#1E1E1E"
-                            app:cardCornerRadius="16dp">
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:clickable="true"
+                            android:focusable="true"
+                            app:cardBackgroundColor="#151515"
+                            app:cardCornerRadius="16dp"
+                            app:strokeColor="#2C2C2C"
+                            app:strokeWidth="1dp">
+
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:gravity="center"
                                 android:orientation="vertical"
-                                android:padding="16dp">
+                                android:padding="24dp">
+
+                                <ImageView
+                                    android:layout_width="48dp"
+                                    android:layout_height="48dp"
+                                    android:background="@drawable/bg_circle_dark"
+                                    android:padding="12dp"
+                                    android:src="@drawable/ic_train"
+                                    app:tint="#00E5FF" />
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Metro M2"
-                                    android:textColor="#00FF00"
-                                    android:background="#1A00FF00"
-                                    android:padding="4dp"/>
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Stadium"
+                                    android:layout_marginTop="12dp"
+                                    android:text="Train\nSchedules"
+                                    android:textAlignment="center"
                                     android:textColor="#FFFFFF"
-                                    android:textSize="18sp"
-                                    android:textStyle="bold"
-                                    android:layout_marginTop="12dp"/>
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Last trip: Yesterday"
-                                    android:textColor="#A0A0A0"
-                                    android:layout_marginTop="8dp"/>
+                                    android:textSize="16sp"
+                                    android:textStyle="bold" />
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
-                </HorizontalScrollView>
 
-                <!-- Smart Cart Header Section -->
-                <TextView
-                    android:id="@+id/smartCartTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Smart Cart"
-                    android:textColor="#FFFFFF"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="32dp"
-                    app:layout_constraintTop_toBottomOf="@id/recentRoutesScroll"
-                    app:layout_constraintStart_toStartOf="parent"/>
-
-                <TextView
-                    android:id="@+id/smartCartSubtitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="8 items • $42.50 Total"
-                    android:textColor="#A0A0A0"
-                    android:textSize="14sp"
-                    app:layout_constraintTop_toBottomOf="@id/smartCartTitle"
-                    app:layout_constraintStart_toStartOf="parent"/>
-
-                <TextView
-                    android:id="@+id/viewListButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="View List >"
-                    android:textColor="#00FF7F"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@id/smartCartSubtitle"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/smartCartTitle"/>
-
-                <!-- Pill-Shaped Search Bar -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/searchLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    app:boxBackgroundColor="#1E1E1E"
-                    app:boxCornerRadiusTopStart="30dp"
-                    app:boxCornerRadiusTopEnd="30dp"
-                    app:boxCornerRadiusBottomStart="30dp"
-                    app:boxCornerRadiusBottomEnd="30dp"
-                    app:boxStrokeWidth="0dp"
-                    app:endIconDrawable="@android:drawable/ic_menu_search"
-                    app:endIconMode="custom"
-                    app:endIconTint="#A0A0A0"
-                    app:hintEnabled="false"
-                    app:layout_constraintTop_toBottomOf="@id/smartCartSubtitle">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
+                    <!-- RECENT DESTINATIONS -->
+                    <TextView
+                        android:id="@+id/txtRecent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="Search groceries or scan..."
-                        android:textColorHint="#A0A0A0"
-                        android:textColor="#FFFFFF"
-                        android:paddingTop="16dp"
-                        android:paddingBottom="16dp"/>
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Weekly Specials Card -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/specialsCard"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    app:cardBackgroundColor="#1E1E1E"
-                    app:cardCornerRadius="16dp"
-                    app:layout_constraintTop_toBottomOf="@id/searchLayout">
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="32dp"
+                        android:text="Recent Destinations"
+                        android:textColor="#9E9E9E"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/scheduleContainer" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:padding="16dp"
-                        android:gravity="center_vertical">
+                        app:layout_constraintTop_toBottomOf="@id/txtRecent">
 
-                        <!-- Dark Green Icon Background -->
-                        <FrameLayout
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:background="#1A00FF7F"> <!-- 10% Opacity Green -->
-
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_gravity="center"
-                                app:tint="#00FF7F"
-                                android:src="@android:drawable/ic_menu_crop"/>
-                        </FrameLayout>
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_circle_dark"
+                            android:padding="10dp"
+                            android:src="@drawable/ic_schedule"
+                            app:tint="#9E9E9E" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_marginStart="16dp">
+                            android:layout_marginStart="16dp"
+                            android:orientation="vertical">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Weekly Specials"
+                                android:text="Central Station"
                                 android:textColor="#FFFFFF"
-                                android:textSize="16sp"
-                                android:textStyle="bold"/>
+                                android:textSize="16sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Save up to 30% on fresh produce"
-                                android:textColor="#A0A0A0"
-                                android:textSize="14sp"/>
+                                android:text="15 min via Subway"
+                                android:textColor="#9E9E9E"
+                                android:textSize="14sp" />
                         </LinearLayout>
                     </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
 
-                <!-- Split Cards (Reorder & Recipes) -->
-                <LinearLayout
-                    android:id="@+id/reorderAndRecipesCards"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="16dp"
-                    app:layout_constraintTop_toBottomOf="@id/specialsCard">
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.core.widget.NestedScrollView>
 
-                    <!-- Reorder Card -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
-                        app:cardBackgroundColor="#1E1E1E"
-                        app:cardCornerRadius="16dp">
+            <!-- Floating Barcode Button -->
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                app:backgroundTint="#00FF7F"
+                app:srcCompat="@android:drawable/ic_menu_camera" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="16dp">
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                app:tint="#00FF7F"
-                                android:src="@android:drawable/ic_menu_recent_history"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Reorder"
-                                android:textColor="#FFFFFF"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:layout_marginTop="12dp"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Quick buy essentials"
-                                android:textColor="#A0A0A0"
-                                android:textSize="12sp"
-                                android:layout_marginTop="4dp"/>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Recipes Card -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:layout_marginStart="8dp"
-                        app:cardBackgroundColor="#1E1E1E"
-                        app:cardCornerRadius="16dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                app:tint="#00FF7F"
-                                android:src="@android:drawable/ic_menu_agenda"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Recipes"
-                                android:textColor="#FFFFFF"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:layout_marginTop="12dp"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Ingredients from your cart"
-                                android:textColor="#A0A0A0"
-                                android:textSize="12sp"
-                                android:layout_marginTop="4dp"/>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-                </LinearLayout>
-
-
-                <!-- Notes and Balance Cards-->
-                <LinearLayout
-                    android:id="@+id/balanceAndListCards"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="16dp"
-                    app:layout_constraintTop_toBottomOf="@+id/reorderAndRecipesCards">
-
-                    <!-- Reorder Card -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
-                        app:cardBackgroundColor="#1E1E1E"
-                        app:cardCornerRadius="16dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                app:tint="#00FF7F"
-                                android:src="@android:drawable/ic_menu_recent_history"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Balance limit"
-                                android:textColor="#FFFFFF"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:layout_marginTop="12dp"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Quick buy essentials"
-                                android:textColor="#A0A0A0"
-                                android:textSize="12sp"
-                                android:layout_marginTop="4dp"/>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Recipes Card -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:layout_marginStart="8dp"
-                        app:cardBackgroundColor="#1E1E1E"
-                        app:cardCornerRadius="16dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                app:tint="#00FF7F"
-                                android:src="@android:drawable/ic_menu_agenda"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Shopping List"
-                                android:textColor="#FFFFFF"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:layout_marginTop="12dp"/>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Ingredients from your cart"
-                                android:textColor="#A0A0A0"
-                                android:textSize="12sp"
-                                android:layout_marginTop="4dp"/>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-                </LinearLayout>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.core.widget.NestedScrollView>
-
-        <!-- Floating Barcode Button -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:layout_width="wrap_content"
+        <!-- ========================================== -->
+        <!-- LOCKED BOTTOM NAVIGATION                   -->
+        <!-- Forced to the absolute bottom              -->
+        <!-- ========================================== -->
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNav"
+            style="@style/CustomBottomNav"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="88dp"
-            app:backgroundTint="#00FF7F"
-            app:srcCompat="@android:drawable/ic_menu_camera" />
+            android:layout_alignParentBottom="true"
+            android:background="#121212"
+            app:elevation="24dp"
+            app:itemIconTint="@color/nav_item_colors"
+            app:itemTextColor="@color/nav_item_colors"
+            app:menu="@menu/bottom_nav_menu" />
 
-        <!-- Bottom Navigation -->
-<!--        <com.google.android.material.bottomnavigation.BottomNavigationView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="bottom"-->
-<!--            android:background="#121212"-->
-<!--            app:itemIconTint="#FFFFFF"-->
-<!--            app:itemTextColor="#FFFFFF"-->
-<!--            app:menu="@menu/bottom_nav_menu" />-->
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNav"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/CustomBottomNav"
-        android:layout_gravity="bottom"
-        android:layout_alignParentBottom="true"
-        android:background="#121212"
-        app:itemIconTint="@color/nav_item_colors"
-        app:itemTextColor="@color/nav_item_colors"
-        app:menu="@menu/bottom_nav_menu"
-        />
-
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </RelativeLayout>
