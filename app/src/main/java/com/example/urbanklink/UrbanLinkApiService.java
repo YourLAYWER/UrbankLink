@@ -7,6 +7,8 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
+
 interface UrbanLinkApiService {
     @POST("api/auth/login")
     Call<AuthResponse> loginUser(@Body LoginRequest request);
@@ -31,4 +33,13 @@ interface UrbanLinkApiService {
 
     @GET("api/Journey/history")
     Call<List<JourneyHistory>> getJourneyHistory(@Header("Authorization") String authHeader);
+
+    @GET("api/transitprovider/summary")
+    Call<List<ProviderSummary>> getProviderSummaries();
+
+    @GET("api/transitprovider/type/{transportType}")
+    Call<List<ProviderSummary>> getProvidersByType(@Path("transportType") String transportType);
+
+    @GET("api/transitroute/provider/{providerId}")
+    Call<RouteResponse> getRoutesByProvider(@Path("providerId") int providerId);
 }

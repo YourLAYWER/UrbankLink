@@ -18,6 +18,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import java.util.ArrayList;
@@ -58,6 +59,29 @@ public class MainActivity extends AppCompatActivity {
         findRouteBtn = findViewById(R.id.findRouteBtn);
         checkAndSyncStops();
 
+        // Check Schedules Logic
+        MaterialCardView busCard = findViewById(R.id.cardBusSchedules);
+        MaterialCardView railCard = findViewById(R.id.cardRailSchedules);
+
+        busCard.setOnClickListener(v -> {
+            // Create an Intent to navigate to your provider list screen
+            Intent intent = new Intent(this, ProviderListActivity.class);
+
+            // Pass the specific transport type
+            intent.putExtra("TRANSPORT_TYPE", "Bus");
+
+            startActivity(intent);
+        });
+
+        railCard.setOnClickListener(v -> {
+            // Create an Intent to navigate to your provider list screen
+            Intent intent = new Intent(this, ProviderListActivity.class);
+
+            // Pass the specific transport type
+            intent.putExtra("TRANSPORT_TYPE", "Rail");
+
+            startActivity(intent);
+        });
 
         findRouteBtn.setOnClickListener(v -> {
             // 1. Grab whatever text the user typed in the boxes
