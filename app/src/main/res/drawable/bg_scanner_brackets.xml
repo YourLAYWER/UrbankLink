@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- This creates a hollow rectangle with cyan borders, but we use inset to push the borders out, leaving just the corners visible. It creates a perfect framing effect! -->
+    <item>
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="4dp"
+                android:color="#00E5FF"
+                android:dashWidth="60dp"
+                android:dashGap="200dp" />
+            <solid android:color="@android:color/transparent" />
+            <corners android:radius="4dp" />
+        </shape>
+    </item>
+</layer-list>
