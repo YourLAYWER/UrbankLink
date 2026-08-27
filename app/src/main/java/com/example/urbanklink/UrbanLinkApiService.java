@@ -42,4 +42,13 @@ interface UrbanLinkApiService {
 
     @GET("api/transitroute/provider/{providerId}")
     Call<RouteResponse> getRoutesByProvider(@Path("providerId") int providerId);
+
+    @GET("api/Fleet/buses/available")
+    Call<BusListResponse> getAvailableBuses();
+
+    @GET("api/Fleet/routes")
+    Call<RouteListResponse> getAllRoutes();
+
+    @POST("api/ConductorShift/start")
+    Call<StartShiftResponse> startShift(@Body StartShiftRequest request);
 }

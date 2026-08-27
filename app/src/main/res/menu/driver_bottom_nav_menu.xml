@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_scan"
+        android:icon="@android:drawable/ic_menu_camera"
+        android:title="Scan" />
+
+    <item
+        android:id="@+id/nav_shift"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        android:title="Shift" />
+
+    <item
+        android:id="@+id/nav_vehicle"
+        android:icon="@drawable/ic_bus"
+        android:title="Vehicle" />
+
+    <item
+        android:id="@+id/nav_reports"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:title="Reports" />
+
+</menu>

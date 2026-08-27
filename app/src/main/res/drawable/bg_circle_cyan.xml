@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <!-- A dark grey that stands out perfectly on your #151515 cards -->
+    <solid android:color="#00FFFF" />
+</shape>

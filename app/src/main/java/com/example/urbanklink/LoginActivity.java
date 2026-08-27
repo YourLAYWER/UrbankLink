@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setText("Logging in...");
 
         // 1. Initialize Retrofit (Pass null for the token since we are trying to get one)
-        UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+        UrbanLinkApiService apiService = ApiClient.getClient(this).create(UrbanLinkApiService.class);
 
         // 2. Package the request
         LoginRequest request = new LoginRequest(email, password);
@@ -90,17 +90,24 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     // 4. We got a 200 OK! Extract the JWT
                     String token = response.body().getToken();
+                    String role = response.body().getRole(); // Grab the role from the API
 
                     // 5. Save the token to local storage
-                    saveTokenToPrefs(token);
+                    // Save BOTH to local storage
+                    saveAuthDataToPrefs(token, role);
 
                     Toast.makeText(LoginActivity.this, "Welcome back!", Toast.LENGTH_SHORT).show();
 
-                    // 6. Navigate to your main dashboard
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
+                    Intent intent;
+                    // Route the user based on their role
+                    if (role != null && role.equalsIgnoreCase("Conductor")) {
+                        intent = new Intent(LoginActivity.this, ShiftStartActivity.class);
+                    } else {
+                        // Default to Commuter Dashboard
+                        intent = new Intent(LoginActivity.this, MainActivity.class);
+                    }
 
-                    // Close the LoginActivity so pressing the "Back" button doesn't bring them here
+                    startActivity(intent);
                     finish();
                 } else {
                     // This catches your C# 401 Unauthorized responses
@@ -126,4 +133,11 @@ public class LoginActivity extends AppCompatActivity {
         editor.apply(); // .apply() saves asynchronously in the background
     }
 
+    private void saveAuthDataToPrefs(String token, String role) {
+        SharedPreferences sharedPreferences = getSharedPreferences("UrbanLinkPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("JWT_TOKEN", token);
+        editor.putString("USER_ROLE", role); // Save the role for later
+        editor.apply();
+    }
 }

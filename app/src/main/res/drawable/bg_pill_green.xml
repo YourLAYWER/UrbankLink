@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- The neon green background color -->
+    <solid android:color="#00FF7F" />
+
+    <!-- Generous radius to ensure the ends are perfectly rounded like a pill -->
+    <corners android:radius="24dp" />
+
+</shape>

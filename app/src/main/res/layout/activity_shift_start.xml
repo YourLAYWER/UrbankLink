@@ -100,7 +100,6 @@
                                 android:layout_height="wrap_content"
                                 android:completionThreshold="1"
                                 android:inputType="textNoSuggestions"
-                                android:text="Choose a vehicle"
                                 android:textColor="#FFFFFF" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -128,7 +127,6 @@
                                 android:layout_height="wrap_content"
                                 android:completionThreshold="1"
                                 android:inputType="textNoSuggestions"
-                                android:text="Choose a route"
                                 android:textColor="#FFFFFF" />
                         </com.google.android.material.textfield.TextInputLayout>
 

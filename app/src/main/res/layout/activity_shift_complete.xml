@@ -122,7 +122,7 @@
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
-                                android:src="@android:drawable/ic_menu_mange_keys"
+                                android:src="@drawable/ic_menu_mange_keys"
                                 app:tint="#00E5FF" />
 
                             <TextView
