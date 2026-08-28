@@ -70,18 +70,15 @@ public class ShiftStartActivity extends AppCompatActivity {
         // Initialize the API service
         UrbanLinkApiService apiService = ApiClient.getClient(this).create(UrbanLinkApiService.class);
 
-        Log.d("API_DEBUG", "Starting fetchAvailableBuses network call...");
-
         apiService.getAvailableBuses().enqueue(new Callback<BusListResponse>() {
             @Override
             public void onResponse(Call<BusListResponse> call, Response<BusListResponse> response) {
-                // Log the exact URL being called and the HTTP status code returned
-                Log.d("API_DEBUG", "Buses Call URL: " + call.request().url());
-                Log.d("API_DEBUG", "Buses Response Code: " + response.code());
 
                 if (response.isSuccessful() && response.body() != null) {
                     allBuses = response.body().data;
-                    Log.d("API_DEBUG", "Buses successfully parsed! Count: " + allBuses.size());
+
+                    // ADD THIS TOAST TO VERIFY DATA IS ACTUALLY ARRIVING
+                    Toast.makeText(ShiftStartActivity.this, "Loaded " + allBuses.size() + " buses", Toast.LENGTH_SHORT).show();
 
                     List<String> busNames = new ArrayList<>();
                     for (AvailableBus bus : allBuses) {
@@ -90,9 +87,10 @@ public class ShiftStartActivity extends AppCompatActivity {
 
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(
                             ShiftStartActivity.this,
-                            R.layout.item_dropdown,
+                            androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
                             busNames
                     );
+                    etVehicleSelection.setThreshold(1);
                     etVehicleSelection.setAdapter(adapter);
 
                     etVehicleSelection.setOnClickListener(v -> etVehicleSelection.showDropDown());
@@ -114,7 +112,6 @@ public class ShiftStartActivity extends AppCompatActivity {
                     });
                 } else {
                     // Catch Server-Side Errors (e.g., 400 Bad Request, 500 Internal Server Error)
-                    Log.e("API_DEBUG", "Buses Server Error! Code: " + response.code() + ", Message: " + response.message());
                     Toast.makeText(ShiftStartActivity.this, "Server Error: " + response.code(), Toast.LENGTH_LONG).show();
                 }
             }
@@ -122,45 +119,49 @@ public class ShiftStartActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<BusListResponse> call, Throwable t) {
                 // Catch complete network failures (e.g., no internet, wrong IP, server offline)
-                Log.e("API_DEBUG", "Buses Network Call Failed Entirely!", t);
                 Toast.makeText(ShiftStartActivity.this, "API Failure: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
     private void fetchRoutes() {
-        UrbanLinkApiService apiService = ApiClient.getClient(this).create(UrbanLinkApiService.class);
-
-
-        Log.d("API_DEBUG", "Starting fetchRoutes network call...");
+        UrbanLinkApiService apiService = ApiClient.getClient(ShiftStartActivity.this).create(UrbanLinkApiService.class);
 
         apiService.getAllRoutes().enqueue(new Callback<RouteListResponse>() {
             @Override
             public void onResponse(Call<RouteListResponse> call, Response<RouteListResponse> response) {
-                Log.d("API_DEBUG", "Routes Call URL: " + call.request().url());
-                Log.d("API_DEBUG", "Routes Response Code: " + response.code());
 
                 if (response.isSuccessful() && response.body() != null) {
+                    // NOTE: If you changed your interface to return Call<List<ActiveRoute>> directly,
+                    // change this next line to: allRoutes = response.body();
                     allRoutes = response.body().data;
-                    Log.d("API_DEBUG", "Routes successfully parsed! Count: " + allRoutes.size());
+
+                    // 1. Verify we have data
+                    Toast.makeText(ShiftStartActivity.this, "Found " + allRoutes.size() + " routes", Toast.LENGTH_LONG).show();
 
                     List<String> routeNames = new ArrayList<>();
                     for (ActiveRoute route : allRoutes) {
                         routeNames.add(route.name);
                     }
 
+                    // 2. Use the safe default Android layout
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(
                             ShiftStartActivity.this,
-                            R.layout.item_dropdown,
+                            android.R.layout.simple_dropdown_item_1line,
                             routeNames
                     );
+
+                    // 3. Fix the character threshold
+                    etRouteSelection.setThreshold(1);
                     etRouteSelection.setAdapter(adapter);
 
+                    // Force the dropdown to show when clicked
                     etRouteSelection.setOnClickListener(v -> etRouteSelection.showDropDown());
                     etRouteSelection.setOnFocusChangeListener((v, hasFocus) -> {
                         if (hasFocus) etRouteSelection.showDropDown();
                     });
 
+                    // 4. Capture the ID when the user taps an option
                     etRouteSelection.setOnItemClickListener((parent, view, position, id) -> {
                         String selectedName = (String) parent.getItemAtPosition(position);
                         for (ActiveRoute route : allRoutes) {
@@ -169,18 +170,23 @@ public class ShiftStartActivity extends AppCompatActivity {
                                 break;
                             }
                         }
+
+                        // Hide the keyboard
                         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        if (imm != null) {
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        }
                         etRouteSelection.clearFocus();
                     });
+
                 } else {
-                    Log.e("API_DEBUG", "Routes Server Error! Code: " + response.code());
+                    Toast.makeText(ShiftStartActivity.this, "Routes Server Error: " + response.code(), Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<RouteListResponse> call, Throwable t) {
-                Log.e("API_DEBUG", "Routes Network Call Failed Entirely!", t);
+                Toast.makeText(ShiftStartActivity.this, "API Failure: " + t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }

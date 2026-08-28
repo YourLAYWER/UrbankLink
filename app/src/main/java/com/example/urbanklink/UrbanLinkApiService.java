@@ -46,7 +46,7 @@ interface UrbanLinkApiService {
     @GET("api/Fleet/buses/available")
     Call<BusListResponse> getAvailableBuses();
 
-    @GET("api/Fleet/routes")
+    @GET("api/TransitRoute/routes")
     Call<RouteListResponse> getAllRoutes();
 
     @POST("api/ConductorShift/start")
