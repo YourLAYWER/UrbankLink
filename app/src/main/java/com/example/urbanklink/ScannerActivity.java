@@ -1,5 +1,6 @@
 package com.example.urbanklink;
 
+import android.content.Intent;
 import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,6 +9,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ExperimentalGetImage;
@@ -21,6 +24,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.mlkit.vision.barcode.BarcodeScanner;
@@ -42,6 +46,10 @@ public class ScannerActivity extends AppCompatActivity {
     private BarcodeScanner scanner;
     private ToneGenerator toneGen;
 
+    private MaterialButton btnCashSale;
+
+    private ActivityResultLauncher<Intent> quickSaleLauncher;
+
     private boolean isProcessing = false;
     private int activeShiftId = -1;
     private int currentPassengers = 45; // Starting demo capacity
@@ -51,6 +59,31 @@ public class ScannerActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_scanner);
 
+        btnCashSale = findViewById(R.id.btnCashSale);
+
+        // 1. You must link the TextView here so it's not null!
+        txtCurrentCapacity = findViewById(R.id.txtCurrentCapacity);
+
+        // 1. Initialize the listener (Put this inside onCreate, before your button click listener)
+        quickSaleLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    // If QuickSaleActivity closed with RESULT_OK, grab the data!
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        int addedPassengers = result.getData().getIntExtra("PASSENGERS_ADDED", 0);
+
+                        // Update the local counter and the UI
+                        currentPassengers += addedPassengers;
+                        txtCurrentCapacity.setText(String.valueOf(currentPassengers));
+                    }
+                });
+
+        // 2. button click listener to uses the launcher
+        btnCashSale = findViewById(R.id.btnCashSale);
+        btnCashSale.setOnClickListener(v -> {
+            Intent intent = new Intent(ScannerActivity.this, QuickSaleActivity.class);
+            quickSaleLauncher.launch(intent); // <-- Changed this line
+        });
 
     }
 

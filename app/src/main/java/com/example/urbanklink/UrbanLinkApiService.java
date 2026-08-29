@@ -54,4 +54,7 @@ interface UrbanLinkApiService {
 
     @POST("api/ConductorShift/scan")
     Call<ScanTicketResponse> scanTicket(@Body ScanTicketRequest request);
+
+    @POST("api/ConductorShift/cash-sale")
+    Call<CashSaleResponse> recordCashSale(@Body CashSaleRequest request);
 }
