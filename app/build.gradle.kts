@@ -60,4 +60,15 @@ dependencies {
 
     // Google Maps API
     implementation("com.google.android.gms:play-services-maps:19.0.0")
+
+    // CameraX core library using the camera2 implementation
+    // CameraX core library using the camera2 implementation
+    val camerax_version = "1.3.0"
+    implementation("androidx.camera:camera-core:$camerax_version")
+    implementation("androidx.camera:camera-camera2:$camerax_version")
+    implementation("androidx.camera:camera-lifecycle:$camerax_version")
+    implementation("androidx.camera:camera-view:$camerax_version")
+
+    // Google ML Kit for Barcode Scanning
+    implementation("com.google.mlkit:barcode-scanning:17.3.0") // (Updated to latest 17.3.0)
 }

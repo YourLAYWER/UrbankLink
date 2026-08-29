@@ -51,4 +51,7 @@ interface UrbanLinkApiService {
 
     @POST("api/ConductorShift/start")
     Call<StartShiftResponse> startShift(@Body StartShiftRequest request);
+
+    @POST("api/ConductorShift/scan")
+    Call<ScanTicketResponse> scanTicket(@Body ScanTicketRequest request);
 }
