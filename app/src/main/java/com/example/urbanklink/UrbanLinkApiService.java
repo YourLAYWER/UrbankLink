@@ -57,4 +57,10 @@ interface UrbanLinkApiService {
 
     @POST("api/ConductorShift/cash-sale")
     Call<CashSaleResponse> recordCashSale(@Body CashSaleRequest request);
+
+    @GET("api/ConductorShift/summary")
+    Call<EndShiftResponse> getShiftSummary(@Header("Authorization") String token);
+
+    @POST("api/ConductorShift/end")
+    Call<EndShiftResponse> endShift(@Header("Authorization") String token);
 }

@@ -85,6 +85,12 @@ public class ScannerActivity extends AppCompatActivity {
             quickSaleLauncher.launch(intent); // <-- Changed this line
         });
 
+        View btnEndShift = findViewById(R.id.btnEndShift);
+        btnEndShift.setOnClickListener(v -> {
+            Intent intent = new Intent(ScannerActivity.this, ShiftCompleteActivity.class);
+            startActivity(intent);
+        });
+
     }
 
     private void startCamera() {
