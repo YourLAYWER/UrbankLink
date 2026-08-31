@@ -32,22 +32,27 @@ public class SplashActivity extends AppCompatActivity {
 
         // 2. Look for the "JWT_TOKEN" key. If it doesn't exist, return null.
         String token = prefs.getString("JWT_TOKEN", null);
+        String role = prefs.getString("USER_ROLE", token);
 
-        Intent intent;
-
-        // 3. The Fork in the Road
-        if (token != null && !token.isEmpty()) {
-            // Path A: Token exists! Route straight to the Dashboard.
-            intent = new Intent(SplashActivity.this, MainActivity.class);
+        //Intent intent;
+        if (token != null) {
+            // The user is already logged in! Now check their role:
+            if (role.equalsIgnoreCase("Conductor")) {
+                // Send them straight to the Conductor Start Shift / Scanner view
+                Intent intent = new Intent(this, ScannerActivity.class); // Or your Conductor home
+                startActivity(intent);
+                finish();
+            } else {
+                // Send them to the standard Passenger dashboard
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
         } else {
-            // Path B: No token. Force them to log in.
-            intent = new Intent(SplashActivity.this, LoginActivity.class);
+            // No token found, send them to the Login screen
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
         }
-
-        // 4. Start the next activity
-        startActivity(intent);
-
-        // 5. Destroy the SplashActivity so they can't press 'Back' to return here
-        finish();
     }
 }

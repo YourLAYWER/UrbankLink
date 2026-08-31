@@ -130,6 +130,7 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("UrbanLinkPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("JWT_TOKEN", token);
+        editor.putString("USER_ROLE", token);
         editor.apply(); // .apply() saves asynchronously in the background
     }
 
