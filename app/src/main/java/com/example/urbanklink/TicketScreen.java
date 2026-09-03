@@ -237,7 +237,7 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
                 txtTicketStatus.setTextColor(android.graphics.Color.parseColor("#FF5252")); // Red text
                 txtTicketStatus.setBackgroundColor(android.graphics.Color.parseColor("#1AFF5252")); // Light red bg
 
-            } else if (safeStatus.equals("REDEEMED")) {
+            } else if (safeStatus.equals("COMPLETED")) {
                 imgQrCode.setAlpha(0.3f);
                 txtTicketStatus.setTextColor(android.graphics.Color.parseColor("#9E9E9E")); // Grey text
                 txtTicketStatus.setBackgroundColor(android.graphics.Color.parseColor("#1A9E9E9E")); // Light grey bg

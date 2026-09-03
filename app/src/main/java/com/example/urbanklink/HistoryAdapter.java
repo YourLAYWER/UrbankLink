@@ -42,7 +42,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
         // Optional UI Polish: Change text color based on status
         if ("EXPIRED".equalsIgnoreCase(item.getStatus())) {
             holder.txtStatus.setTextColor(Color.parseColor("#FF8A8A")); // Soft red
-        } else if ("REDEEMED".equalsIgnoreCase(item.getStatus())) {
+        } else if ("COMPLETED".equalsIgnoreCase(item.getStatus())) {
             holder.txtStatus.setTextColor(Color.parseColor("#A0A0A0")); // Greyed out
         } else {
             holder.txtStatus.setTextColor(Color.parseColor("#00FF7F")); // Bright green for ACTIVE
