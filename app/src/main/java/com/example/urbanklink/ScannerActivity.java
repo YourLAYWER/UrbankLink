@@ -1,6 +1,9 @@
 package com.example.urbanklink;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +22,7 @@ import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -51,8 +55,9 @@ public class ScannerActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> quickSaleLauncher;
 
     private boolean isProcessing = false;
+    private String authHeader;
     private int activeShiftId = -1;
-    private int currentPassengers = 45; // Starting demo capacity
+    private int currentPassengers = 0; // Starting demo capacity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,28 +66,46 @@ public class ScannerActivity extends AppCompatActivity {
 
         btnCashSale = findViewById(R.id.btnCashSale);
 
-        // 1. You must link the TextView here so it's not null!
+        // 1. LINK XML VIEWS FIRST (Moved to the top)
+        viewFinder = findViewById(R.id.viewFinder);
+        pillScanResult = findViewById(R.id.pillScanResult);
         txtCurrentCapacity = findViewById(R.id.txtCurrentCapacity);
+        btnCashSale = findViewById(R.id.btnCashSale);
 
-        // 1. Initialize the listener (Put this inside onCreate, before your button click listener)
+        // 2. INITIALIZE SERVICES FIRST
+        cameraExecutor = java.util.concurrent.Executors.newSingleThreadExecutor();
+        scanner = com.google.mlkit.vision.barcode.BarcodeScanning.getClient();
+        toneGen = new ToneGenerator(android.media.AudioManager.STREAM_MUSIC, 100);
+
+        // 3. AUTH & SHIFT SETUP
+        SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
+        String token = prefs.getString("JWT_TOKEN", null);
+
+        if (token == null) {
+            performLogout();
+            return;
+        }
+        authHeader = "Bearer " + token.replace("\"", "").trim();
+        fetchActiveShift();
+
+        // 1. Register the launcher to catch the result from QuickSaleActivity
         quickSaleLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    // If QuickSaleActivity closed with RESULT_OK, grab the data!
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         int addedPassengers = result.getData().getIntExtra("PASSENGERS_ADDED", 0);
 
-                        // Update the local counter and the UI
+                        // Update the local capacity counter and refresh the UI text
                         currentPassengers += addedPassengers;
                         txtCurrentCapacity.setText(String.valueOf(currentPassengers));
                     }
-                });
+                }
+        );
 
-        // 2. button click listener to uses the launcher
-        btnCashSale = findViewById(R.id.btnCashSale);
+        // 4. BUTTON LISTENERS
         btnCashSale.setOnClickListener(v -> {
             Intent intent = new Intent(ScannerActivity.this, QuickSaleActivity.class);
-            quickSaleLauncher.launch(intent); // <-- Changed this line
+            quickSaleLauncher.launch(intent); // Must use .launch(), not startActivity()
         });
 
         View btnEndShift = findViewById(R.id.btnEndShift);
@@ -91,6 +114,58 @@ public class ScannerActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // 5. START CAMERA LAST (Now that views and services are ready)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 100);
+        } else {
+            startCamera();
+        }
+
+    }
+
+    private void fetchActiveShift() {
+        UrbanLinkApiService apiService = ApiClient.getClient(this).create(UrbanLinkApiService.class);
+        apiService.getShiftSummary(authHeader).enqueue(new Callback<EndShiftResponse>() {
+            @Override
+            public void onResponse(Call<EndShiftResponse> call, Response<EndShiftResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    EndShiftResponse data = response.body();
+                    // Extract the active shift ID directly from the backend response model
+                    activeShiftId = data.shiftSummary.shiftId; // Ensure your EndShiftResponse model has this field
+
+                    Toast.makeText(ScannerActivity.this, "Active Shift Loaded", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(ScannerActivity.this, "No active shift found!", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<EndShiftResponse> call, Throwable t) {
+                Toast.makeText(ScannerActivity.this, "Failed to connect to server", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void performLogout() {
+        SharedPreferences.Editor editor = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE).edit();
+        editor.clear();
+        editor.apply();
+
+        Intent intent = new Intent(ScannerActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 100 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // The user just clicked "Allow", start the camera immediately
+            startCamera();
+        } else {
+            Toast.makeText(this, "Camera permission is required to scan tickets", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void startCamera() {
@@ -141,7 +216,7 @@ public class ScannerActivity extends AppCompatActivity {
         isProcessing = true; // Lock the scanner
 
         // 1. Verify this is actually an UrbanLink ticket before we even bother the server
-        if (!qrData.toLowerCase().startsWith("URBANLINK-")) {
+        if (!qrData.toLowerCase().startsWith("urbanlink-")) {
             Toast.makeText(this, "Invalid QR: Not an UrbanLink Ticket", Toast.LENGTH_SHORT).show();
 
             // Unlock the scanner quickly so they can try again
@@ -151,7 +226,7 @@ public class ScannerActivity extends AppCompatActivity {
 
         // 2. Strip out the prefix to get the pure GUID for the database
         // (?i) makes it case-insensitive just in case!
-        String cleanQrData = qrData.replaceAll("(?i)URBANLINK-", "").trim();
+        String cleanQrData = qrData.replaceAll("(?i)urbanlink-", "").trim();
 
         // 3. Send the clean GUID to the server
         ScanTicketRequest request = new ScanTicketRequest(activeShiftId, cleanQrData);

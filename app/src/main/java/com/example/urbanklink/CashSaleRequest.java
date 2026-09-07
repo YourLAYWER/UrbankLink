@@ -4,8 +4,7 @@ public class CashSaleRequest {
     public int shiftId;
     public int passengerCount;
 
-    public CashSaleRequest(int shiftId, int passengerCount) {
-        this.shiftId = shiftId;
+    public CashSaleRequest(int passengerCount) {
         this.passengerCount = passengerCount;
     }
 }
