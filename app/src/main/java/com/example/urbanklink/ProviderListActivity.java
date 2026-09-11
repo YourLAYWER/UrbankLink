@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
 
@@ -36,19 +37,21 @@ public class ProviderListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_provider_list);
+        // Set up the shared top header (false = hides the back button since this is a main tab)
+        HeaderUtils.setupHeader(this, true, false);
 
         // Bind the UI components
         recyclerView = findViewById(R.id.recyclerViewProviders);
         progressBar = findViewById(R.id.progressBar);
         tvEmptyState = findViewById(R.id.tvEmptyState);
 
-        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        //MaterialToolbar toolbar = findViewById(R.id.toolbar);
 
         // Setup RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // Handle the Back Button on the toolbar
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        //toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
         // Grab the "Bus" or "Rail string that wsa passed in
         transportType = getIntent().getStringExtra("TRANSPORT_TYPE");
@@ -58,6 +61,12 @@ public class ProviderListActivity extends AppCompatActivity {
             setTitle(transportType + " Providers");
             fetchProviders(transportType);
         }
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+
+        // Use your existing utility class!
+        // Pass '0' or a specific menu ID (like R.id.nav_home) depending on what you want highlighted
+        NavigationUtils.setupBottomNavigation(this, bottomNav, 0);
     }
 
     private void fetchProviders(String type) {

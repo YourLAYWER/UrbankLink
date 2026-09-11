@@ -3,6 +3,7 @@ package com.example.urbanklink;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
 
@@ -34,24 +36,61 @@ public class RouteScheduleActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_route_schedule);
 
+//        //Top Header SetUp
+//        HeaderUtils.setupHeader(this, true, false);
+//
+//        recyclerView = findViewById(R.id.recyclerViewRoutes);
+//        progressBar = findViewById(R.id.progressBarSchedule);
+//        MaterialToolbar toolbar = findViewById(R.id.toolbarSchedule);
+//
+//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+//        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+//
+//        // 1. Unpack the data sent from Level 2
+//        providerId = getIntent().getIntExtra("PROVIDER_ID", -1);
+//        providerName = getIntent().getStringExtra("PROVIDER_NAME");
+//
+//        if (providerName != null) {
+//            toolbar.setTitle(providerName + " Routes");
+//        }
+//
+//        if (providerId != -1) {
+//            fetchRoutes(providerId);
+//        }
+//
+//        // Bottom Navigation SetUp
+//        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+//        NavigationUtils.setupBottomNavigation(this, bottomNav, 0);
+
+
+        // 1. Top Header SetUp (This automatically handles the Back button!)
+        HeaderUtils.setupHeader(this, true, false);
+
         recyclerView = findViewById(R.id.recyclerViewRoutes);
         progressBar = findViewById(R.id.progressBarSchedule);
-        MaterialToolbar toolbar = findViewById(R.id.toolbarSchedule);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
-        // 1. Unpack the data sent from Level 2
+        // 2. Unpack the data sent from Level 2
         providerId = getIntent().getIntExtra("PROVIDER_ID", -1);
         providerName = getIntent().getStringExtra("PROVIDER_NAME");
 
+        // 3. Update the custom header title instead of the old Toolbar
         if (providerName != null) {
-            toolbar.setTitle(providerName + " Routes");
+            // NOTE: Change 'txtAppNameTitle' to whatever ID you used for the title in your layout_top_header.xml
+            TextView headerTitle = findViewById(R.id.txtScreenTitle);
+            if (headerTitle != null) {
+                headerTitle.setText(providerName + " Routes");
+            }
         }
 
         if (providerId != -1) {
             fetchRoutes(providerId);
         }
+
+        // 4. Bottom Navigation SetUp
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+        NavigationUtils.setupBottomNavigation(this, bottomNav, 0);
     }
 
     private void fetchRoutes(int id) {

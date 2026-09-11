@@ -15,12 +15,7 @@
           <targets>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="PhysicalDevice" identifier="serial=R92Y20D8P2V" />
-              </handle>
-            </Target>
-            <Target type="DEFAULT_BOOT">
-              <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\s228131715\.android\avd\Small_Tablet.avd" />
+                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\s228131715\.android\avd\Pixel_8.avd" />
               </handle>
             </Target>
           </targets>

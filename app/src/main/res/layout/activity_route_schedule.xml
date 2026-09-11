@@ -5,44 +5,67 @@
     android:id="@+id/scheduleScreen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:background="#151515"
     tools:context=".RouteScheduleActivity">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appBarLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#151515"
-            app:layout_constraintTop_toTopOf="parent">
+    <!-- ========================================== -->
+    <!-- 1. GLOBAL TOP HEADER                       -->
+    <!-- ========================================== -->
+    <include
+        android:id="@+id/topHeader"
+        layout="@layout/layout_top_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent" />
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/toolbarSchedule"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:navigationIconTint="#FFFFFF"
-                app:titleTextColor="#FFFFFF"
-                app:title="Loading..." />
-        </com.google.android.material.appbar.AppBarLayout>
+    <View
+        android:id="@+id/dividerTop"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#2A2A2A"
+        app:layout_constraintTop_toBottomOf="@id/topHeader" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewRoutes"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:padding="8dp"
-            android:clipToPadding="false"
-            app:layout_constraintTop_toBottomOf="@id/appBarLayout"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+    <!-- ========================================== -->
+    <!-- 2. SCROLLABLE LIST                         -->
+    <!-- ========================================== -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewRoutes"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="8dp"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/dividerTop"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <ProgressBar
-            android:id="@+id/progressBarSchedule"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:indeterminateTint="#00E5FF"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+    <!-- Loading Spinner -->
+    <ProgressBar
+        android:id="@+id/progressBarSchedule"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminateTint="#00E5FF"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- ========================================== -->
+    <!-- 3. BOTTOM NAVIGATION                       -->
+    <!-- ========================================== -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        style="@style/CustomBottomNav"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#121212"
+        app:elevation="24dp"
+        app:itemIconTint="@color/nav_item_colors"
+        app:itemTextColor="@color/nav_item_colors"
+        app:menu="@menu/bottom_nav_menu"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
