@@ -28,8 +28,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.mlkit.vision.barcode.BarcodeScanner;
 import com.google.mlkit.vision.barcode.common.Barcode;
@@ -113,6 +115,12 @@ public class ScannerActivity extends AppCompatActivity {
             Intent intent = new Intent(ScannerActivity.this, ShiftCompleteActivity.class);
             startActivity(intent);
         });
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
+        FloatingActionButton fabScan = findViewById(R.id.fabScan);
+
+        // Pass -1 for ScannerActivity since the active state belongs to the FAB, not the bottom menu
+        BottomDriverNavManager.setup(this, bottomNav, fabScan, -1);
 
         // 5. START CAMERA LAST (Now that views and services are ready)
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {

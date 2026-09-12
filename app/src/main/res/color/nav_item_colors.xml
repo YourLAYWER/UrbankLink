@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Selected state: Green -->
-    <item android:state_checked="true" android:color="#00F5A0" />
-
-    <!-- Unselected state: Grey -->
-    <item android:color="#808080" />
+<item android:color="#00E5FF" android:state_checked="true" /> <!-- Cyan -->
+<item android:color="#A0A0A0" /> <!-- Grey -->
 </selector>

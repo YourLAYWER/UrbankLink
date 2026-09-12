@@ -263,19 +263,57 @@
             app:iconTint="#00E5FF"
             app:strokeColor="#00E5FF"
             app:strokeWidth="2dp"
-            app:layout_constraintBottom_toTopOf="@id/bottomNav" />
+            app:layout_constraintBottom_toTopOf="@id/bottomNavContainer" />
 
         <!-- ========================================== -->
         <!-- 6. BOTTOM NAVIGATION                       -->
         <!-- ========================================== -->
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNav"
+<!--        <com.google.android.material.bottomnavigation.BottomNavigationView-->
+<!--            android:id="@+id/bottomNav"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:background="#121212"-->
+<!--            app:itemIconTint="@color/nav_item_colors"-->
+<!--            app:itemTextColor="@color/nav_item_colors"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:menu="@menu/driver_bottom_nav_menu" />-->
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/bottomNavContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottomAppBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#121212"
-            app:itemIconTint="@color/nav_item_colors"
-            app:itemTextColor="@color/nav_item_colors"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:menu="@menu/driver_bottom_nav_menu" />
+            android:layout_gravity="bottom"
+            android:backgroundTint="#121212"
+            app:fabAlignmentMode="center"
+            app:fabCradleMargin="8dp"
+            app:fabCradleRoundedCornerRadius="16dp">
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottomNav"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                app:elevation="0dp"
+                app:itemIconTint="@color/nav_item_colors"
+                app:itemTextColor="@color/nav_item_colors"
+                app:menu="@menu/driver_bottom_nav_menu" />
+        </com.google.android.material.bottomappbar.BottomAppBar>
+
+        <!-- The Large Center Scan Button -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabScan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#00E5FF"
+            android:src="@android:drawable/ic_menu_camera"
+            app:layout_anchor="@id/bottomAppBar"
+            app:tint="#121212" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
