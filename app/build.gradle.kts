@@ -61,6 +61,7 @@ dependencies {
     // Google Maps API
     implementation("com.google.android.gms:play-services-maps:19.0.0")
     implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation("com.google.maps.android:android-maps-utils:3.8.2")
 
     // CameraX core library using the camera2 implementation
     // CameraX core library using the camera2 implementation

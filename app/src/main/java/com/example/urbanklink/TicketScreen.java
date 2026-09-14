@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -20,9 +21,11 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.maps.android.PolyUtil;
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -36,7 +39,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class TicketScreen extends AppCompatActivity implements OnMapReadyCallback{
 
@@ -99,6 +108,84 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+    }
+
+    private void fetchWalkingRoute(LatLng origin, LatLng destination) {
+        executor.execute(() -> {
+            // Replace with your actual Google Maps API Key or retrieve from strings.xml / BuildConfig
+            String apiKey = getString(R.string.google_maps_key);
+
+            String cleanedUrl = "https://maps.googleapis.com/maps/api/directions/json"
+                    + "?origin=" + origin.latitude + "," + origin.longitude
+                    + "&destination=" + destination.latitude + "," + destination.longitude
+                    + "&mode=walking"
+                    + "&key=" + apiKey;
+
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder().url(cleanedUrl).build();
+
+//            try {
+//                Response response = client.newCall(request).execute();
+//                if (response.isSuccessful() && response.body() != null) {
+//                    String jsonData = response.body().string();
+//                    JSONObject jsonObject = new JSONObject(jsonData);
+//                    JSONArray routes = jsonObject.getJSONArray("routes");
+//
+//                    if (routes.length() > 0) {
+//                        JSONObject route = routes.getJSONObject(0);
+//                        JSONObject overviewPolyline = route.getJSONObject("overview_polyline");
+//                        String encodedPoints = overviewPolyline.getString("points");
+//
+//                        List<LatLng> decodedPath = PolyUtil.decode(encodedPoints);
+//
+//                        runOnUiThread(() -> drawWalkingPathOnMap(decodedPath));
+//                    }
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+
+            try {
+                Response response = client.newCall(request).execute();
+                String bodyString = response.body() != null ? response.body().string() : "";
+                Log.d("DIRECTIONS_API", "Code: " + response.code() + " | Body: " + bodyString);
+
+                if (response.isSuccessful() && !bodyString.isEmpty()) {
+                    JSONObject jsonObject = new JSONObject(bodyString);
+                    String status = jsonObject.optString("status");
+
+                    if ("OK".equals(status)) {
+                        JSONArray routes = jsonObject.getJSONArray("routes");
+                        if (routes.length() > 0) {
+                            JSONObject route = routes.getJSONObject(0);
+                            JSONObject overviewPolyline = route.getJSONObject("overview_polyline");
+                            String encodedPoints = overviewPolyline.getString("points");
+
+                            List<LatLng> decodedPath = PolyUtil.decode(encodedPoints);
+                            runOnUiThread(() -> drawWalkingPathOnMap(decodedPath));
+                        }
+                    } else {
+                        Log.e("DIRECTIONS_API", "API Error Status: " + status + " - " + jsonObject.optString("error_message"));
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("DIRECTIONS_API", "Exception: " + e.getMessage(), e);
+            }
+        });
+    }
+
+    private void drawWalkingPathOnMap(List<LatLng> pathPoints) {
+        if (mMap == null || pathPoints == null || pathPoints.isEmpty()) return;
+
+        if (userToStartPolyline != null) {
+            userToStartPolyline.remove();
+        }
+
+        userToStartPolyline = mMap.addPolyline(new PolylineOptions()
+                .addAll(pathPoints)
+                .width(12f)
+                .color(Color.parseColor("#00E5FF"))
+                .geodesic(false));
     }
 
     // ==========================================
@@ -185,17 +272,8 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
 
         if (userCurrentCoord != null) {
             builder.include(userCurrentCoord);
-
-            if (userToStartPolyline != null) {
-                userToStartPolyline.remove();
-            }
-
-            // Draw a path from the user's live position to the boarding stop
-            userToStartPolyline = mMap.addPolyline(new PolylineOptions()
-                    .add(userCurrentCoord, startStopCoord)
-                    .width(10f)
-                    .color(Color.parseColor("#00E5FF"))
-                    .geodesic(true));
+            // Request real road-snapped walking directions from Google
+            fetchWalkingRoute(userCurrentCoord, startStopCoord);
         }
 
         LatLngBounds bounds = builder.build();
