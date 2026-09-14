@@ -1,8 +1,12 @@
 package com.example.urbanklink;
 
+import static android.app.ProgressDialog.show;
+
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
@@ -11,11 +15,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
@@ -42,11 +55,47 @@ public class MainActivity extends AppCompatActivity {
 
     // ---> ADD THIS: A global list to hold all stops so the button can search it <---
     private List<Stop> allStops = new ArrayList<>();
+
+    // Location components
+    private FusedLocationProviderClient fusedLocationClient;
+    private ActivityResultLauncher<String[]> locationPermissionRequest;
+    private GoogleMap mMap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.mapFragment); // Make sure 'R.id.map' matches your XML map fragment ID
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(googleMap -> {
+                mMap = googleMap;
+                enableUserLocation();           // Try enabling if permissions were already granted previously
+            });
+        }
+
+        // Initialize FusedLocationProviderClient
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Register permission launcher for location
+        locationPermissionRequest = registerForActivityResult(
+                new ActivityResultContracts.RequestMultiplePermissions(),
+                result -> {
+                    Boolean fineGranted = result.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false);
+                    Boolean coarseGranted = result.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false);
+
+                    if ((fineGranted != null && fineGranted) || (coarseGranted != null && coarseGranted)) {
+                        Toast.makeText(this, "Location permission granted", Toast.LENGTH_SHORT).show();
+                        enableUserLocation();
+                    } else {
+                        Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+
+        checkLocationPermissions();
 
         // Set up the shared top header (false = hides the back button since this is a main tab)
         HeaderUtils.setupHeader(this, false, true);
@@ -137,6 +186,35 @@ public class MainActivity extends AppCompatActivity {
         NavigationUtils.setupBottomNavigation(this, bottomNav, R.id.nav_home);
         // End of Bottom Navigation Settings
     }
+
+    private void enableUserLocation() {
+        if (mMap == null) return;
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+
+            // Optional: Move camera to the user's last known location immediately
+            fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+                if (location != null) {
+                    LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f));
+                }
+            });
+        }
+    }
+    private void checkLocationPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            locationPermissionRequest.launch(new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            });
+        }
+    }
+
     private void loadStopsIntoUI() {
         // 1. Create a background thread to read from Room
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -215,6 +293,7 @@ public class MainActivity extends AppCompatActivity {
             });
         });
     }
+
     private void checkAndSyncStops() {
         SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", Context.MODE_PRIVATE);
         long lastSyncTime = prefs.getLong("LAST_STOPS_SYNC", 0); // 0 means it has never synced
@@ -237,6 +316,7 @@ public class MainActivity extends AppCompatActivity {
             loadStopsIntoUI();
         }
     }
+
     private void syncStopsFromBackend() {
         UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
 
