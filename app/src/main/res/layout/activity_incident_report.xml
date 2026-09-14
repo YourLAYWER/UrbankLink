@@ -159,38 +159,32 @@
                             android:layout_marginBottom="16dp" />
 
                         <!-- ChipGroup allows auto-wrapping to the next line -->
+                        <!-- ChipGroup allows auto-wrapping to the next line -->
                         <com.google.android.material.chip.ChipGroup
                             android:id="@+id/chipGroupIssues"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             app:chipSpacingHorizontal="8dp"
                             app:chipSpacingVertical="8dp"
-                            app:singleSelection="true">
+                            app:singleSelection="true"
+                            app:selectionRequired="true">
 
-                            <!-- Selected State Example (Engine Trouble) -->
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
                                 android:id="@+id/chipEngine"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Engine Trouble"
-                                android:textColor="#121212"
-                                android:textStyle="bold"
-                                android:checked="true"
-                                app:chipBackgroundColor="#00E5FF"
-                                app:chipStrokeWidth="0dp" />
+                                android:checkable="true"
+                                android:checked="true" />
 
-                            <!-- Unselected States -->
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
                                 android:id="@+id/chipTire"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Flat Tire"
-                                android:textColor="#A0A0A0"
-                                app:chipBackgroundColor="#2A2A2A"
-                                app:chipStrokeColor="#333333"
-                                app:chipStrokeWidth="1dp" />
+                                android:checkable="true" />
 
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -198,10 +192,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Scanner Offline"
-                                android:textColor="#A0A0A0"
-                                app:chipBackgroundColor="#2A2A2A"
-                                app:chipStrokeColor="#333333"
-                                app:chipStrokeWidth="1dp" />
+                                android:checkable="true" />
 
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -209,10 +200,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Medical Event"
-                                android:textColor="#A0A0A0"
-                                app:chipBackgroundColor="#2A2A2A"
-                                app:chipStrokeColor="#333333"
-                                app:chipStrokeWidth="1dp" />
+                                android:checkable="true" />
 
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -220,22 +208,15 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Passenger Dispute"
-                                android:textColor="#A0A0A0"
-                                app:chipBackgroundColor="#2A2A2A"
-                                app:chipStrokeColor="#333333"
-                                app:chipStrokeWidth="1dp" />
+                                android:checkable="true" />
 
-                            <!-- NEWLY ADDED CHIPS -->
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
                                 android:id="@+id/chipDelay"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Delay"
-                                android:textColor="#A0A0A0"
-                                app:chipBackgroundColor="#2A2A2A"
-                                app:chipStrokeColor="#333333"
-                                app:chipStrokeWidth="1dp" />
+                                android:checkable="true" />
 
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -243,10 +224,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Other"
-                                android:textColor="#A0A0A0"
-                                app:chipBackgroundColor="#2A2A2A"
-                                app:chipStrokeColor="#333333"
-                                app:chipStrokeWidth="1dp" />
+                                android:checkable="true" />
 
                         </com.google.android.material.chip.ChipGroup>
                     </LinearLayout>
