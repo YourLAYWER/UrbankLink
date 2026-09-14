@@ -176,7 +176,11 @@
                                 android:layout_height="wrap_content"
                                 android:text="Engine Trouble"
                                 android:checkable="true"
-                                android:checked="true" />
+                                android:checked="true"
+                                android:textColor="@color/chip_text_color"
+                                app:chipBackgroundColor="@color/chip_bg_color"
+                                app:chipStrokeColor="@color/chip_stroke_color"
+                                app:chipStrokeWidth="1dp"/>
 
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -184,7 +188,11 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Flat Tire"
-                                android:checkable="true" />
+                                android:checkable="true"
+                                android:textColor="@color/chip_text_color"
+                                app:chipBackgroundColor="@color/chip_bg_color"
+                                app:chipStrokeColor="@color/chip_stroke_color"
+                                app:chipStrokeWidth="1dp"/>
 
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -192,7 +200,11 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Scanner Offline"
-                                android:checkable="true" />
+                                android:checkable="true"
+                                android:textColor="@color/chip_text_color"
+                                app:chipBackgroundColor="@color/chip_bg_color"
+                                app:chipStrokeColor="@color/chip_stroke_color"
+                                app:chipStrokeWidth="1dp"/>
 
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -200,7 +212,11 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Medical Event"
-                                android:checkable="true" />
+                                android:checkable="true"
+                                android:textColor="@color/chip_text_color"
+                                app:chipBackgroundColor="@color/chip_bg_color"
+                                app:chipStrokeColor="@color/chip_stroke_color"
+                                app:chipStrokeWidth="1dp"/>
 
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -208,7 +224,11 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Passenger Dispute"
-                                android:checkable="true" />
+                                android:checkable="true"
+                                android:textColor="@color/chip_text_color"
+                                app:chipBackgroundColor="@color/chip_bg_color"
+                                app:chipStrokeColor="@color/chip_stroke_color"
+                                app:chipStrokeWidth="1dp"/>
 
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -216,7 +236,11 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Delay"
-                                android:checkable="true" />
+                                android:checkable="true"
+                                android:textColor="@color/chip_text_color"
+                                app:chipBackgroundColor="@color/chip_bg_color"
+                                app:chipStrokeColor="@color/chip_stroke_color"
+                                app:chipStrokeWidth="1dp"/>
 
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -224,7 +248,11 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Other"
-                                android:checkable="true" />
+                                android:checkable="true"
+                                android:textColor="@color/chip_text_color"
+                                app:chipBackgroundColor="@color/chip_bg_color"
+                                app:chipStrokeColor="@color/chip_stroke_color"
+                                app:chipStrokeWidth="1dp"/>
 
                         </com.google.android.material.chip.ChipGroup>
                     </LinearLayout>
