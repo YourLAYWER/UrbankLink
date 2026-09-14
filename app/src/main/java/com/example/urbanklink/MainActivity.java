@@ -196,9 +196,13 @@ public class MainActivity extends AppCompatActivity {
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
-            // Optional: Move camera to the user's last known location immediately
+            // First, center immediately on Gqeberha as a clean default view so it never shows all of Africa
+            LatLng gqeberhaDefault = new LatLng(-33.9608, 25.6022);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(gqeberhaDefault, 30f));
+
+            // Then, animate to the user's actual GPS coordinates once retrieved
             fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
-                if (location != null) {
+                if (location != null && mMap != null) {
                     LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f));
                 }
