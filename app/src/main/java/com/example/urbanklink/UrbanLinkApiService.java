@@ -2,6 +2,7 @@ package com.example.urbanklink;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -63,4 +64,10 @@ interface UrbanLinkApiService {
 
     @POST("api/ConductorShift/end")
     Call<EndShiftResponse> endShift(@Header("Authorization") String token);
+
+    @POST("api/incident/report")
+    Call<ResponseBody> logIncident(
+            @Header("Authorization") String token,
+            @Body IncidentReportRequest request
+    );
 }

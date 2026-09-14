@@ -170,6 +170,7 @@
                             <!-- Selected State Example (Engine Trouble) -->
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
+                                android:id="@+id/chipEngine"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Engine Trouble"
@@ -182,6 +183,7 @@
                             <!-- Unselected States -->
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
+                                android:id="@+id/chipTire"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Flat Tire"
@@ -192,6 +194,7 @@
 
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
+                                android:id="@+id/chipScanner"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Scanner Offline"
@@ -202,6 +205,7 @@
 
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
+                                android:id="@+id/chipMedical"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Medical Event"
@@ -212,6 +216,7 @@
 
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
+                                android:id="@+id/chipDispute"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Passenger Dispute"
@@ -223,6 +228,7 @@
                             <!-- NEWLY ADDED CHIPS -->
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
+                                android:id="@+id/chipDelay"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Delay"
@@ -233,6 +239,7 @@
 
                             <com.google.android.material.chip.Chip
                                 style="@style/Widget.MaterialComponents.Chip.Choice"
+                                android:id="@+id/chipOther"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Other"
@@ -248,65 +255,51 @@
                 <!-- ========================================== -->
                 <!-- 4. DETAILS CARD                            -->
                 <!-- ========================================== -->
+                <!-- DETAILS CARD -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    app:cardBackgroundColor="#1A1A1A"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="#1A2222"
                     app:cardCornerRadius="12dp"
-                    app:strokeColor="#2A2A2A"
+                    app:strokeColor="#333333"
                     app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="20dp">
+                        android:padding="16dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
                             android:text="Details"
-                            android:textColor="#E0E0E0"
-                            android:textSize="18sp"
-                            android:layout_marginBottom="12dp" />
+                            android:textColor="#FFFFFF"
+                            android:textSize="16sp" />
 
-                        <!-- Custom Text Input Box with Mic Icon -->
-                        <androidx.constraintlayout.widget.ConstraintLayout
+                        <!-- Text Input with Mic Icon -->
+                        <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
-                            android:layout_height="140dp"
-                            android:background="@drawable/bg_bottom_sheet_rounded"
-                            android:backgroundTint="#121212">
+                            android:layout_height="wrap_content"
+                            app:boxBackgroundColor="#121212"
+                            app:boxStrokeColor="#333333"
+                            app:endIconDrawable="@android:drawable/ic_btn_speak_now"
+                            app:endIconMode="custom"
+                            app:endIconTint="#00E5FF"
+                            app:hintEnabled="false">
 
-                            <EditText
-                                android:id="@+id/etIncidentDetails"
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/inputDetails"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:background="@android:color/transparent"
+                                android:layout_height="wrap_content"
                                 android:gravity="top|start"
                                 android:hint="Add brief details (optional)..."
-                                android:padding="16dp"
+                                android:lines="4"
                                 android:textColor="#FFFFFF"
-                                android:textColorHint="#666666"
-                                android:textSize="14sp" />
-
-                            <!-- Microphone Icon -->
-                            <ImageView
-                                android:id="@+id/btnVoiceDictation"
-                                android:layout_width="36dp"
-                                android:layout_height="36dp"
-                                android:layout_marginEnd="12dp"
-                                android:layout_marginBottom="12dp"
-                                android:background="@drawable/bg_circle_dark"
-                                android:backgroundTint="#2A2A2A"
-                                android:padding="8dp"
-                                android:src="@android:drawable/ic_btn_speak_now"
-                                app:tint="#A0A0A0"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent" />
-
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
+                                android:textColorHint="#666666" />
+                        </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
