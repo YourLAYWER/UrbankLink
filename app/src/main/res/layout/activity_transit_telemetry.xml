@@ -286,6 +286,7 @@
                         android:textSize="10sp" />
 
                     <TextView
+                        android:id="@+id/txtPrevName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Peace Stop"
@@ -367,6 +368,7 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/txtCurrentName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
@@ -377,6 +379,7 @@
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnArrived"
                     android:layout_width="160dp"
                     android:layout_height="64dp"
                     android:layout_marginEnd="16dp"
@@ -462,6 +465,7 @@
                         android:textSize="10sp" />
 
                     <TextView
+                        android:id="@+id/txtNextName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Glove Stop"
@@ -481,6 +485,7 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
+                        android:id="@+id/txtNextPax"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="12dp"

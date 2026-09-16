@@ -13,6 +13,10 @@ android {
         }
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.example.urbanklink"
         minSdk = 29
@@ -24,17 +28,29 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Local machine testing (10.0.2.2 points to host PC from emulator)
+            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:5000/\"")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // University production server configuration
+            buildConfigField("String", "BASE_URL", "\"https://urbanlink-api.mandela.ac.za/\"")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    // Required to generate the BuildConfig class for BASE_URL switching
+    buildFeatures {
+        buildConfig = true
     }
 }
 
@@ -47,7 +63,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    // Use the matching 3.0.0 version for both core and converter
+
+    // Retrofit & OkHttp
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
     implementation("com.squareup.retrofit2:converter-gson:3.0.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
@@ -64,7 +81,6 @@ dependencies {
     implementation("com.google.maps.android:android-maps-utils:3.8.2")
 
     // CameraX core library using the camera2 implementation
-    // CameraX core library using the camera2 implementation
     val camerax_version = "1.3.0"
     implementation("androidx.camera:camera-core:$camerax_version")
     implementation("androidx.camera:camera-camera2:$camerax_version")
@@ -72,5 +88,11 @@ dependencies {
     implementation("androidx.camera:camera-view:$camerax_version")
 
     // Google ML Kit for Barcode Scanning
-    implementation("com.google.mlkit:barcode-scanning:17.3.0") // (Updated to latest 17.3.0)
+    implementation("com.google.mlkit:barcode-scanning:17.3.0")
+
+    // Microsoft SignalR Client WebSockets
+    implementation("com.microsoft.signalr:signalr:7.0.0")
+
+    // Gson for parsing server payloads
+    implementation("com.google.code.gson:gson:2.10.1")
 }
