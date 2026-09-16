@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- A massive radius ensures the ends are always perfectly round capsules -->
+    <corners android:radius="100dp" />
+
+    <!-- Solid white base so backgroundTint works perfectly in your layout -->
+    <solid android:color="#FFFFFF" />
+</shape>
