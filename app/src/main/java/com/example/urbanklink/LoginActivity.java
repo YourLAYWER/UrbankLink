@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (role != null && role.equalsIgnoreCase("Conductor")) {
                         intent = new Intent(LoginActivity.this, ShiftStartActivity.class);
                     } else if (role != null && role.equalsIgnoreCase("Driver")) {
-                        intent = new Intent(LoginActivity.this, TransitTelemetry.class);
+                        intent = new Intent(LoginActivity.this, ShiftStartActivity.class);
                     } else {
                         // Default to Commuter Dashboard
                         intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -128,14 +128,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     // --- Helper Method to Save the Token securely ---
-    private void saveTokenToPrefs(String token) {
-        SharedPreferences sharedPreferences = getSharedPreferences("UrbanLinkPrefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("JWT_TOKEN", token);
-        editor.putString("USER_ROLE", token);
-        editor.apply(); // .apply() saves asynchronously in the background
-    }
-
     private void saveAuthDataToPrefs(String token, String role) {
         SharedPreferences sharedPreferences = getSharedPreferences("UrbanLinkPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();

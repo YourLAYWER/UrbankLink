@@ -193,7 +193,7 @@ public class ShiftStartActivity extends AppCompatActivity {
 
     private void startConductorShift(int busId, int routeId) {
         StartShiftRequest request = new StartShiftRequest(busId, routeId);
-        UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+        UrbanLinkApiService apiService = ApiClient.getClient(ShiftStartActivity.this).create(UrbanLinkApiService.class);
 
         apiService.startShift(request).enqueue(new Callback<StartShiftResponse>() {
             @Override
@@ -205,8 +205,18 @@ public class ShiftStartActivity extends AppCompatActivity {
 
                     Toast.makeText(ShiftStartActivity.this, "Shift Started Successfully!", Toast.LENGTH_SHORT).show();
 
-                    // 2. Navigate to the Scanner Dashboard
-                    Intent intent = new Intent(ShiftStartActivity.this, ScannerActivity.class);
+                    // 2. Retrieve the role stored during the login process (e.g., "Driver" or "Conductor")
+                    String userRole = prefs.getString("USER_ROLE", "Conductor"); // Defaults to Conductor if not found
+
+                    Intent intent;
+
+                    if ("Driver".equalsIgnoreCase(userRole)) {
+                        // Drivers go straight to the real-time non-scrolling tablet dashboard
+                        intent = new Intent(ShiftStartActivity.this, TransitTelemetry.class);
+                    } else {
+                        // Conductors go to the Zebra handheld ticket scanning interface
+                        intent = new Intent(ShiftStartActivity.this, ScannerActivity.class);
+                    }
                     startActivity(intent);
                     finish(); // Close this setup screen so they can't press 'Back' to return to it
                 } else {

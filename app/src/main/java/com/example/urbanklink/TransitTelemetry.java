@@ -1,5 +1,6 @@
 package com.example.urbanklink;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -49,6 +50,11 @@ public class TransitTelemetry extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_transit_telemetry);
+
+        // Inside TransitTelemetry.java, instead of a hardcoded "1":
+        SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
+        int activeShiftId = prefs.getInt("ACTIVE_SHIFT_ID", -1);
+        String currentShiftId = String.valueOf(activeShiftId);
 
         initializeViews();
         setupListeners();
