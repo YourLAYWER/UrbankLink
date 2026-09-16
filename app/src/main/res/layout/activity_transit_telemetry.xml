@@ -33,7 +33,7 @@
                 android:gravity="center"
                 android:orientation="vertical"
                 android:layout_marginBottom="8dp">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_crop" app:tint="#A0A0A0" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_scan" app:tint="#A0A0A0" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="SCAN" android:textColor="#A0A0A0" android:textSize="10sp" android:textStyle="bold" />
             </LinearLayout>
 
@@ -46,7 +46,7 @@
                 android:gravity="center"
                 android:orientation="vertical"
                 android:layout_marginBottom="8dp">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_camera" app:tint="#A0A0A0" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_cash" app:tint="#A0A0A0" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="CASH" android:textColor="#A0A0A0" android:textSize="10sp" android:textStyle="bold" />
             </LinearLayout>
 
@@ -79,7 +79,7 @@
                 android:gravity="center"
                 android:orientation="vertical"
                 android:layout_marginBottom="8dp">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_recent_history" app:tint="#A0A0A0" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_time" app:tint="#A0A0A0" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="SHIFT" android:textColor="#A0A0A0" android:textSize="10sp" android:textStyle="bold" />
             </LinearLayout>
 
@@ -91,7 +91,7 @@
                 android:backgroundTint="#1A1B22"
                 android:gravity="center"
                 android:orientation="vertical">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_dialog_alert" app:tint="#A0A0A0" />
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_alert" app:tint="#A0A0A0" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="REPORT" android:textColor="#A0A0A0" android:textSize="10sp" android:textStyle="bold" />
             </LinearLayout>
 
@@ -276,7 +276,7 @@
                     android:background="@drawable/bg_circle_dark"
                     android:backgroundTint="#1A1B22"
                     android:padding="6dp"
-                    android:src="@android:drawable/ic_menu_agenda"
+                    android:src="@drawable/ic_past"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -400,7 +400,7 @@
                     android:textStyle="bold"
                     app:backgroundTint="#00E5FF"
                     app:cornerRadius="12dp"
-                    app:icon="@android:drawable/ic_menu_revert"
+                    app:icon="@drawable/ic_open"
                     app:iconTint="#0A0B10"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
