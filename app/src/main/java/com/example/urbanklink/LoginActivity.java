@@ -102,6 +102,8 @@ public class LoginActivity extends AppCompatActivity {
                     // Route the user based on their role
                     if (role != null && role.equalsIgnoreCase("Conductor")) {
                         intent = new Intent(LoginActivity.this, ShiftStartActivity.class);
+                    } else if (role != null && role.equalsIgnoreCase("Driver")) {
+                        intent = new Intent(LoginActivity.this, TransitTelemetry.class);
                     } else {
                         // Default to Commuter Dashboard
                         intent = new Intent(LoginActivity.this, MainActivity.class);

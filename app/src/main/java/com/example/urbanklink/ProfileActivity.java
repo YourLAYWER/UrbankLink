@@ -154,4 +154,6 @@ public class ProfileActivity extends AppCompatActivity {
         // Make "Cancel" a subtle grey so it doesn't compete for attention
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor("#A0A0A0"));
     }
+
+
 }

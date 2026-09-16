@@ -163,21 +163,7 @@
             </LinearLayout>
 
             <!-- Central UrbanLink Logo -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/shiftCard"
-                app:layout_constraintStart_toEndOf="@id/busTag"
-                app:layout_constraintTop_toTopOf="parent">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_compass" app:tint="#00E5FF" />
-                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:orientation="vertical">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="URBANLINK" android:textColor="#00E5FF" android:textSize="14sp" android:textStyle="bold" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TRANSIT OS · TELEMETRY" android:textColor="#008899" android:textSize="8sp" />
-                </LinearLayout>
-            </LinearLayout>
+
 
             <!-- Shift Hours -->
             <LinearLayout

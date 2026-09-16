@@ -122,8 +122,6 @@ public class RegistrationActivity extends AppCompatActivity {
         registerUserWithBackend(fullName, email, password);
     }
 
-
-
     private void registerUserWithBackend(String fullName, String email, String password) {
         // Disable the button so the user doesn't spam the API
         btnRegister.setText("Registering...");
@@ -148,13 +146,13 @@ public class RegistrationActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     // 4. Registration successful!
                     // If your API automatically logs the user in and returns a token upon registration:
-                    String token = response.body().getToken();
-                    saveTokenToPrefs(token); // (Assuming you have this helper method here too)
+                    //String token = response.body().getToken();
+                    //saveTokenToPrefs(token); // (Assuming you have this helper method here too)
 
                     Toast.makeText(RegistrationActivity.this, "Account created successfully!", Toast.LENGTH_SHORT).show();
 
                     // 5. Navigate straight to the dashboard
-                    Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
+                    Intent intent = new Intent(RegistrationActivity.this, LoginActivity.class);
                     startActivity(intent);
 
                     // Close the RegistrationActivity
