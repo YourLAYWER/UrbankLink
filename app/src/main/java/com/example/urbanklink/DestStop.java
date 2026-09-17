@@ -1,10 +1,19 @@
 package com.example.urbanklink;
 
+import com.google.gson.annotations.SerializedName;
+
 public class DestStop {
 
+    @SerializedName("Name")
     private String name;
+
+    @SerializedName("SequenceNumber")
     private int sequenceNumber;
+
+    @SerializedName("PassengersDroppingOff")
     private int passengersDroppingOff;
+
+    @SerializedName("Status")
     private String status;
 
     // Getters and Setters
