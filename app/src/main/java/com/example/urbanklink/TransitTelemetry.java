@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,11 +73,11 @@ public class TransitTelemetry extends AppCompatActivity {
         // For demonstration, assuming text views are accessed or updated via container logic.
         //btnArrived = findViewById(R.id.btnSOS); // Or map to your "ARRIVED!" button inside cardCurrentStop
 
-        // Bind card text views
-        txtPrevName = cardPreviousStop.findViewById(R.id.txtPrevName);
-        txtCurrentName = cardCurrentStop.findViewById(R.id.txtCurrentName);
-        txtNextName = cardNextStop.findViewById(R.id.txtNextName);
-        txtNextPax = cardNextStop.findViewById(R.id.txtNextPax);
+        // Bind text views directly from the activity's layout hierarchy
+        txtPrevName = findViewById(R.id.txtPrevName);
+        txtCurrentName = findViewById(R.id.txtCurrentName);
+        txtNextName = findViewById(R.id.txtNextName);
+        txtNextPax = findViewById(R.id.txtNextPax);
 
         // Bind the actual ARRIVED button inside the current stop card
         btnArrived = cardCurrentStop.findViewById(R.id.btnArrived);
@@ -108,6 +109,7 @@ public class TransitTelemetry extends AppCompatActivity {
 
                     updateQueueData(freshQueue);
                 } catch (Exception e) {
+                    Log.e("UI_Crash_Debug", "Failed to update UI: " + e.getMessage(), e); // <-- Add this
                     Toast.makeText(this, "Error syncing route queue", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -127,20 +129,108 @@ public class TransitTelemetry extends AppCompatActivity {
         }).start();
     }
 
+//    private void updateQueueData(List<DestStop> newServerQueue) {
+//        upcomingStopsQueue.clear();
+//        upcomingStopsQueue.addAll(newServerQueue);
+//
+//        // If current stop is empty, pull initial items
+//        if (currentStop == null && !upcomingStopsQueue.isEmpty()) {
+//            currentStop = upcomingStopsQueue.poll();
+//        }
+//        if (nextStop == null && !upcomingStopsQueue.isEmpty()) {
+//            nextStop = upcomingStopsQueue.poll();
+//        }
+//
+//        refreshUIState();
+//    }
+
+//    private void updateQueueData(List<DestStop> newServerQueue) {
+//        if (newServerQueue == null || newServerQueue.isEmpty()) {
+//            return;
+//        }
+//
+//        // The server sends the complete ordered queue of pending stops.
+//        // Let's map them safely to our 3 visual driver cards:
+//
+//        // 1. If we don't have a current stop yet, grab the first one from the server
+//        if (currentStop == null) {
+//            currentStop = newServerQueue.get(0);
+//
+//            if (newServerQueue.size() > 1) {
+//                nextStop = newServerQueue.get(1);
+//            }
+//        } else {
+//            // If we already have a current stop active, check if the server queue
+//            // still contains our current stop or if we should sync up with the server's head
+//            // (We preserve currentStop until the driver taps "ARRIVED!")
+//
+//            // Find where our currentStop is in the new server list, or update nextStop dynamically
+//            boolean foundCurrent = false;
+//            for (int i = 0; i < newServerQueue.size(); i++) {
+//                DestStop stop = newServerQueue.get(i);
+//                if (stop.getName().equals(currentStop.getName())) {
+//                    foundCurrent = true;
+//                    // Look ahead to see if there's a next stop in the fresh list
+//                    if (i + 1 < newServerQueue.size()) {
+//                        nextStop = newServerQueue.get(i + 1);
+//                    } else {
+//                        nextStop = null;
+//                    }
+//                    break;
+//                }
+//            }
+//
+//            // If the current stop was completely cleared or isn't in the list anymore, advance to head
+//            if (!foundCurrent && !newServerQueue.isEmpty()) {
+//                currentStop = newServerQueue.get(0);
+//                nextStop = newServerQueue.size() > 1 ? newServerQueue.get(1) : null;
+//            }
+//        }
+//
+//        // Redraw the UI cards with the fresh synchronized data
+//        runOnUiThread(this::refreshUIState);
+//    }
+
     private void updateQueueData(List<DestStop> newServerQueue) {
-        upcomingStopsQueue.clear();
-        upcomingStopsQueue.addAll(newServerQueue);
-
-        // If current stop is empty, pull initial items
-        if (currentStop == null && !upcomingStopsQueue.isEmpty()) {
-            currentStop = upcomingStopsQueue.poll();
-        }
-        if (nextStop == null && !upcomingStopsQueue.isEmpty()) {
-            nextStop = upcomingStopsQueue.poll();
+        if (newServerQueue == null || newServerQueue.isEmpty()) {
+            Log.d("SignalR_Test", "Received empty queue from server.");
+            return;
         }
 
-        refreshUIState();
+        Log.d("SignalR_Test", "Updating queue data with " + newServerQueue.size() + " stops.");
+
+        // 1. If we don't have a current stop yet, set it to the first item safely
+        if (currentStop == null) {
+            currentStop = newServerQueue.get(0);
+        }
+
+        // 2. Find the index of our current stop in the fresh server list safely
+        int currentIndex = -1;
+        for (int i = 0; i < newServerQueue.size(); i++) {
+            DestStop stop = newServerQueue.get(i);
+            // Null-safe comparison using Objects.equals or checking for null first
+            if (stop != null && stop.getName() != null && currentStop != null && stop.getName().equals(currentStop.getName())) {
+                currentIndex = i;
+                break;
+            }
+        }
+
+        // 3. Update nextStop based on the index position
+        if (currentIndex != -1 && currentIndex + 1 < newServerQueue.size()) {
+            nextStop = newServerQueue.get(currentIndex + 1);
+        } else if (currentIndex == -1 && !newServerQueue.isEmpty()) {
+            // Fallback: take the head of the queue
+            currentStop = newServerQueue.get(0);
+            nextStop = newServerQueue.size() > 1 ? newServerQueue.get(1) : null;
+        } else {
+            nextStop = null;
+        }
+
+        // 4. Force UI refresh on the main thread immediately
+        runOnUiThread(this::refreshUIState);
     }
+
+
 
     private void animateRouteProgression() {
         // 1. Shift data states forward
