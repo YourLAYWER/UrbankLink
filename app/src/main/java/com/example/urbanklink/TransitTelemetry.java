@@ -27,6 +27,7 @@ import com.microsoft.signalr.HubConnectionBuilder;
 import com.microsoft.signalr.HubConnectionState;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -39,14 +40,17 @@ public class TransitTelemetry extends AppCompatActivity {
     private MaterialButton btnArrived;
 
     // Real-time Queue state
-    private final Queue<DestStop> upcomingStopsQueue = new LinkedList<>();
+    private List<DestStop> cachedServerQueue = new ArrayList<>();
     private DestStop previousStop, currentStop, nextStop;
+
+    private int currentQueueIndex = 0;
 
     // SignalR Hub Connection
     private HubConnection hubConnection;
-    private final String currentShiftId = "1"; // Replace with dynamically resolved shift ID from login token
     private final Gson gson = new Gson();
     private int activeBusId;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +61,9 @@ public class TransitTelemetry extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
         int activeShiftId = prefs.getInt("ACTIVE_SHIFT_ID", -1);
         activeBusId = prefs.getInt("ACTIVE_BUS_ID", -1);
-        String currentShiftId = String.valueOf(activeShiftId);
+
+        // Debug log to verify if preferences are loading correctly
+        Log.d("BusDebug", "Active Shift ID: " + activeShiftId + ", Active Bus ID: " + activeBusId);
 
         initializeViews();
         setupListeners();
@@ -69,38 +75,32 @@ public class TransitTelemetry extends AppCompatActivity {
         cardCurrentStop = findViewById(R.id.cardCurrentStop);
         cardNextStop = findViewById(R.id.cardNextStop);
 
-        // Note: You can add specific IDs to the text views inside your cards in XML to reference them directly.
-        // For demonstration, assuming text views are accessed or updated via container logic.
-        //btnArrived = findViewById(R.id.btnSOS); // Or map to your "ARRIVED!" button inside cardCurrentStop
-
-        // Bind text views directly from the activity's layout hierarchy
+        // Bind text views using root findViewById so they are never null
         txtPrevName = findViewById(R.id.txtPrevName);
         txtCurrentName = findViewById(R.id.txtCurrentName);
         txtNextName = findViewById(R.id.txtNextName);
         txtNextPax = findViewById(R.id.txtNextPax);
 
-        // Bind the actual ARRIVED button inside the current stop card
+        // Bind the ARRIVED button inside the current stop card container
         btnArrived = cardCurrentStop.findViewById(R.id.btnArrived);
     }
 
     private void setupListeners() {
-        // Driver taps "ARRIVED!" to manually progress or trigger the 10-second timer cycle
+        // Driver taps "ARRIVED!" to progress to the next stop in sequence
         btnArrived.setOnClickListener(v -> {
             btnArrived.setEnabled(false);
             btnArrived.setText("CLEARING...");
 
-            // Trigger animation and data shift after clearing
-            cardCurrentStop.postDelayed(this::animateRouteProgression, 1000);
+            // Trigger animation and data shift
+            cardCurrentStop.postDelayed(this::animateRouteProgression, 500);
         });
     }
 
     private void connectSignalR() {
-        // Automatically switches between localhost (debug) and university server (release) via BuildConfig
         String hubUrl = BuildConfig.BASE_URL + "transithub";
-
         hubConnection = HubConnectionBuilder.create(hubUrl).build();
 
-        // Listen for the distributed observer event pushed from the backend
+        // Listen for live queue broadcasts from the backend
         hubConnection.on("QueueUpdated", (queueJson) -> {
             runOnUiThread(() -> {
                 try {
@@ -109,134 +109,92 @@ public class TransitTelemetry extends AppCompatActivity {
 
                     updateQueueData(freshQueue);
                 } catch (Exception e) {
-                    Log.e("UI_Crash_Debug", "Failed to update UI: " + e.getMessage(), e); // <-- Add this
+                    Log.e("SignalR_Error", "Failed to parse queue: " + e.getMessage(), e);
                     Toast.makeText(this, "Error syncing route queue", Toast.LENGTH_SHORT).show();
                 }
             });
         }, String.class);
 
-        // Use the bus ID for SignalI group connection
-        String busGroupKey = String.valueOf(activeBusId);
-        // Start connection on a background thread
         new Thread(() -> {
             try {
                 hubConnection.start().blockingAwait();
-                // Correct method for calling a hub function without a return value
                 hubConnection.send("JoinBusGroup", String.valueOf(activeBusId));
+                Log.d("SignalR_Test", "Connected and joined group for bus: " + activeBusId);
             } catch (Exception e) {
                 runOnUiThread(() -> Toast.makeText(this, "Real-time sync offline", Toast.LENGTH_SHORT).show());
             }
         }).start();
     }
 
-//    private void updateQueueData(List<DestStop> newServerQueue) {
-//        upcomingStopsQueue.clear();
-//        upcomingStopsQueue.addAll(newServerQueue);
-//
-//        // If current stop is empty, pull initial items
-//        if (currentStop == null && !upcomingStopsQueue.isEmpty()) {
-//            currentStop = upcomingStopsQueue.poll();
-//        }
-//        if (nextStop == null && !upcomingStopsQueue.isEmpty()) {
-//            nextStop = upcomingStopsQueue.poll();
-//        }
-//
-//        refreshUIState();
-//    }
-
-//    private void updateQueueData(List<DestStop> newServerQueue) {
-//        if (newServerQueue == null || newServerQueue.isEmpty()) {
-//            return;
-//        }
-//
-//        // The server sends the complete ordered queue of pending stops.
-//        // Let's map them safely to our 3 visual driver cards:
-//
-//        // 1. If we don't have a current stop yet, grab the first one from the server
-//        if (currentStop == null) {
-//            currentStop = newServerQueue.get(0);
-//
-//            if (newServerQueue.size() > 1) {
-//                nextStop = newServerQueue.get(1);
-//            }
-//        } else {
-//            // If we already have a current stop active, check if the server queue
-//            // still contains our current stop or if we should sync up with the server's head
-//            // (We preserve currentStop until the driver taps "ARRIVED!")
-//
-//            // Find where our currentStop is in the new server list, or update nextStop dynamically
-//            boolean foundCurrent = false;
-//            for (int i = 0; i < newServerQueue.size(); i++) {
-//                DestStop stop = newServerQueue.get(i);
-//                if (stop.getName().equals(currentStop.getName())) {
-//                    foundCurrent = true;
-//                    // Look ahead to see if there's a next stop in the fresh list
-//                    if (i + 1 < newServerQueue.size()) {
-//                        nextStop = newServerQueue.get(i + 1);
-//                    } else {
-//                        nextStop = null;
-//                    }
-//                    break;
-//                }
-//            }
-//
-//            // If the current stop was completely cleared or isn't in the list anymore, advance to head
-//            if (!foundCurrent && !newServerQueue.isEmpty()) {
-//                currentStop = newServerQueue.get(0);
-//                nextStop = newServerQueue.size() > 1 ? newServerQueue.get(1) : null;
-//            }
-//        }
-//
-//        // Redraw the UI cards with the fresh synchronized data
-//        runOnUiThread(this::refreshUIState);
-//    }
-
     private void updateQueueData(List<DestStop> newServerQueue) {
         if (newServerQueue == null || newServerQueue.isEmpty()) {
-            Log.d("SignalR_Test", "Received empty queue from server.");
             return;
         }
 
-        Log.d("SignalR_Test", "Updating queue data with " + newServerQueue.size() + " stops.");
+        // 1. Cache the fresh server list
+        cachedServerQueue = newServerQueue;
 
-        // 1. If we don't have a current stop yet, set it to the first item safely
-        if (currentStop == null) {
-            currentStop = newServerQueue.get(0);
-        }
-
-        // 2. Find the index of our current stop in the fresh server list safely
-        int currentIndex = -1;
-        for (int i = 0; i < newServerQueue.size(); i++) {
-            DestStop stop = newServerQueue.get(i);
-            // Null-safe comparison using Objects.equals or checking for null first
-            if (stop != null && stop.getName() != null && currentStop != null && stop.getName().equals(currentStop.getName())) {
-                currentIndex = i;
-                break;
+        // 2. Re-align position or initialize if first load
+        if (txtCurrentName.getText().toString().equals("BOARDWALK 1") && currentQueueIndex == 0 && cachedServerQueue.size() > 0) {
+            // Keep index 0 on startup
+        } else if (currentStopNameIsSet()) {
+            boolean found = false;
+            String activeName = txtCurrentName.getText().toString();
+            for (int i = 0; i < cachedServerQueue.size(); i++) {
+                if (cachedServerQueue.get(i).getName() != null && cachedServerQueue.get(i).getName().equalsIgnoreCase(activeName)) {
+                    currentQueueIndex = i;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found && currentQueueIndex >= cachedServerQueue.size()) {
+                currentQueueIndex = Math.max(0, cachedServerQueue.size() - 1);
             }
         }
 
-        // 3. Update nextStop based on the index position
-        if (currentIndex != -1 && currentIndex + 1 < newServerQueue.size()) {
-            nextStop = newServerQueue.get(currentIndex + 1);
-        } else if (currentIndex == -1 && !newServerQueue.isEmpty()) {
-            // Fallback: take the head of the queue
-            currentStop = newServerQueue.get(0);
-            nextStop = newServerQueue.size() > 1 ? newServerQueue.get(1) : null;
-        } else {
-            nextStop = null;
-        }
-
-        // 4. Force UI refresh on the main thread immediately
-        runOnUiThread(this::refreshUIState);
+        refreshUIState();
     }
 
+    private boolean currentStopNameIsSet() {
+        return txtCurrentName != null && !txtCurrentName.getText().toString().isEmpty();
+    }
 
+    private void refreshUIState() {
+        if (cachedServerQueue.isEmpty()) return;
+
+        // 1. Previous Stop
+        if (currentQueueIndex > 0 && currentQueueIndex - 1 < cachedServerQueue.size()) {
+            cardPreviousStop.setVisibility(View.VISIBLE);
+            DestStop prev = cachedServerQueue.get(currentQueueIndex - 1);
+            txtPrevName.setText(prev.getName() != null ? prev.getName() : "");
+        } else {
+            cardPreviousStop.setVisibility(View.INVISIBLE);
+        }
+
+        // 2. Current Target Stop
+        if (currentQueueIndex < cachedServerQueue.size()) {
+            cardCurrentStop.setVisibility(View.VISIBLE);
+            DestStop current = cachedServerQueue.get(currentQueueIndex);
+            txtCurrentName.setText(current.getName() != null ? current.getName() : "");
+        } else {
+            cardCurrentStop.setVisibility(View.INVISIBLE);
+            txtCurrentName.setText("ROUTE COMPLETE");
+        }
+
+        // 3. Subsequent Stop (Next)
+        if (currentQueueIndex + 1 < cachedServerQueue.size()) {
+            cardNextStop.setVisibility(View.VISIBLE);
+            DestStop next = cachedServerQueue.get(currentQueueIndex + 1);
+            txtNextName.setText(next.getName() != null ? next.getName() : "");
+            txtNextPax.setText("EXPECTED: ~" + next.getPassengersDroppingOff() + " PAX");
+        } else {
+            cardNextStop.setVisibility(View.INVISIBLE);
+        }
+    }
 
     private void animateRouteProgression() {
-        // 1. Shift data states forward
-        previousStop = currentStop;
-        currentStop = nextStop;
-        nextStop = upcomingStopsQueue.poll(); // Pulls the next item from the backend queue
+        // 1. Increment index to move to the next stop in sequence
+        currentQueueIndex++;
 
         int animDuration = 250;
 
@@ -245,10 +203,10 @@ public class TransitTelemetry extends AppCompatActivity {
         cardCurrentStop.animate().translationY(-40f).alpha(0f).setDuration(animDuration);
         cardNextStop.animate().translationY(-40f).alpha(0f).setDuration(animDuration).withEndAction(() -> {
 
-            // 3. Update Text Content mid-animation
+            // 3. Update Text Content mid-animation via index re-evaluation
             refreshUIState();
 
-            // 4. Reset vertical offsets below center
+            // 4. Reset vertical offsets
             cardPreviousStop.setTranslationY(40f);
             cardCurrentStop.setTranslationY(40f);
             cardNextStop.setTranslationY(40f);
@@ -257,7 +215,7 @@ public class TransitTelemetry extends AppCompatActivity {
             cardPreviousStop.animate().translationY(0f).alpha(1f).setDuration(animDuration);
             cardCurrentStop.animate().translationY(0f).alpha(1f).setDuration(animDuration);
 
-            if (nextStop != null) {
+            if (currentQueueIndex + 1 < cachedServerQueue.size()) {
                 cardNextStop.setVisibility(View.VISIBLE);
                 cardNextStop.animate().translationY(0f).alpha(1f).setDuration(animDuration);
             } else {
@@ -268,34 +226,6 @@ public class TransitTelemetry extends AppCompatActivity {
             btnArrived.setEnabled(true);
             btnArrived.setText("ARRIVED!");
         });
-    }
-
-    private void refreshUIState() {
-        // 1. Previous Stop
-        if (previousStop != null) {
-            cardPreviousStop.setVisibility(View.VISIBLE);
-            txtPrevName.setText(previousStop.getName());
-        } else {
-            cardPreviousStop.setVisibility(View.INVISIBLE);
-        }
-
-        // 2. Current Target Stop
-        if (currentStop != null) {
-            cardCurrentStop.setVisibility(View.VISIBLE);
-            txtCurrentName.setText(currentStop.getName());
-        } else {
-            cardCurrentStop.setVisibility(View.INVISIBLE);
-            txtCurrentName.setText("ROUTE COMPLETE");
-        }
-
-        // 3. Subsequent Stop
-        if (nextStop != null) {
-            cardNextStop.setVisibility(View.VISIBLE);
-            txtNextName.setText(nextStop.getName());
-            txtNextPax.setText("EXPECTED: ~" + nextStop.getPassengersDroppingOff() + " PAX");
-        } else {
-            cardNextStop.setVisibility(View.INVISIBLE);
-        }
     }
 
     @Override
