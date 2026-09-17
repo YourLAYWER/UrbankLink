@@ -201,7 +201,10 @@ public class ShiftStartActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     // 1. Save the Shift ID securely in SharedPreferences
                     SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
-                    prefs.edit().putInt("ACTIVE_SHIFT_ID", response.body().shiftId).apply();
+                    prefs.edit()
+                            .putInt("ACTIVE_SHIFT_ID", response.body().shiftId)
+                            .putInt("ACTIVE_BUS_ID", selectedBusId) // <-- Save the bus ID here
+                            .apply();
 
                     Toast.makeText(ShiftStartActivity.this, "Shift Started Successfully!", Toast.LENGTH_SHORT).show();
 

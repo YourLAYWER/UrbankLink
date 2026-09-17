@@ -45,6 +45,7 @@ public class TransitTelemetry extends AppCompatActivity {
     private HubConnection hubConnection;
     private final String currentShiftId = "1"; // Replace with dynamically resolved shift ID from login token
     private final Gson gson = new Gson();
+    private int activeBusId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +55,7 @@ public class TransitTelemetry extends AppCompatActivity {
         // Inside TransitTelemetry.java, instead of a hardcoded "1":
         SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
         int activeShiftId = prefs.getInt("ACTIVE_SHIFT_ID", -1);
+        activeBusId = prefs.getInt("ACTIVE_BUS_ID", -1);
         String currentShiftId = String.valueOf(activeShiftId);
 
         initializeViews();
@@ -111,12 +113,14 @@ public class TransitTelemetry extends AppCompatActivity {
             });
         }, String.class);
 
+        // Use the bus ID for SignalI group connection
+        String busGroupKey = String.valueOf(activeBusId);
         // Start connection on a background thread
         new Thread(() -> {
             try {
                 hubConnection.start().blockingAwait();
                 // Correct method for calling a hub function without a return value
-                hubConnection.send("JoinShiftGroup", currentShiftId);
+                hubConnection.send("JoinBusGroup", String.valueOf(activeBusId));
             } catch (Exception e) {
                 runOnUiThread(() -> Toast.makeText(this, "Real-time sync offline", Toast.LENGTH_SHORT).show());
             }
