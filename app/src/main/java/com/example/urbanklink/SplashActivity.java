@@ -42,6 +42,10 @@ public class SplashActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, ScannerActivity.class); // Or your Conductor home
                 startActivity(intent);
                 finish();
+            } else if (role.equalsIgnoreCase("Driver")) {
+                Intent intent = new Intent(this, ScannerTelemetry.class); // Or your Conductor home
+                startActivity(intent);
+                finish();
             } else {
                 // Send them to the standard Passenger dashboard
                 Intent intent = new Intent(this, MainActivity.class);

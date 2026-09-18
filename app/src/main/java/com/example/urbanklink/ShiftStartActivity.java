@@ -64,6 +64,24 @@ public class ShiftStartActivity extends AppCompatActivity {
 
             startConductorShift(selectedBusId, selectedRouteId);
         });
+
+
+        // 1. Initialize the top header (Show back button, hide standard logout button)
+        HeaderUtils.setupHeader(this, true, false);
+
+        // 2. Override the UI Back Button to force a logout instead of a standard finish()
+        android.view.View btnBack = findViewById(R.id.btnHeaderBack);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> performLogout());
+        }
+
+        // 3. Override the physical Android hardware Back Button to also force a logout
+        getOnBackPressedDispatcher().addCallback(this, new androidx.activity.OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                performLogout();
+            }
+        });
     }
 
     private void fetchAvailableBuses() {
@@ -191,6 +209,20 @@ public class ShiftStartActivity extends AppCompatActivity {
         });
     }
 
+    private void performLogout() {
+        // Clear the session data
+        SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", Context.MODE_PRIVATE);
+        prefs.edit().clear().apply();
+
+        Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
+
+        // Route back to Login and clear the backstack
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
     private void startConductorShift(int busId, int routeId) {
         StartShiftRequest request = new StartShiftRequest(busId, routeId);
         UrbanLinkApiService apiService = ApiClient.getClient(ShiftStartActivity.this).create(UrbanLinkApiService.class);
@@ -236,5 +268,8 @@ public class ShiftStartActivity extends AppCompatActivity {
                 Toast.makeText(ShiftStartActivity.this, "API Connection Failed", Toast.LENGTH_SHORT).show();
             }
         });
+
+
+
     }
 }
