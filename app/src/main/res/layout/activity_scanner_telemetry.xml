@@ -12,103 +12,14 @@
         <!-- ========================================== -->
         <!-- 1. LEFT NAVIGATION SIDEBAR                 -->
         <!-- ========================================== -->
-        <LinearLayout
-            android:id="@+id/sideNavRail"
-            android:layout_width="100dp"
-            android:layout_height="0dp"
-            android:background="#12131A"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:paddingVertical="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <!-- Scan (ACTIVE STATE) -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_marginBottom="8dp"
-                app:cardBackgroundColor="#12131A"
-                app:cardCornerRadius="12dp"
-                app:strokeColor="#00E5FF"
-                app:strokeWidth="2dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="vertical">
-                    <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_scan" app:tint="#00E5FF" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="SCAN" android:textColor="#00E5FF" android:textSize="10sp" android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Cash -->
-            <LinearLayout
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:background="@drawable/bg_nav_tab"
-                android:backgroundTint="#1A1B22"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:layout_marginBottom="8dp">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_cash" app:tint="#A0A0A0" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="CASH" android:textColor="#A0A0A0" android:textSize="10sp" android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- Stops -->
-            <LinearLayout
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:background="@drawable/bg_nav_tab"
-                android:backgroundTint="#1A1B22"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:layout_marginBottom="8dp">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_directions" app:tint="#A0A0A0" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="STOPS" android:textColor="#A0A0A0" android:textSize="10sp" android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- Shift -->
-            <LinearLayout
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:background="@drawable/bg_nav_tab"
-                android:backgroundTint="#1A1B22"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:layout_marginBottom="8dp">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_time" app:tint="#A0A0A0" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="SHIFT" android:textColor="#A0A0A0" android:textSize="10sp" android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- Report -->
-            <LinearLayout
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:background="@drawable/bg_nav_tab"
-                android:backgroundTint="#1A1B22"
-                android:gravity="center"
-                android:orientation="vertical">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_alert" app:tint="#A0A0A0" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="REPORT" android:textColor="#A0A0A0" android:textSize="10sp" android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- Spacer -->
-            <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
-
-            <!-- Profile -->
-            <LinearLayout
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:background="@drawable/bg_nav_tab"
-                android:backgroundTint="#1A1B22"
-                android:gravity="center"
-                android:orientation="vertical">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_profile" app:tint="#A0A0A0" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="PROFILE" android:textColor="#A0A0A0" android:textSize="10sp" android:textStyle="bold" />
-            </LinearLayout>
-        </LinearLayout>
+        <include
+        android:id="@+id/sideNavRail"
+        layout="@layout/layout_side_nav"
+        android:layout_width="100dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
         <View
             android:id="@+id/navDivider"

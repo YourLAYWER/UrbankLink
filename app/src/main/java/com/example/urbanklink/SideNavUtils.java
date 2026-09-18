@@ -61,7 +61,13 @@ public class SideNavUtils {
                 if (id == R.id.navTabScan) {
                     intent = new Intent(activity, ScannerTelemetry.class);
                 } else if (id == R.id.navTabStops) {
-                    intent = new Intent(activity, TransitTelemetry.class); // Or whatever your stops screen is named
+                    intent = new Intent(activity, TransitTelemetry.class);
+                } else if (id == R.id.navTabCash) {
+                    // intent = new Intent(activity, QuickSaleActivity.class); // Uncomment when ready
+                } else if (id == R.id.navTabShift) {
+                    // intent = new Intent(activity, ShiftCompleteActivity.class); // Uncomment when ready
+                } else if (id == R.id.navTabReport) {
+                    intent = new Intent(activity, IncidentReportActivity.class);
                 }
                 // Add your other routing destinations here as you build them!
                 // else if (id == R.id.navTabCash) { intent = new Intent(...); }

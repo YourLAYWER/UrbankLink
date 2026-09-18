@@ -13,7 +13,7 @@
         <!-- 1. LEFT NAVIGATION SIDEBAR                 -->
         <!-- ========================================== -->
     <!-- 1. LEFT NAVIGATION SIDEBAR -->
-    <include
+        <include
         android:id="@+id/sideNavRail"
         layout="@layout/layout_side_nav"
         android:layout_width="100dp"

@@ -70,8 +70,6 @@ public class ScannerTelemetry extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_scanner_telemetry);
 
-        SideNavUtils.setupSideNavigation(this, R.id.navTabScan);
-
         // 1. Setup Tablet Side Navigation (Highlights SCAN tab)
         SideNavUtils.setupSideNavigation(this, R.id.navTabScan);
 
