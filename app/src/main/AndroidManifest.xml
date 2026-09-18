@@ -104,10 +104,6 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".scannerTelemetry"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".ScannerTelemetry"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
