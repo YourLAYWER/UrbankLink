@@ -215,7 +215,7 @@ public class ShiftStartActivity extends AppCompatActivity {
 
                     if ("Driver".equalsIgnoreCase(userRole)) {
                         // Drivers go straight to the real-time non-scrolling tablet dashboard
-                        intent = new Intent(ShiftStartActivity.this, TransitTelemetry.class);
+                        intent = new Intent(ShiftStartActivity.this, scannerTelemetry.class);
                     } else {
                         // Conductors go to the Zebra handheld ticket scanning interface
                         intent = new Intent(ShiftStartActivity.this, ScannerActivity.class);
