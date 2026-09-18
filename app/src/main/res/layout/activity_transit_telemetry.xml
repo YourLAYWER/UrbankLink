@@ -32,88 +32,14 @@
         <!-- ========================================== -->
         <!-- 2. TOP STATUS BAR                          -->
         <!-- ========================================== -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/topBar"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            android:background="#0A0B10"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/navDivider"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <!-- Bus Tag -->
-            <LinearLayout
-                android:id="@+id/busTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:background="@drawable/bg_pill"
-                android:backgroundTint="#1A1B22"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="6dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-                <View android:layout_width="8dp" android:layout_height="8dp" android:background="@drawable/bg_circle_dark" android:backgroundTint="#00FF7F" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="BUS #ALGOA-042" android:textColor="#00E5FF" android:textSize="12sp" android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- Route Info -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/busTag"
-                app:layout_constraintTop_toTopOf="parent">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:letterSpacing="0.1" android:text="ROUTE 1 EXPRESS" android:textColor="#888888" android:textSize="10sp" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Downtown → Summerstrand" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- Central UrbanLink Logo -->
-
-
-            <!-- Shift Hours -->
-            <LinearLayout
-                android:id="@+id/shiftCard"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/bg_pill"
-                android:backgroundTint="#1A1B22"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/btnSOS"
-                app:layout_constraintTop_toTopOf="parent">
-                <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@android:drawable/ic_menu_recent_history" app:tint="#A0A0A0" />
-                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:orientation="vertical">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SHIFT HOURS" android:textColor="#888888" android:textSize="8sp" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="02:28 h" android:textColor="#FFFFFF" android:textSize="14sp" android:textStyle="bold" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- SOS Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSOS"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="24dp"
-                android:text="* SOS"
-                android:textColor="#FF4C4C"
-                app:backgroundTint="#1A1111"
-                app:cornerRadius="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:strokeColor="#FF4C4C"
-                app:strokeWidth="1dp" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <include
+        android:id="@+id/topBar"
+        layout="@layout/layout_top_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/navDivider"
+        app:layout_constraintTop_toTopOf="parent" />
 
         <View
             android:id="@+id/topDivider"
@@ -433,54 +359,12 @@
         <!-- ========================================== -->
         <!-- 4. BOTTOM TELEMETRY BAR                    -->
         <!-- ========================================== -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/bottomBar"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:background="#0A0B10"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/navDivider">
-
-            <!-- Capacity Tracker -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginStart="24dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                app:layout_constraintStart_toStartOf="parent">
-                <ImageView android:layout_width="14dp" android:layout_height="14dp" android:src="@android:drawable/ic_menu_myplaces" app:tint="#00E5FF" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="CAPACITY:" android:textColor="#888888" android:textSize="10sp" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="4dp" android:text="38 / 60 PAX" android:textColor="#FFFFFF" android:textSize="10sp" android:textStyle="bold" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="4dp" android:text="(63%)" android:textColor="#888888" android:textSize="10sp" />
-
-                <ProgressBar
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="100dp"
-                    android:layout_height="6dp"
-                    android:layout_marginStart="12dp"
-                    android:max="100"
-                    android:progress="63"
-                    android:progressTint="#00E5FF"
-                    android:progressBackgroundTint="#2A2B33" />
-            </LinearLayout>
-
-            <!-- Connectivity & Temp -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="24dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <View android:layout_width="6dp" android:layout_height="6dp" android:background="@drawable/bg_circle_dark" android:backgroundTint="#00FF7F" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:layout_marginEnd="24dp" android:text="Connected" android:textColor="#888888" android:textSize="10sp" />
-
-                <ImageView android:layout_width="14dp" android:layout_height="14dp" android:src="@android:drawable/ic_menu_info_details" app:tint="#00E5FF" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:text="CABIN 21.5°C" android:textColor="#888888" android:textSize="10sp" />
-            </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <include
+        android:id="@+id/bottomBar"
+        layout="@layout/layout_bottom_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/navDivider" />
     </androidx.constraintlayout.widget.ConstraintLayout>
