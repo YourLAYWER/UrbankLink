@@ -57,6 +57,8 @@ public class TransitTelemetry extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_transit_telemetry);
 
+        SideNavUtils.setupSideNavigation(this, R.id.navTabScan);
+
         // Inside TransitTelemetry.java, instead of a hardcoded "1":
         SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
         int activeShiftId = prefs.getInt("ACTIVE_SHIFT_ID", -1);
