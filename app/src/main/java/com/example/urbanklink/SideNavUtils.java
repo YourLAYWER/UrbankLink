@@ -65,7 +65,7 @@ public class SideNavUtils {
                 } else if (id == R.id.navTabCash) {
                     // intent = new Intent(activity, QuickSaleActivity.class); // Uncomment when ready
                 } else if (id == R.id.navTabShift) {
-                    // intent = new Intent(activity, ShiftCompleteActivity.class); // Uncomment when ready
+                    intent = new Intent(activity, ShiftHandoverTelemetry.class); // Uncomment when ready
                 } else if (id == R.id.navTabReport) {
                     intent = new Intent(activity, IncidentReportActivity.class);
                 }
