@@ -59,7 +59,7 @@ public class SideNavUtils {
                 Intent intent = null;
 
                 if (id == R.id.navTabScan) {
-                    intent = new Intent(activity, scannerTelemetry.class);
+                    intent = new Intent(activity, ScannerTelemetry.class);
                 } else if (id == R.id.navTabStops) {
                     intent = new Intent(activity, TransitTelemetry.class); // Or whatever your stops screen is named
                 }

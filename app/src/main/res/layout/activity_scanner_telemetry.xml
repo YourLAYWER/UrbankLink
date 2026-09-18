@@ -1,676 +1,766 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#0A0B10"
-    android:fitsSystemWindows="true"
-    tools:context=".ScannerActivity">
-
-    <!-- ========================================== -->
-    <!-- 1. LEFT NAVIGATION SIDEBAR                 -->
-    <!-- ========================================== -->
-    <!-- 1. LEFT NAVIGATION SIDEBAR -->
-    <include
-        android:id="@+id/sideNavRail"
-        layout="@layout/layout_side_nav"
-        android:layout_width="100dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:id="@+id/navDivider"
-        android:layout_width="1dp"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#2A2B33"
-        app:layout_constraintStart_toEndOf="@id/sideNavRail" />
-
-    <!-- ========================================== -->
-    <!-- 2. TOP STATUS BAR                          -->
-    <!-- ========================================== -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/topBar"
-        android:layout_width="0dp"
-        android:layout_height="80dp"
         android:background="#0A0B10"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/navDivider"
-        app:layout_constraintTop_toTopOf="parent">
+        android:fitsSystemWindows="true"
+        tools:context=".ScannerTelemetry">
 
-        <!-- Bus Tag -->
+        <!-- ========================================== -->
+        <!-- 1. LEFT NAVIGATION SIDEBAR                 -->
+        <!-- ========================================== -->
         <LinearLayout
-            android:id="@+id/busTag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:background="@drawable/bg_pill"
-            android:backgroundTint="#1A1B22"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-            <View android:layout_width="8dp" android:layout_height="8dp" android:background="@drawable/bg_pill" android:backgroundTint="#00FF7F" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="BUS #ALGOA-042" android:textColor="#00E5FF" android:textSize="12sp" android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- Route Info -->
-        <LinearLayout
-            android:id="@+id/routeInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/busTag"
-            app:layout_constraintTop_toTopOf="parent">
-            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:letterSpacing="0.1" android:text="ROUTE 1 EXPRESS · " android:textColor="#008899" android:textSize="10sp" android:textStyle="bold" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:letterSpacing="0.1" android:text="NEXT: PEACE STOP" android:textColor="#888888" android:textSize="10sp" />
-            </LinearLayout>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Downtown → Summerstrand" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- Telemetry Active Pill -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:background="@drawable/bg_pill"
-            android:backgroundTint="#12131A"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/routeInfo"
-            app:layout_constraintTop_toTopOf="parent">
-            <View android:layout_width="6dp" android:layout_height="6dp" android:background="@drawable/bg_pill" android:backgroundTint="#00E5FF" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="URBANLINK TRANSIT OS · TELEMETRY ACTIVE" android:textColor="#888888" android:textSize="10sp" android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- Shift Hours -->
-        <LinearLayout
-            android:id="@+id/shiftCard"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/bg_pill"
-            android:backgroundTint="#1A1B22"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnSOS"
-            app:layout_constraintTop_toTopOf="parent">
-            <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@android:drawable/ic_menu_recent_history" app:tint="#00E5FF" />
-            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:orientation="vertical">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SHIFT HOURS" android:textColor="#888888" android:textSize="8sp" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="02:28 h" android:textColor="#FFFFFF" android:textSize="14sp" android:textStyle="bold" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- SOS Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSOS"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:text="SOS"
-            android:textColor="#FFFFFF"
-            app:backgroundTint="#FF4C4C"
-            app:cornerRadius="100dp"
-            app:icon="@android:drawable/ic_dialog_alert"
-            app:iconTint="#FFFFFF"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <View
-        android:id="@+id/topDivider"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:background="#2A2B33"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/navDivider"
-        app:layout_constraintTop_toBottomOf="@id/topBar" />
-
-    <!-- ========================================== -->
-    <!-- 3. MAIN SPLIT CONTENT AREA                 -->
-    <!-- ========================================== -->
-
-    <!-- Guideline splitting screen 65% Left / 35% Right -->
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineSplit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.65" />
-
-    <!-- LEFT COLUMN: SCANNER VIEWPORT -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:padding="24dp"
-        app:layout_constraintBottom_toTopOf="@id/bottomDivider"
-        app:layout_constraintEnd_toStartOf="@id/guidelineSplit"
-        app:layout_constraintStart_toEndOf="@id/navDivider"
-        app:layout_constraintTop_toBottomOf="@id/topDivider">
-
-        <!-- Camera Viewport Card -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cameraCard"
-            android:layout_width="0dp"
+            android:id="@+id/sideNavRail"
+            android:layout_width="100dp"
             android:layout_height="0dp"
-            android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="#0D0E15"
-            app:cardCornerRadius="16dp"
-            app:strokeColor="#1A1B22"
-            app:strokeWidth="2dp"
-            app:layout_constraintTop_toTopOf="parent"
+            android:background="#12131A"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingVertical="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/passengerInfoBar">
+            app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+            <!-- Scan (ACTIVE STATE) -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_marginBottom="8dp"
+                app:cardBackgroundColor="#12131A"
+                app:cardCornerRadius="12dp"
+                app:strokeColor="#00E5FF"
+                app:strokeWidth="2dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_scan" app:tint="#00E5FF" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="SCAN" android:textColor="#00E5FF" android:textSize="10sp" android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <!-- Alignment Text & Laser Line -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ALIGN QR CODE WITHIN BOUNDS"
-                    android:textColor="#444444"
-                    android:textSize="12sp"
-                    android:letterSpacing="0.1"
-                    android:layout_marginBottom="40dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+            <!-- Cash -->
+            <LinearLayout
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:background="@drawable/bg_nav_tab"
+                android:backgroundTint="#1A1B22"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_marginBottom="8dp">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_cash" app:tint="#A0A0A0" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="CASH" android:textColor="#A0A0A0" android:textSize="10sp" android:textStyle="bold" />
+            </LinearLayout>
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="4dp"
-                    android:layout_marginHorizontal="64dp"
-                    android:background="#00E5FF"
-                    android:alpha="0.8"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintVertical_bias="0.25" />
+            <!-- Stops -->
+            <LinearLayout
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:background="@drawable/bg_nav_tab"
+                android:backgroundTint="#1A1B22"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_marginBottom="8dp">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_directions" app:tint="#A0A0A0" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="STOPS" android:textColor="#A0A0A0" android:textSize="10sp" android:textStyle="bold" />
+            </LinearLayout>
 
-                <!-- Custom Scanner Brackets (Corners) -->
-                <!-- Top Left -->
-                <View android:layout_width="48dp" android:layout_height="4dp" android:layout_marginStart="32dp" android:layout_marginTop="32dp" android:background="#00E5FF" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
-                <View android:layout_width="4dp" android:layout_height="48dp" android:layout_marginStart="32dp" android:layout_marginTop="32dp" android:background="#00E5FF" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
-                <!-- Top Right -->
-                <View android:layout_width="48dp" android:layout_height="4dp" android:layout_marginEnd="32dp" android:layout_marginTop="32dp" android:background="#00E5FF" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" />
-                <View android:layout_width="4dp" android:layout_height="48dp" android:layout_marginEnd="32dp" android:layout_marginTop="32dp" android:background="#00E5FF" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" />
-                <!-- Bottom Left -->
-                <View android:layout_width="48dp" android:layout_height="4dp" android:layout_marginStart="32dp" android:layout_marginBottom="32dp" android:background="#00E5FF" app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="parent" />
-                <View android:layout_width="4dp" android:layout_height="48dp" android:layout_marginStart="32dp" android:layout_marginBottom="32dp" android:background="#00E5FF" app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="parent" />
-                <!-- Bottom Right -->
-                <View android:layout_width="48dp" android:layout_height="4dp" android:layout_marginEnd="32dp" android:layout_marginBottom="32dp" android:background="#00E5FF" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="parent" />
-                <View android:layout_width="4dp" android:layout_height="48dp" android:layout_marginEnd="32dp" android:layout_marginBottom="32dp" android:background="#00E5FF" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="parent" />
+            <!-- Shift -->
+            <LinearLayout
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:background="@drawable/bg_nav_tab"
+                android:backgroundTint="#1A1B22"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_marginBottom="8dp">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_time" app:tint="#A0A0A0" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="SHIFT" android:textColor="#A0A0A0" android:textSize="10sp" android:textStyle="bold" />
+            </LinearLayout>
 
-                <!-- Success Overlay Panel -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="400dp"
-                    android:layout_height="140dp"
-                    app:cardBackgroundColor="#0A1F16"
-                    app:cardCornerRadius="16dp"
-                    app:strokeColor="#00FF7F"
-                    app:strokeWidth="2dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
+            <!-- Report -->
+            <LinearLayout
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:background="@drawable/bg_nav_tab"
+                android:backgroundTint="#1A1B22"
+                android:gravity="center"
+                android:orientation="vertical">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_alert" app:tint="#A0A0A0" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="REPORT" android:textColor="#A0A0A0" android:textSize="10sp" android:textStyle="bold" />
+            </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical">
+            <!-- Spacer -->
+            <View android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
 
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:src="@android:drawable/ic_dialog_info"
-                            app:tint="#00FF7F"
-                            android:layout_marginBottom="8dp" />
+            <!-- Profile -->
+            <LinearLayout
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:background="@drawable/bg_nav_tab"
+                android:backgroundTint="#1A1B22"
+                android:gravity="center"
+                android:orientation="vertical">
+                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_profile" app:tint="#A0A0A0" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="PROFILE" android:textColor="#A0A0A0" android:textSize="10sp" android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="✓ TICKET VALIDATED"
-                            android:textColor="#00FF7F"
-                            android:textSize="20sp"
-                            android:textStyle="bold"
-                            android:letterSpacing="0.05" />
+        <View
+            android:id="@+id/navDivider"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#2A2B33"
+            app:layout_constraintStart_toEndOf="@id/sideNavRail" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="STANDARD SINGLE · R15.00"
-                            android:textColor="#00E5FF"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Flash Toggle Button -->
-                <ImageView
-                    android:id="@+id/btnToggleFlash"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginTop="8dp"
-                    android:elevation="12dp"
-                    android:background="@drawable/bg_pill"
-                    android:backgroundTint="#1A1B22"
-                    android:padding="12dp"
-                    android:src="@android:drawable/ic_menu_camera"
-                    app:tint="#FFFFFF"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Footer Passenger Info Bar -->
+        <!-- ========================================== -->
+        <!-- 2. TOP STATUS BAR                          -->
+        <!-- ========================================== -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/passengerInfoBar"
+            android:id="@+id/topBar"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_nav_tab"
-            android:backgroundTint="#12131A"
-            android:padding="16dp"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_height="80dp"
+            android:background="#0A0B10"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintStart_toEndOf="@id/navDivider"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/icPass"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+            <!-- Bus Tag -->
+            <LinearLayout
+                android:id="@+id/busTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
                 android:background="@drawable/bg_pill"
-                android:backgroundTint="#003344"
-                android:padding="8dp"
-                android:src="@android:drawable/ic_menu_myplaces"
-                app:tint="#00E5FF"
+                android:backgroundTint="#1A1B22"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:orientation="vertical"
-                app:layout_constraintStart_toEndOf="@id/icPass"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="PASSENGER: ADULT · BOARDWALK 1"
-                    android:textColor="#FFFFFF"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TRIP ID: #URB-84920-ZA"
-                    android:textColor="#888888"
-                    android:textSize="12sp" />
+                app:layout_constraintTop_toTopOf="parent">
+                <View android:layout_width="8dp" android:layout_height="8dp" android:background="@drawable/bg_pill" android:backgroundTint="#00FF7F" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="BUS #ALGOA-042" android:textColor="#00E5FF" android:textSize="12sp" android:textStyle="bold" />
             </LinearLayout>
 
+            <!-- Route Info -->
+            <LinearLayout
+                android:id="@+id/routeInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/busTag"
+                app:layout_constraintTop_toTopOf="parent">
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:letterSpacing="0.1" android:text="ROUTE 1 EXPRESS · " android:textColor="#008899" android:textSize="10sp" android:textStyle="bold" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:letterSpacing="0.1" android:text="NEXT: PEACE STOP" android:textColor="#888888" android:textSize="10sp" />
+                </LinearLayout>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Downtown → Summerstrand" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Telemetry Active Pill -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="end"
+                android:layout_marginStart="32dp"
+                android:background="@drawable/bg_pill"
+                android:backgroundTint="#12131A"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/routeInfo"
+                app:layout_constraintTop_toTopOf="parent">
+                <View android:layout_width="6dp" android:layout_height="6dp" android:background="@drawable/bg_pill" android:backgroundTint="#00E5FF" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="URBANLINK TRANSIT OS · TELEMETRY ACTIVE" android:textColor="#888888" android:textSize="10sp" android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Shift Hours -->
+            <LinearLayout
+                android:id="@+id/shiftCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_pill"
+                android:backgroundTint="#1A1B22"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnSOS"
+                app:layout_constraintTop_toTopOf="parent">
+                <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@android:drawable/ic_menu_recent_history" app:tint="#00E5FF" />
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SHIFT HOURS" android:textColor="#888888" android:textSize="8sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="02:28 h" android:textColor="#FFFFFF" android:textSize="14sp" android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- SOS Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSOS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="24dp"
+                android:text="SOS"
+                android:textColor="#FFFFFF"
+                app:backgroundTint="#FF4C4C"
+                app:cornerRadius="100dp"
+                app:icon="@android:drawable/ic_dialog_alert"
+                app:iconTint="#FFFFFF"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="VALIDATION TIME"
-                    android:textColor="#666666"
-                    android:textSize="10sp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="14:28:04"
-                    android:textColor="#00E5FF"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <View
+            android:id="@+id/topDivider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="#2A2B33"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/navDivider"
+            app:layout_constraintTop_toBottomOf="@id/topBar" />
 
-    <!-- RIGHT COLUMN: INFO & CONTROLS -->
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:padding="24dp"
-        app:layout_constraintBottom_toTopOf="@id/bottomDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/guidelineSplit"
-        app:layout_constraintTop_toBottomOf="@id/topDivider">
+        <!-- ========================================== -->
+        <!-- 3. MAIN SPLIT CONTENT AREA                 -->
+        <!-- ========================================== -->
 
-        <!-- Cabin Occupancy Card -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
+        <!-- Guideline splitting screen 65% Left / 35% Right -->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineSplit"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="#12131A"
-            app:cardCornerRadius="16dp"
-            app:strokeColor="#2A2B33"
-            app:strokeWidth="1dp">
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.65" />
 
+        <!-- LEFT COLUMN: SCANNER VIEWPORT -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:padding="24dp"
+            app:layout_constraintBottom_toTopOf="@id/bottomDivider"
+            app:layout_constraintEnd_toStartOf="@id/guidelineSplit"
+            app:layout_constraintStart_toEndOf="@id/navDivider"
+            app:layout_constraintTop_toBottomOf="@id/topDivider">
+
+            <!-- Camera Viewport Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cameraCard"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="#0D0E15"
+                app:cardCornerRadius="16dp"
+                app:strokeColor="#1A1B22"
+                app:strokeWidth="2dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/passengerInfoBar">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <!-- Alignment Text & Laser Line -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ALIGN QR CODE WITHIN BOUNDS"
+                        android:textColor="#444444"
+                        android:textSize="12sp"
+                        android:letterSpacing="0.1"
+                        android:layout_marginBottom="40dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="4dp"
+                        android:layout_marginHorizontal="64dp"
+                        android:background="#00E5FF"
+                        android:alpha="0.8"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintVertical_bias="0.25" />
+
+                    <!-- Custom Scanner Brackets (Corners) -->
+                    <!-- Top Left -->
+                    <View android:layout_width="48dp" android:layout_height="4dp" android:layout_marginStart="32dp" android:layout_marginTop="32dp" android:background="#00E5FF" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
+                    <View android:layout_width="4dp" android:layout_height="48dp" android:layout_marginStart="32dp" android:layout_marginTop="32dp" android:background="#00E5FF" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
+                    <!-- Top Right -->
+                    <View android:layout_width="48dp" android:layout_height="4dp" android:layout_marginEnd="32dp" android:layout_marginTop="32dp" android:background="#00E5FF" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" />
+                    <View android:layout_width="4dp" android:layout_height="48dp" android:layout_marginEnd="32dp" android:layout_marginTop="32dp" android:background="#00E5FF" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" />
+                    <!-- Bottom Left -->
+                    <View android:layout_width="48dp" android:layout_height="4dp" android:layout_marginStart="32dp" android:layout_marginBottom="32dp" android:background="#00E5FF" app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="parent" />
+                    <View android:layout_width="4dp" android:layout_height="48dp" android:layout_marginStart="32dp" android:layout_marginBottom="32dp" android:background="#00E5FF" app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="parent" />
+                    <!-- Bottom Right -->
+                    <View android:layout_width="48dp" android:layout_height="4dp" android:layout_marginEnd="32dp" android:layout_marginBottom="32dp" android:background="#00E5FF" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="parent" />
+                    <View android:layout_width="4dp" android:layout_height="48dp" android:layout_marginEnd="32dp" android:layout_marginBottom="32dp" android:background="#00E5FF" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="parent" />
+
+                    <!-- Success Overlay Panel -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/panelSuccessOverlay"
+                        android:layout_width="400dp"
+                        android:layout_height="140dp"
+                        app:cardBackgroundColor="#0A1F16"
+                        app:cardCornerRadius="16dp"
+                        app:strokeColor="#00FF7F"
+                        app:strokeWidth="2dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:src="@android:drawable/ic_dialog_info"
+                                app:tint="#00FF7F"
+                                android:layout_marginBottom="8dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="✓ TICKET VALIDATED"
+                                android:textColor="#00FF7F"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                android:letterSpacing="0.05" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="STANDARD SINGLE · R15.00"
+                                android:textColor="#00E5FF"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Flash Toggle Button -->
+                    <ImageView
+                        android:id="@+id/btnToggleFlash"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="8dp"
+                        android:elevation="12dp"
+                        android:background="@drawable/bg_pill"
+                        android:backgroundTint="#1A1B22"
+                        android:padding="12dp"
+                        android:src="@android:drawable/ic_menu_camera"
+                        app:tint="#FFFFFF"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Footer Passenger Info Bar -->
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
+                android:id="@+id/passengerInfoBar"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:padding="24dp">
+                android:background="@drawable/bg_nav_tab"
+                android:backgroundTint="#12131A"
+                android:padding="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
 
                 <ImageView
-                    android:id="@+id/icCabin"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@android:drawable/ic_menu_sort_by_size"
-                    app:tint="#00E5FF"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="CABIN OCCUPANCY"
-                    android:textColor="#888888"
-                    android:textSize="12sp"
-                    android:letterSpacing="0.1"
-                    app:layout_constraintBottom_toBottomOf="@id/icCabin"
-                    app:layout_constraintStart_toEndOf="@id/icCabin"
-                    app:layout_constraintTop_toTopOf="@id/icCabin" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/icPass"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:background="@drawable/bg_pill"
                     android:backgroundTint="#003344"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="4dp"
-                    android:text="75% FULL"
-                    android:textColor="#00E5FF"
-                    android:textSize="10sp"
-                    android:textStyle="bold"
+                    android:padding="8dp"
+                    android:src="@android:drawable/ic_menu_myplaces"
+                    app:tint="#00E5FF"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
-                <TextView
-                    android:id="@+id/txtOccupancyCount"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:text="45"
-                    android:textColor="#FFFFFF"
-                    android:textSize="48sp"
-                    android:textStyle="bold"
-                    app:layout_constraintTop_toBottomOf="@id/icCabin"
-                    app:layout_constraintStart_toStartOf="parent" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="/ 60"
-                    android:textColor="#888888"
-                    android:textSize="20sp"
-                    app:layout_constraintBottom_toBottomOf="@id/txtOccupancyCount"
-                    app:layout_constraintStart_toEndOf="@id/txtOccupancyCount" />
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical"
+                    app:layout_constraintStart_toEndOf="@id/icPass"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PASSENGER: ADULT · BOARDWALK 1"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TRIP ID: #URB-84920-ZA"
+                        android:textColor="#888888"
+                        android:textSize="12sp" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="end"
-                    app:layout_constraintBottom_toBottomOf="@id/txtOccupancyCount"
-                    app:layout_constraintEnd_toEndOf="parent">
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="15 SEATS REMAINING"
-                        android:textColor="#00FF7F"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="SEATED: 35 | STANDING: 10"
-                        android:textColor="#888888"
+                        android:text="VALIDATION TIME"
+                        android:textColor="#666666"
                         android:textSize="10sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="14:28:04"
+                        android:textColor="#00E5FF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
-
-                <ProgressBar
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="8dp"
-                    android:layout_marginTop="24dp"
-                    android:max="60"
-                    android:progress="45"
-                    android:progressTint="#00E5FF"
-                    android:progressBackgroundTint="#2A2B33"
-                    app:layout_constraintTop_toBottomOf="@id/txtOccupancyCount" />
             </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
 
-        <!-- Mark Full Toggle -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            app:cardBackgroundColor="#12131A"
-            app:cardCornerRadius="16dp"
-            app:strokeColor="#2A2B33"
-            app:strokeWidth="1dp">
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- RIGHT COLUMN: INFO & CONTROLS -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:padding="24dp"
+            app:layout_constraintBottom_toTopOf="@id/bottomDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guidelineSplit"
+            app:layout_constraintTop_toBottomOf="@id/topDivider">
+
+            <!-- Cabin Occupancy Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="#12131A"
+                app:cardCornerRadius="16dp"
+                app:strokeColor="#2A2B33"
+                app:strokeWidth="1dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="24dp">
+
+                    <ImageView
+                        android:id="@+id/icCabin"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@android:drawable/ic_menu_sort_by_size"
+                        app:tint="#00E5FF"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="CABIN OCCUPANCY"
+                        android:textColor="#888888"
+                        android:textSize="12sp"
+                        android:letterSpacing="0.1"
+                        app:layout_constraintBottom_toBottomOf="@id/icCabin"
+                        app:layout_constraintStart_toEndOf="@id/icCabin"
+                        app:layout_constraintTop_toTopOf="@id/icCabin" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_pill"
+                        android:backgroundTint="#003344"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="4dp"
+                        android:text="75% FULL"
+                        android:textColor="#00E5FF"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <TextView
+                        android:id="@+id/txtOccupancyCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:text="45"
+                        android:textColor="#FFFFFF"
+                        android:textSize="48sp"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toBottomOf="@id/icCabin"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="/ 60"
+                        android:textColor="#888888"
+                        android:textSize="20sp"
+                        app:layout_constraintBottom_toBottomOf="@id/txtOccupancyCount"
+                        app:layout_constraintStart_toEndOf="@id/txtOccupancyCount" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="end"
+                        app:layout_constraintBottom_toBottomOf="@id/txtOccupancyCount"
+                        app:layout_constraintEnd_toEndOf="parent">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="15 SEATS REMAINING"
+                            android:textColor="#00FF7F"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="SEATED: 35 | STANDING: 10"
+                            android:textColor="#888888"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+
+                    <ProgressBar
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:layout_marginTop="24dp"
+                        android:max="60"
+                        android:progress="45"
+                        android:progressTint="#00E5FF"
+                        android:progressBackgroundTint="#2A2B33"
+                        app:layout_constraintTop_toBottomOf="@id/txtOccupancyCount" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Mark Full Toggle -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                app:cardBackgroundColor="#12131A"
+                app:cardCornerRadius="16dp"
+                app:strokeColor="#2A2B33"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="20dp"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="MARK BUS AS FULL"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="Prevents new online bookings &amp; flags depot dispatch."
+                            android:textColor="#888888"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Walk On Cash Ticket Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="20dp"
-                android:gravity="center_vertical">
-
-                <LinearLayout
+                android:layout_marginBottom="12dp">
+                <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="MARK BUS AS FULL"
-                        android:textColor="#FFFFFF"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Prevents new online bookings &amp; flags depot dispatch."
-                        android:textColor="#888888"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:text="WALK-ON COMMUTER FARES"
+                    android:textColor="#00E5FF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1" />
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="false" />
+                    android:text="PRINT &amp; VALIDATE"
+                    android:textColor="#666666"
+                    android:textSize="10sp"
+                    android:letterSpacing="0.1" />
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
 
-        <!-- Walk On Cash Ticket Section -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="12dp">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="WALK-ON COMMUTER FARES"
-                android:textColor="#00E5FF"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.1" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="PRINT &amp; VALIDATE"
-                android:textColor="#666666"
-                android:textSize="10sp"
-                android:letterSpacing="0.1" />
-        </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                app:backgroundTint="#0A1F26"
+                app:strokeColor="#00E5FF"
+                app:strokeWidth="2dp"
+                app:cornerRadius="12dp"
+                android:insetBottom="0dp"
+                android:insetTop="0dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            app:backgroundTint="#0A1F26"
-            app:strokeColor="#00E5FF"
-            app:strokeWidth="2dp"
-            app:cornerRadius="12dp"
-            android:insetBottom="0dp"
-            android:insetTop="0dp" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginTop="-80dp"
-            android:elevation="4dp"
-            android:background="?attr/selectableItemBackground">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:background="@drawable/bg_nav_tab"
-                    android:backgroundTint="#00E5FF"
-                    android:padding="6dp"
-                    android:src="@android:drawable/ic_menu_camera"
-                    app:tint="#0A0B10" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/btnCashSaleTab"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginTop="-80dp"
+                android:elevation="4dp"
+                android:background="?attr/selectableItemBackground">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:orientation="vertical">
-                    <TextView
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/bg_nav_tab"
+                        android:backgroundTint="#00E5FF"
+                        android:padding="6dp"
+                        android:src="@android:drawable/ic_menu_camera"
+                        app:tint="#0A0B10" />
+
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="CASH TICKET SALE"
-                        android:textColor="#00E5FF"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="TAP TO ISSUE INSTANT BOARDING"
-                        android:textColor="#008899"
-                        android:textSize="10sp"
-                        android:letterSpacing="0.1" />
+                        android:layout_marginStart="16dp"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="CASH TICKET SALE"
+                            android:textColor="#00E5FF"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TAP TO ISSUE INSTANT BOARDING"
+                            android:textColor="#008899"
+                            android:textSize="10sp"
+                            android:letterSpacing="0.1" />
+                    </LinearLayout>
                 </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/bottomDivider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="#2A2B33"
+            app:layout_constraintBottom_toTopOf="@id/bottomBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/navDivider" />
+
+        <!-- ========================================== -->
+        <!-- 4. BOTTOM TELEMETRY BAR                    -->
+        <!-- ========================================== -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/bottomBar"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:background="#0A0B10"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/navDivider">
+
+            <!-- Capacity Tracker -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="24dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CAPACITY:" android:textColor="#FFFFFF" android:textSize="10sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="4dp" android:text="45 / 60 PAX" android:textColor="#00E5FF" android:textSize="10sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="4dp" android:text="(75%)" android:textColor="#00E5FF" android:textSize="10sp" />
+
+                <ProgressBar
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="100dp"
+                    android:layout_height="6dp"
+                    android:layout_marginStart="12dp"
+                    android:max="100"
+                    android:progress="75"
+                    android:progressTint="#00E5FF"
+                    android:progressBackgroundTint="#2A2B33" />
+            </LinearLayout>
+
+            <!-- Connectivity & Temp -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="24dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <View android:layout_width="6dp" android:layout_height="6dp" android:background="@drawable/bg_pill" android:backgroundTint="#00FF7F" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:layout_marginEnd="24dp" android:text="Connected" android:textColor="#888888" android:textSize="10sp" />
+
+                <ImageView android:layout_width="14dp" android:layout_height="14dp" android:src="@android:drawable/ic_menu_info_details" app:tint="#00E5FF" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:text="CABIN 21.5°C" android:textColor="#888888" android:textSize="10sp" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </LinearLayout>
-
-    <View
-        android:id="@+id/bottomDivider"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:background="#2A2B33"
-        app:layout_constraintBottom_toTopOf="@id/bottomBar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/navDivider" />
-
-    <!-- ========================================== -->
-    <!-- 4. BOTTOM TELEMETRY BAR                    -->
-    <!-- ========================================== -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/bottomBar"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:background="#0A0B10"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/navDivider">
-
-        <!-- Capacity Tracker -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="24dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            app:layout_constraintStart_toStartOf="parent">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CAPACITY:" android:textColor="#FFFFFF" android:textSize="10sp" android:textStyle="bold" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="4dp" android:text="45 / 60 PAX" android:textColor="#00E5FF" android:textSize="10sp" android:textStyle="bold" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="4dp" android:text="(75%)" android:textColor="#00E5FF" android:textSize="10sp" />
-
-            <ProgressBar
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="100dp"
-                android:layout_height="6dp"
-                android:layout_marginStart="12dp"
-                android:max="100"
-                android:progress="75"
-                android:progressTint="#00E5FF"
-                android:progressBackgroundTint="#2A2B33" />
-        </LinearLayout>
-
-        <!-- Connectivity & Temp -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="24dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <View android:layout_width="6dp" android:layout_height="6dp" android:background="@drawable/bg_pill" android:backgroundTint="#00FF7F" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:layout_marginEnd="24dp" android:text="Connected" android:textColor="#888888" android:textSize="10sp" />
-
-            <ImageView android:layout_width="14dp" android:layout_height="14dp" android:src="@android:drawable/ic_menu_info_details" app:tint="#00E5FF" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:text="CABIN 21.5°C" android:textColor="#888888" android:textSize="10sp" />
-        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
