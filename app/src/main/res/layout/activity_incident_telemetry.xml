@@ -1,0 +1,880 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#0A0B10"
+        android:fitsSystemWindows="true"
+        tools:context=".IncidentTelemetry">
+
+        <!-- ========================================== -->
+        <!-- 1. MODULAR INCLUDES                        -->
+        <!-- ========================================== -->
+
+        <!-- Sidebar Navigation -->
+        <include
+            android:id="@+id/sideNavRail"
+            layout="@layout/layout_side_nav"
+            android:layout_width="100dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/navDivider"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#2A2B33"
+            app:layout_constraintStart_toEndOf="@id/sideNavRail" />
+
+        <!-- Top Status Bar -->
+        <include
+            android:id="@+id/topBar"
+            layout="@layout/layout_top_bar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/navDivider"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/topDivider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="#2A2B33"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/navDivider"
+            app:layout_constraintTop_toBottomOf="@id/topBar" />
+
+        <!-- Bottom Telemetry Bar -->
+        <include
+            android:id="@+id/bottomBar"
+            layout="@layout/layout_bottom_bar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/navDivider" />
+
+        <View
+            android:id="@+id/bottomDivider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="#2A2B33"
+            app:layout_constraintBottom_toTopOf="@id/bottomBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/navDivider" />
+
+        <!-- ========================================== -->
+        <!-- 2. MAIN SPLIT CONTENT AREA                 -->
+        <!-- ========================================== -->
+
+        <!-- Guideline splitting screen approx 58% Left / 42% Right -->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineSplit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.58" />
+
+        <!-- ========================================== -->
+        <!-- LEFT COLUMN: CATEGORIES & SOS              -->
+        <!-- ========================================== -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:padding="32dp"
+            app:layout_constraintBottom_toTopOf="@id/bottomDivider"
+            app:layout_constraintEnd_toStartOf="@id/guidelineSplit"
+            app:layout_constraintStart_toEndOf="@id/navDivider"
+            app:layout_constraintTop_toBottomOf="@id/topDivider">
+
+            <!-- Page Title Row -->
+            <LinearLayout
+                android:id="@+id/titleRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:background="@drawable/bg_pill"
+                    android:backgroundTint="#FF4C4C" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:letterSpacing="0.05"
+                    android:text="INCIDENT &amp; SAFETY REPORT"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:background="@drawable/bg_pill"
+                    android:backgroundTint="#1A1B22"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp"
+                    android:text="GPS GEO-LOCKED"
+                    android:textColor="#888888"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txtSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Submit vehicle issues, route delays, or initiate immediate emergency security dispatch."
+                android:textColor="#A0A0A0"
+                android:textSize="12sp"
+                app:layout_constraintTop_toBottomOf="@id/titleRow" />
+
+            <!-- SOS Dispatch Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardSOS"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:cardBackgroundColor="#0D1117"
+                app:cardCornerRadius="12dp"
+                app:layout_constraintTop_toBottomOf="@id/txtSubtitle"
+                app:strokeColor="#FF4C4C"
+                app:strokeWidth="2dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp">
+
+                    <ImageView
+                        android:id="@+id/icSosAlarm"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="@drawable/bg_nav_tab"
+                        android:backgroundTint="#2A1117"
+                        android:padding="12dp"
+                        android:src="@android:drawable/ic_lock_idle_alarm"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="#FF4C4C" />
+
+                    <TextView
+                        android:id="@+id/txtSosTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="EMERGENCY SOS DISPATCH"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toEndOf="@id/icSosAlarm"
+                        app:layout_constraintTop_toTopOf="@id/icSosAlarm" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:background="@drawable/bg_pill"
+                        android:backgroundTint="#FF4C4C"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="2dp"
+                        android:text="CRITICAL"
+                        android:textColor="#FFFFFF"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@id/txtSosTitle"
+                        app:layout_constraintStart_toEndOf="@id/txtSosTitle"
+                        app:layout_constraintTop_toTopOf="@id/txtSosTitle" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:lineSpacingExtra="4dp"
+                        android:text="Instantly sends exact GPS telemetry, cabin audio feed, and live speed to municipal police &amp; central depot security."
+                        android:textColor="#A0A0A0"
+                        android:textSize="11sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@id/txtSosTitle"
+                        app:layout_constraintTop_toBottomOf="@id/txtSosTitle" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="32dp"
+                        android:drawableStart="@android:drawable/ic_menu_mylocation"
+                        android:drawablePadding="8dp"
+                        android:drawableTint="#FF4C4C"
+                        android:text="Lat: -33.9608° S, Long: 25.6022° E"
+                        android:textColor="#FF4C4C"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/icSosAlarm" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnTriggerSOS"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TRIGGER INSTANT SOS"
+                        android:textColor="#000000"
+                        android:textStyle="bold"
+                        app:backgroundTint="#FF4C4C"
+                        app:cornerRadius="8dp"
+                        app:icon="@android:drawable/ic_dialog_alert"
+                        app:iconTint="#000000"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ROUTINE ISSUES WRAPPER CARD -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardRoutineIssues"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="24dp"
+                app:cardBackgroundColor="#0D1117"
+                app:cardCornerRadius="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardSOS"
+                app:strokeColor="#2A2B33"
+                app:strokeWidth="1dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="24dp">
+
+                    <!-- Routine Header -->
+                    <LinearLayout
+                        android:id="@+id/rowRoutineHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@android:drawable/ic_menu_preferences"
+                            app:tint="#00E5FF" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:text="LOG ROUTINE ISSUE"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:letterSpacing="0.1"
+                            android:text="SELECT PRIMARY CATEGORY"
+                            android:textColor="#666666"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+
+                    <!-- Category Grid -->
+                    <GridLayout
+                        android:id="@+id/gridCategories"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:columnCount="3"
+                        android:rowCount="3"
+                        app:layout_constraintTop_toBottomOf="@id/rowRoutineHeader">
+
+                        <!-- Active Card: Engine Trouble -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardEngine"
+                            android:layout_width="0dp"
+                            android:layout_height="85dp"
+                            android:layout_rowWeight="1"
+                            android:layout_columnWeight="1"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="12dp"
+                            app:cardBackgroundColor="#0D1117"
+                            app:cardCornerRadius="8dp"
+                            app:strokeColor="#00E5FF"
+                            app:strokeWidth="2dp">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:padding="16dp">
+
+                                <ImageView
+                                    android:id="@+id/icEngine"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@android:drawable/ic_menu_directions"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:tint="#00E5FF" />
+
+                                <View
+                                    android:layout_width="8dp"
+                                    android:layout_height="8dp"
+                                    android:background="@drawable/bg_pill"
+                                    android:backgroundTint="#00E5FF"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="16dp"
+                                    android:text="Engine Trouble"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@id/icEngine" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="DTC / Powertrain"
+                                    android:textColor="#00E5FF"
+                                    android:textSize="10sp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/icEngine"
+                                    app:layout_constraintVertical_bias="1.0" />
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Card: Flat Tire -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardTire"
+                            android:layout_width="0dp"
+                            android:layout_height="85dp"
+                            android:layout_rowWeight="1"
+                            android:layout_columnWeight="1"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="12dp"
+                            app:cardBackgroundColor="#12131A"
+                            app:cardCornerRadius="8dp"
+                            app:strokeColor="#2A2B33"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="103dp"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@android:drawable/ic_menu_preferences"
+                                    app:tint="#A0A0A0" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:text="Flat Tire"
+                                    android:textColor="#E0E0E0"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Chassis / Wheels"
+                                    android:textColor="#666666"
+                                    android:textSize="10sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Card: Scanner Offline -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardScanner"
+                            android:layout_width="0dp"
+                            android:layout_height="85dp"
+                            android:layout_rowWeight="1"
+                            android:layout_columnWeight="1"
+                            android:layout_marginBottom="12dp"
+                            app:cardBackgroundColor="#12131A"
+                            app:cardCornerRadius="8dp"
+                            app:strokeColor="#2A2B33"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="102dp"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@android:drawable/ic_menu_camera"
+                                    app:tint="#A0A0A0" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:text="Scanner Offline"
+                                    android:textColor="#E0E0E0"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Validator Device"
+                                    android:textColor="#666666"
+                                    android:textSize="10sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Card: Medical Event -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardMedical"
+                            android:layout_width="0dp"
+                            android:layout_height="85dp"
+                            android:layout_rowWeight="1"
+                            android:layout_columnWeight="1"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="12dp"
+                            app:cardBackgroundColor="#12131A"
+                            app:cardCornerRadius="8dp"
+                            app:strokeColor="#2A2B33"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="108dp"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@android:drawable/ic_menu_add"
+                                    app:tint="#A0A0A0" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:text="Medical Event"
+                                    android:textColor="#E0E0E0"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Passenger First Aid"
+                                    android:textColor="#666666"
+                                    android:textSize="10sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Card: Passenger Dispute -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardDispute"
+                            android:layout_width="0dp"
+                            android:layout_height="85dp"
+                            android:layout_rowWeight="1"
+                            android:layout_columnWeight="1"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="12dp"
+                            app:cardBackgroundColor="#12131A"
+                            app:cardCornerRadius="8dp"
+                            app:strokeColor="#2A2B33"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="96dp"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@android:drawable/ic_menu_info_details"
+                                    app:tint="#A0A0A0" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:text="Passenger Dispute"
+                                    android:textColor="#E0E0E0"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Fare / Conduct"
+                                    android:textColor="#666666"
+                                    android:textSize="10sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Card: Delay & Traffic -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardDelay"
+                            android:layout_width="0dp"
+                            android:layout_height="85dp"
+                            android:layout_rowWeight="1"
+                            android:layout_columnWeight="1"
+                            android:layout_marginBottom="12dp"
+                            app:cardBackgroundColor="#12131A"
+                            app:cardCornerRadius="8dp"
+                            app:strokeColor="#2A2B33"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="96dp"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@android:drawable/ic_menu_recent_history"
+                                    app:tint="#A0A0A0" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:text="Delay &amp; Traffic"
+                                    android:textColor="#E0E0E0"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=">10 min Variance"
+                                    android:textColor="#666666"
+                                    android:textSize="10sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Card: Other -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cardOther"
+                            android:layout_width="0dp"
+                            android:layout_height="85dp"
+                            android:layout_rowWeight="1"
+                            android:layout_columnWeight="1"
+                            android:layout_marginEnd="8dp"
+                            app:cardBackgroundColor="#12131A"
+                            app:cardCornerRadius="8dp"
+                            app:strokeColor="#2A2B33"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="98dp"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@android:drawable/ic_menu_more"
+                                    app:tint="#A0A0A0" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:text="Other"
+                                    android:textColor="#E0E0E0"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Unspecified / Edge Case"
+                                    android:textColor="#666666"
+                                    android:textSize="10sp" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                    </GridLayout>
+
+                    <View
+                        android:id="@+id/statsDivider"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="#2A2B33"
+                        app:layout_constraintBottom_toTopOf="@id/rowBottomStats" />
+
+                    <!-- Bottom Stats Row -->
+                    <LinearLayout
+                        android:id="@+id/rowBottomStats"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Active Route: Route 1 Express"
+                            android:textColor="#666666"
+                            android:textSize="10sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Current Speed: 38 km/h"
+                            android:textColor="#00E5FF"
+                            android:textSize="10sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- ========================================== -->
+        <!-- RIGHT COLUMN: DETAILS & SUBMIT             -->
+        <!-- ========================================== -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:padding="32dp"
+            app:layout_constraintBottom_toTopOf="@id/bottomDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guidelineSplit"
+            app:layout_constraintTop_toBottomOf="@id/topDivider">
+
+            <!-- DETAILS WRAPPER CARD -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                app:cardBackgroundColor="#0D1117"
+                app:cardCornerRadius="12dp"
+                app:strokeColor="#2A2B33"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                    <!-- Details Header -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@android:drawable/ic_menu_sort_by_size"
+                            app:tint="#00E5FF" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:letterSpacing="0.05"
+                            android:text="DETAILS"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:letterSpacing="0.1"
+                            android:text="OPTIONAL VOICE / TEXT"
+                            android:textColor="#666666"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+
+                    <!-- Text Input Area (Nested Card) -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_weight="1"
+                        app:cardBackgroundColor="#0A0B10"
+                        app:cardCornerRadius="8dp"
+                        app:strokeColor="#1A1B22"
+                        app:strokeWidth="1dp">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="20dp">
+
+                            <EditText
+                                android:id="@+id/etIncidentDetails"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_marginBottom="16dp"
+                                android:background="@null"
+                                android:gravity="top|start"
+                                android:hint="Type details here..."
+                                android:lineSpacingExtra="4dp"
+                                android:text="Overheating alert triggered near Boardwalk 1 stop. Coolant level warning on telemetry cluster. Engine power derated."
+                                android:textColor="#FFFFFF"
+                                android:textColorHint="#444444"
+                                android:textSize="14sp"
+                                app:layout_constraintBottom_toTopOf="@id/btnVoiceRecord"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <View
+                                android:layout_width="6dp"
+                                android:layout_height="6dp"
+                                android:background="@drawable/bg_pill"
+                                android:backgroundTint="#00E5FF"
+                                app:layout_constraintBottom_toBottomOf="@id/btnVoiceRecord"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="@id/btnVoiceRecord" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:text="Audio Dispatch Ready"
+                                android:textColor="#666666"
+                                android:textSize="10sp"
+                                app:layout_constraintBottom_toBottomOf="@id/btnVoiceRecord"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="@id/btnVoiceRecord" />
+
+                            <ImageView
+                                android:id="@+id/btnVoiceRecord"
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:background="@drawable/bg_nav_tab"
+                                android:backgroundTint="#1A1B22"
+                                android:padding="12dp"
+                                android:src="@android:drawable/ic_btn_speak_now"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:tint="#A0A0A0" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Diagnostics Card (Nested Card) -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        app:cardBackgroundColor="#12131A"
+                        app:cardCornerRadius="8dp"
+                        app:strokeColor="#1A1B22"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:padding="16dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@android:drawable/ic_menu_directions"
+                                app:tint="#00FF7F" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Auto-attached Bus Diagnostics"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="CANBUS Log #84920-ZA · Odometer 118.4 km · 45 PAX"
+                                    android:textColor="#666666"
+                                    android:textSize="10sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Action Buttons (Outside the Wrapper Card) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnClearForm"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="56dp"
+                    android:layout_marginEnd="12dp"
+                    android:text="CLEAR"
+                    android:textColor="#E0E0E0"
+                    app:cornerRadius="8dp"
+                    app:strokeColor="#2A2B33"
+                    app:strokeWidth="1dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSubmitReport"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:text="SUBMIT REPORT"
+                    android:textColor="#000000"
+                    android:textStyle="bold"
+                    app:backgroundTint="#00E5FF"
+                    app:cornerRadius="8dp"
+                    app:icon="@android:drawable/ic_menu_send"
+                    app:iconGravity="textStart"
+                    app:iconTint="#000000" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>

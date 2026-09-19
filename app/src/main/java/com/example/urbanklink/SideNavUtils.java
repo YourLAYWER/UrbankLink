@@ -67,7 +67,7 @@ public class SideNavUtils {
                 } else if (id == R.id.navTabShift) {
                     intent = new Intent(activity, ShiftHandoverTelemetry.class); // Uncomment when ready
                 } else if (id == R.id.navTabReport) {
-                    intent = new Intent(activity, IncidentReportActivity.class);
+                    intent = new Intent(activity, IncidentTelemetry.class);
                 }
                 // Add your other routing destinations here as you build them!
                 // else if (id == R.id.navTabCash) { intent = new Intent(...); }
