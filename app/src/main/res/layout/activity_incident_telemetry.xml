@@ -164,7 +164,7 @@
                         android:background="@drawable/bg_nav_tab"
                         android:backgroundTint="#2A1117"
                         android:padding="12dp"
-                        android:src="@android:drawable/ic_lock_idle_alarm"
+                        android:src="@drawable/ic_emergency"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:tint="#FF4C4C" />
@@ -214,7 +214,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="32dp"
-                        android:drawableStart="@android:drawable/ic_menu_mylocation"
+                        android:drawableStart="@drawable/ic_my_location"
                         android:drawablePadding="8dp"
                         android:drawableTint="#FF4C4C"
                         android:text="Lat: -33.9608° S, Long: 25.6022° E"
@@ -319,25 +319,17 @@
 
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="104dp"
                                 android:padding="16dp">
 
                                 <ImageView
                                     android:id="@+id/icEngine"
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
-                                    android:src="@android:drawable/ic_menu_directions"
+                                    android:src="@drawable/ic_engine"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent"
                                     app:tint="#00E5FF" />
-
-                                <View
-                                    android:layout_width="8dp"
-                                    android:layout_height="8dp"
-                                    android:background="@drawable/bg_pill"
-                                    android:backgroundTint="#00E5FF"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -386,7 +378,7 @@
                                 <ImageView
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
-                                    android:src="@android:drawable/ic_menu_preferences"
+                                    android:src="@drawable/ic_flatTire"
                                     app:tint="#A0A0A0" />
 
                                 <TextView
@@ -429,7 +421,7 @@
                                 <ImageView
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
-                                    android:src="@android:drawable/ic_menu_camera"
+                                    android:src="@drawable/ic_offline"
                                     app:tint="#A0A0A0" />
 
                                 <TextView
@@ -473,7 +465,7 @@
                                 <ImageView
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
-                                    android:src="@android:drawable/ic_menu_add"
+                                    android:src="@drawable/ic_medical"
                                     app:tint="#A0A0A0" />
 
                                 <TextView
@@ -517,7 +509,7 @@
                                 <ImageView
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
-                                    android:src="@android:drawable/ic_menu_info_details"
+                                    android:src="@drawable/ic_dispute"
                                     app:tint="#A0A0A0" />
 
                                 <TextView
@@ -560,7 +552,7 @@
                                 <ImageView
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
-                                    android:src="@android:drawable/ic_menu_recent_history"
+                                    android:src="@drawable/ic_time"
                                     app:tint="#A0A0A0" />
 
                                 <TextView
@@ -603,7 +595,7 @@
                                 <ImageView
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
-                                    android:src="@android:drawable/ic_menu_more"
+                                    android:src="@drawable/ic_more"
                                     app:tint="#A0A0A0" />
 
                                 <TextView
@@ -871,7 +863,7 @@
                     android:textStyle="bold"
                     app:backgroundTint="#00E5FF"
                     app:cornerRadius="8dp"
-                    app:icon="@android:drawable/ic_menu_send"
+                    app:icon="@drawable/ic_send"
                     app:iconGravity="textStart"
                     app:iconTint="#000000" />
             </LinearLayout>
