@@ -116,7 +116,7 @@ public class ScannerTelemetry extends AppCompatActivity {
         // 6. Button Listeners
         if (btnCashSaleTab != null) {
             btnCashSaleTab.setOnClickListener(v -> {
-                Intent intent = new Intent(ScannerTelemetry.this, QuickSaleActivity.class);
+                Intent intent = new Intent(ScannerTelemetry.this, PosTelemetry.class);
                 quickSaleLauncher.launch(intent);
             });
         }
