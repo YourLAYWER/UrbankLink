@@ -36,8 +36,12 @@ public class HeaderManager {
                     if (txtRouteName != null) txtRouteName.setText(info.getRouteName().toUpperCase());
                     if (txtRouteDirection != null) txtRouteDirection.setText(info.getRouteDisplay());
 
-                    // Save routeId locally if needed for subsequent calls
-                    prefs.edit().putInt("ACTIVE_ROUTE_ID", info.getRouteId()).apply();
+                    // Save routeId and baseFare locally for the POS screen
+                    SharedPreferences prefs = activity.getSharedPreferences("UrbanLinkPrefs", Context.MODE_PRIVATE);
+                    prefs.edit()
+                            .putInt("ACTIVE_ROUTE_ID", info.getRouteId())
+                            .putFloat("ACTIVE_BASE_FARE", (float) info.getBaseFare()) // Save base fare
+                            .apply();
                 } else {
                     Toast.makeText(activity, "Failed to load shift metadata", Toast.LENGTH_SHORT).show();
                 }

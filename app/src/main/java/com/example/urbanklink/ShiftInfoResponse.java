@@ -18,6 +18,9 @@ public class ShiftInfoResponse {
     @SerializedName("endStop")
     private String endStop;
 
+    @SerializedName("baseFare")
+    private double baseFare;
+
     @SerializedName("routeDisplay")
     private String routeDisplay;
 
@@ -27,5 +30,6 @@ public class ShiftInfoResponse {
     public String getRouteName() { return routeName; }
     public String getStartStop() { return startStop; }
     public String getEndStop() { return endStop; }
+    public double getBaseFare() { return baseFare; }
     public String getRouteDisplay() { return routeDisplay; }
 }

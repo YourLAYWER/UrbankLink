@@ -23,14 +23,14 @@ import retrofit2.Response;
 public class PosTelemetry extends AppCompatActivity {
 
     // UI Elements mapped to the tablet XML
-    private TextView txtQuantity, txtTotalAmount;
+    private TextView txtQuantity, txtTotalAmount, txtBaseFare;
     private MaterialButton btnMinus, btnPlus;
     private MaterialButton btnFast1, btnFast2, btnFast3, btnFast5;
     private MaterialButton btnClear, btnConfirmIssue;
 
     // Transaction State
     private int quantity = 1;
-    private final double BASE_FARE = 15.00;
+    private double dynamicBaseFare = 15.00;
     private String authHeader;
     private ToneGenerator toneGen;
 
@@ -55,11 +55,15 @@ public class PosTelemetry extends AppCompatActivity {
             authHeader = "Bearer " + token.replace("\"", "").trim();
         }
 
+        // Load route-specific base fare saved by HeaderManager (defaults to 15.00 if not found)
+        dynamicBaseFare = prefs.getFloat("ACTIVE_BASE_FARE", 15.00f);
+
         toneGen = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
 
         // 3. Link UI Components
         txtQuantity = findViewById(R.id.txtQuantity);
         txtTotalAmount = findViewById(R.id.txtTotalAmount);
+        txtBaseFare = findViewById(R.id.txtBaseFare);
 
         btnMinus = findViewById(R.id.btnMinus);
         btnPlus = findViewById(R.id.btnPlus);
@@ -104,17 +108,32 @@ public class PosTelemetry extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Refresh base fare in case it updated or loaded slightly after onCreate
+        SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
+        dynamicBaseFare = prefs.getFloat("ACTIVE_BASE_FARE", (float) dynamicBaseFare);
+        updateTotalDisplay();
+    }
+
     private void setFastQuantity(int q) {
         quantity = q;
         updateTotalDisplay();
     }
 
     private void updateTotalDisplay() {
+
+        // B) Update the SINGLE FARE AMOUNT display (txtBaseFare)
+        // This guarantees the driver sees the correct rate for the current route
+        if (txtBaseFare != null) {
+            txtBaseFare.setText(String.format("R%.2f", dynamicBaseFare));
+        }
         // Update digit block
         txtQuantity.setText(String.valueOf(quantity));
 
         // Calculate new totals
-        double total = quantity * BASE_FARE;
+        double total = quantity * dynamicBaseFare;
         txtTotalAmount.setText(String.format("R%.2f", total));
 
         // Dynamically inject the calculated total into the confirmation button text
