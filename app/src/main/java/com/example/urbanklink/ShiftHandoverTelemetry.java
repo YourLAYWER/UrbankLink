@@ -3,6 +3,7 @@ package com.example.urbanklink;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +32,11 @@ public class ShiftHandoverTelemetry extends AppCompatActivity {
 
         // 1. Setup Tablet Side Navigation (Highlights SHIFT tab)
         SideNavUtils.setupSideNavigation(this, R.id.navTabShift);
+
+        View rootView = findViewById(android.R.id.content);
+
+        // Automatically fetches and populates the header info across all screens!
+        HeaderManager.loadHeaderData(this, rootView);
 
         // 2. Bind XML Views
         txtTotalScans = findViewById(R.id.txtTotalScans);

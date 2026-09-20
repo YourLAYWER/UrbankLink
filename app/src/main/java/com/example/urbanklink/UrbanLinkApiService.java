@@ -70,4 +70,7 @@ interface UrbanLinkApiService {
             @Header("Authorization") String token,
             @Body IncidentReportRequest request
     );
+
+    @GET("api/ConductorShift/active-shift-info")
+    Call<ShiftInfoResponse> getActiveShiftInfo();
 }

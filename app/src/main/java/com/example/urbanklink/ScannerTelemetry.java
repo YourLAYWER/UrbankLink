@@ -73,6 +73,11 @@ public class ScannerTelemetry extends AppCompatActivity {
         // 1. Setup Tablet Side Navigation (Highlights SCAN tab)
         SideNavUtils.setupSideNavigation(this, R.id.navTabScan);
 
+        View rootView = findViewById(android.R.id.content);
+
+        // Automatically fetches and populates the header info across all screens!
+        HeaderManager.loadHeaderData(this, rootView);
+
         // 2. Link UI Elements
         viewFinder = findViewById(R.id.viewFinder);
         panelSuccessOverlay = findViewById(R.id.panelSuccessOverlay);

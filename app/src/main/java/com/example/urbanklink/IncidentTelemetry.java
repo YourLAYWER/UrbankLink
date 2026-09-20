@@ -56,6 +56,11 @@ public class IncidentTelemetry extends AppCompatActivity {
         // 1. Tablet Sidebar Navigation
         SideNavUtils.setupSideNavigation(this, R.id.navTabReport);
 
+        View rootView = findViewById(android.R.id.content);
+
+        // Automatically fetches and populates the header info across all screens!
+        HeaderManager.loadHeaderData(this, rootView);
+
         // 2. Setup Auth Token
         SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
         String token = prefs.getString("JWT_TOKEN", null);

@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +42,11 @@ public class PosTelemetry extends AppCompatActivity {
 
         // 1. Tablet Sidebar Navigation (Crucial for routing)
         SideNavUtils.setupSideNavigation(this, R.id.navTabCash);
+
+        View rootView = findViewById(android.R.id.content);
+
+        // Automatically fetches and populates the header info across all screens!
+        HeaderManager.loadHeaderData(this, rootView);
 
         // 2. Grab JWT Token
         SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);

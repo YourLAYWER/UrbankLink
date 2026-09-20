@@ -59,6 +59,11 @@ public class TransitTelemetry extends AppCompatActivity {
 
         SideNavUtils.setupSideNavigation(this, R.id.navTabStops);
 
+        View rootView = findViewById(android.R.id.content);
+
+        // Automatically fetches and populates the header info across all screens!
+        HeaderManager.loadHeaderData(this, rootView);
+
         // Inside TransitTelemetry.java, instead of a hardcoded "1":
         SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
         int activeShiftId = prefs.getInt("ACTIVE_SHIFT_ID", -1);
