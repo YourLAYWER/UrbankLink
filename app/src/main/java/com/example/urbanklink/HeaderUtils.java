@@ -56,8 +56,8 @@ public class HeaderUtils {
         if (btnProfile != null) {
             btnProfile.setOnClickListener(v -> {
                 // Navigate to the profile screen
-                // Intent intent = new Intent(activity, ProfileActivity.class);
-                // activity.startActivity(intent);
+                Intent intent = new Intent(activity, ProfileActivity.class);
+                activity.startActivity(intent);
             });
         }
     }
