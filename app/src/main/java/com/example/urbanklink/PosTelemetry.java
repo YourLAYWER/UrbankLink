@@ -1,5 +1,6 @@
 package com.example.urbanklink;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
@@ -154,13 +155,34 @@ public class PosTelemetry extends AppCompatActivity {
                     toneGen.startTone(ToneGenerator.TONE_PROP_BEEP, 150);
                     Toast.makeText(PosTelemetry.this, "Sale Successful: R" + response.body().amountAdded, Toast.LENGTH_SHORT).show();
 
-                    // Tablet specific adaptation: Do not call finish().
-                    // Drivers stay on this screen to serve the next passenger. Just reset the UI.
-                    setFastQuantity(1);
-                    btnConfirmIssue.setEnabled(true);
+                    // 1. Grab the current passenger count from SharedPreferences
+                    SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
+                    int currentCount = prefs.getInt("ACTIVE_PASSENGER_COUNT", 0); // Defaults to 45 or your baseline
+
+                    // 2. Add the newly sold ticket quantity
+                    int newCount = currentCount + quantity;
+
+                    // 3. Save the updated count back persistently
+                    prefs.edit().putInt("ACTIVE_PASSENGER_COUNT", newCount).apply();
+
+                    // 4. Handle navigation exit vs continuous selling
+                    if (getCallingActivity() != null) {
+                        // Opened via Scanner Button -> Send result back and finish
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("PASSENGERS_ADDED", quantity);
+                        setResult(RESULT_OK, resultIntent);
+                        finish();
+                    } else {
+                        // Opened via Side Navigation -> Reset UI so driver can keep selling tickets
+                        setFastQuantity(1);
+                        btnConfirmIssue.setEnabled(true);
+                        updateTotalDisplay();
+                        Toast.makeText(PosTelemetry.this, "Passenger count updated!", Toast.LENGTH_SHORT).show();
+                    }
+
                 } else {
                     btnConfirmIssue.setEnabled(true);
-                    updateTotalDisplay(); // Re-applies the original price text
+                    updateTotalDisplay();
                     Toast.makeText(PosTelemetry.this, "Transaction Failed. Try again.", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -168,7 +190,7 @@ public class PosTelemetry extends AppCompatActivity {
             @Override
             public void onFailure(Call<CashSaleResponse> call, Throwable t) {
                 btnConfirmIssue.setEnabled(true);
-                updateTotalDisplay(); // Re-applies the original price text
+                updateTotalDisplay();
                 Toast.makeText(PosTelemetry.this, "Network Error", Toast.LENGTH_SHORT).show();
             }
         });

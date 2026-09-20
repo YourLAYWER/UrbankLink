@@ -62,7 +62,7 @@ public class ScannerTelemetry extends AppCompatActivity {
     private boolean isProcessing = false;
     private String authHeader;
     private int activeShiftId = -1;
-    private int currentPassengers = 45; // Starting demo capacity based on your UI
+    private int currentPassengers = 0; // Starting demo capacity based on your UI
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +110,7 @@ public class ScannerTelemetry extends AppCompatActivity {
                 result -> {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         int addedPassengers = result.getData().getIntExtra("PASSENGERS_ADDED", 0);
-                        currentPassengers += addedPassengers;
+                        updatePassengerCount(currentPassengers + addedPassengers);
                         if (txtOccupancyCount != null) {
                             txtOccupancyCount.setText(String.valueOf(currentPassengers));
                         }
@@ -144,6 +144,36 @@ public class ScannerTelemetry extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 100);
         } else {
             startCamera();
+        }
+
+
+
+        // Load saved count, defaulting to 45 if nothing is stored yet
+        currentPassengers = prefs.getInt("ACTIVE_PASSENGER_COUNT", 0);
+
+        if (txtOccupancyCount != null) {
+            txtOccupancyCount.setText(String.valueOf(currentPassengers));
+        }
+    }
+    private void updatePassengerCount(int newCount) {
+        currentPassengers = newCount;
+
+        if (txtOccupancyCount != null) {
+            txtOccupancyCount.setText(String.valueOf(currentPassengers));
+        }
+
+        // Save persistently so other screens or re-opened activities remember it
+        SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
+        prefs.edit().putInt("ACTIVE_PASSENGER_COUNT", currentPassengers).apply();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
+        currentPassengers = prefs.getInt("ACTIVE_PASSENGER_COUNT", 0);
+        if (txtOccupancyCount != null) {
+            txtOccupancyCount.setText(String.valueOf(currentPassengers));
         }
     }
 
@@ -252,6 +282,10 @@ public class ScannerTelemetry extends AppCompatActivity {
             @Override
             public void onResponse(Call<ScanTicketResponse> call, Response<ScanTicketResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
+
+                    //Increment Passenger Count
+                    updatePassengerCount(currentPassengers + 1);
+
                     // TICKET IS VALID
                     toneGen.startTone(ToneGenerator.TONE_PROP_BEEP, 150);
 
@@ -259,10 +293,10 @@ public class ScannerTelemetry extends AppCompatActivity {
                     if (panelSuccessOverlay != null) panelSuccessOverlay.setVisibility(View.VISIBLE);
 
                     // Update Capacity UI
-                    currentPassengers++;
-                    if (txtOccupancyCount != null) {
-                        txtOccupancyCount.setText(String.valueOf(currentPassengers));
-                    }
+//                    currentPassengers++;
+//                    if (txtOccupancyCount != null) {
+//                        txtOccupancyCount.setText(String.valueOf(currentPassengers));
+//                    }
 
                     // Hide overlay and unlock scanner after 2 seconds
                     viewFinder.postDelayed(() -> {
