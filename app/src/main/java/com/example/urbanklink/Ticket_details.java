@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -194,8 +196,14 @@ public class Ticket_details extends AppCompatActivity {
 
                     JourneyResponse data = response.body();
 
+                    // 1. Loop through all involved routes and subscribe to their specific topics
+                    if (data.getRouteIds() != null) {
+                        for (int routeId : data.getRouteIds()) {
+                            subscribeToRouteAlerts(routeId);
+                        }
+                    }
 
-                    // 1. Create the offline ticket record
+                    // 2. Create the offline ticket record
                     LocalTicket newTicket = new LocalTicket(
                             data.getTicketReference(),
                             data.getJourneyId(),
@@ -207,12 +215,12 @@ public class Ticket_details extends AppCompatActivity {
                             data.getTicketStatus()
                     );
 
-                    // 2. Save to Room database on a background thread (Room crashes if run on the main UI thread)
+                    // 3. Save to Room database on a background thread (Room crashes if run on the main UI thread)
                     java.util.concurrent.Executors.newSingleThreadExecutor().execute(() -> {
                         UrbanLinkDatabase.getInstance(Ticket_details.this).ticketDao().insertTicket(newTicket);
                     });
 
-                    // 3. Show Toast and Navigate to QR Screen
+                    // 4. Show Toast and Navigate to QR Screen
                     showSnackbar("Payment Successful! Ticket Saved.");
 
                     // SUCCESS!
@@ -220,6 +228,9 @@ public class Ticket_details extends AppCompatActivity {
                     Intent intent = new Intent(Ticket_details.this, TicketScreen.class);
                     intent.putExtra("TICKET_REF", response.body().getTicketReference());
                     intent.putExtra("TICKET_STATUS", response.body().getTicketStatus());
+
+                    // Optionally pass the route array to the next screen so it knows what to unsubscribe from later
+                    intent.putIntegerArrayListExtra("ROUTE_IDS", new java.util.ArrayList<>(data.getRouteIds()));
                     startActivity(intent);
                     // You would typically navigate to a "Ticket QR Code" screen here
                     finish();
@@ -250,5 +261,19 @@ public class Ticket_details extends AppCompatActivity {
                 showErrorSnackbar("Network error during checkout.");
             }
         });
+    }
+    public void subscribeToRouteAlerts(int routeId) {
+        // The topic string must perfectly match the backend: "route_{routeId}_alerts"
+        String topic = "route_" + routeId + "_alerts";
+
+        FirebaseMessaging.getInstance().subscribeToTopic(topic)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("FCM", "Successfully subscribed to " + topic);
+                    } else {
+                        Log.e("FCM", "Failed to subscribe to " + topic, task.getException());
+                        // Optionally retry later or rely on the REST API fallback
+                    }
+                });
     }
 }

@@ -44,7 +44,6 @@
             android:name=".MainActivity"
             android:exported="false" />
 
-        <!-- LoginActivity is no longer the launcher, so exported is false -->
         <activity
             android:name=".LoginActivity"
             android:exported="false"
@@ -119,6 +118,14 @@
             android:name=".PosTelemetry"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
+        <service
+            android:name=".UrbanLinkFirebaseService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

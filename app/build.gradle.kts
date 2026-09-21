@@ -95,4 +95,7 @@ dependencies {
 
     // Gson for parsing server payloads
     implementation("com.google.code.gson:gson:2.10.1")
+
+    //Firebase
+    implementation("com.google.firebase:firebase-messaging:23.4.0")
 }

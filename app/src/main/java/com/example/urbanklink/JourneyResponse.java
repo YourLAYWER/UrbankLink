@@ -2,6 +2,8 @@ package com.example.urbanklink;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class JourneyResponse {
     @SerializedName("message")
     private String message;
@@ -23,6 +25,9 @@ public class JourneyResponse {
 
     @SerializedName("ticketStatus")
     private String ticketStatus;
+
+    @SerializedName("routeIds")
+    private List<Integer> routeIds;
 
     // --- GETTERS ---
 
@@ -50,4 +55,8 @@ public class JourneyResponse {
     public String getEstimatedArrivalTime() {return estimatedArrivalTime;}
 
     public String getTicketStatus() {return ticketStatus;}
+
+    public List<Integer> getRouteIds() {
+        return routeIds;
+    }
 }
