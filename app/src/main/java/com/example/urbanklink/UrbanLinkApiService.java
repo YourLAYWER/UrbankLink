@@ -73,4 +73,7 @@ interface UrbanLinkApiService {
 
     @GET("api/ConductorShift/active-shift-info")
     Call<ShiftInfoResponse> getActiveShiftInfo();
+
+    @GET("api/Incident/routes/{routeId}/status")
+    Call<RouteStatusResponse> getRouteStatus(@Path("routeId") int routeId);
 }

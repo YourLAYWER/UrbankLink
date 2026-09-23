@@ -1,6 +1,10 @@
 package com.example.urbanklink;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -14,6 +18,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -21,6 +26,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.maps.android.PolyUtil;
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
@@ -45,7 +51,10 @@ import org.w3c.dom.Text;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 public class TicketScreen extends AppCompatActivity implements OnMapReadyCallback{
 
@@ -58,6 +67,8 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
     private FusedLocationProviderClient fusedLocationClient;
     private ActivityResultLauncher<String[]> locationPermissionRequest;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    private String currentTicketStatus = "ACTIVE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,13 +95,37 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
                 }
         );
 
+//        String ticketRef = getIntent().getStringExtra("TICKET_REF");
+//        String ticketStatus = getIntent().getStringExtra("TICKET_STATUS");
+//        String ticketRoute = getIntent().getStringExtra("TICKET_ROUTE");
+
+//        if (ticketRef != null && !ticketRef.isEmpty()) {
+//            if (ticketStatus == null) ticketStatus = "ACTIVE";
+//            generateQRCode(ticketRef, ticketStatus);
+//
+//            if (ticketRoute != null) {
+//                TextView txtCurrentLeg = findViewById(R.id.txtCurrentLeg);
+//                if (txtCurrentLeg != null) txtCurrentLeg.setText(ticketRoute);
+//            }
+//
+//            loadSpecificTicketFromDatabase(ticketRef);
+//        } else {
+//            loadActiveTicketFromDatabase();
+//            showSnackbar("Offline Ticket Loaded");
+//        }
+
+        // 1. Assign and immediately check for null before anything else
+        currentTicketStatus = getIntent().getStringExtra("TICKET_STATUS");
+        if (currentTicketStatus == null) {
+            currentTicketStatus = "ACTIVE";
+        }
+
         String ticketRef = getIntent().getStringExtra("TICKET_REF");
-        String ticketStatus = getIntent().getStringExtra("TICKET_STATUS");
         String ticketRoute = getIntent().getStringExtra("TICKET_ROUTE");
 
+        // 2. Use it safely in your existing logic
         if (ticketRef != null && !ticketRef.isEmpty()) {
-            if (ticketStatus == null) ticketStatus = "ACTIVE";
-            generateQRCode(ticketRef, ticketStatus);
+            generateQRCode(ticketRef, currentTicketStatus);
 
             if (ticketRoute != null) {
                 TextView txtCurrentLeg = findViewById(R.id.txtCurrentLeg);
@@ -108,6 +143,7 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
     }
 
     private void fetchWalkingRoute(LatLng origin, LatLng destination) {
@@ -124,29 +160,8 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder().url(cleanedUrl).build();
 
-//            try {
-//                Response response = client.newCall(request).execute();
-//                if (response.isSuccessful() && response.body() != null) {
-//                    String jsonData = response.body().string();
-//                    JSONObject jsonObject = new JSONObject(jsonData);
-//                    JSONArray routes = jsonObject.getJSONArray("routes");
-//
-//                    if (routes.length() > 0) {
-//                        JSONObject route = routes.getJSONObject(0);
-//                        JSONObject overviewPolyline = route.getJSONObject("overview_polyline");
-//                        String encodedPoints = overviewPolyline.getString("points");
-//
-//                        List<LatLng> decodedPath = PolyUtil.decode(encodedPoints);
-//
-//                        runOnUiThread(() -> drawWalkingPathOnMap(decodedPath));
-//                    }
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-
             try {
-                Response response = client.newCall(request).execute();
+                okhttp3.Response response = client.newCall(request).execute();
                 String bodyString = response.body() != null ? response.body().string() : "";
                 Log.d("DIRECTIONS_API", "Code: " + response.code() + " | Body: " + bodyString);
 
@@ -372,5 +387,78 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
             e.printStackTrace();
             showErrorSnackbar("Failed to generate QR Code");
         }
+    }
+
+    // Method below is for unsubscribing to Route notifications
+    public void onTicketScanned(int routeId) {
+        String topic = "route_" + routeId + "_alerts";
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
+        // Proceed with updating local Room DB status to "Used"
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                routeAlertReceiver,
+                new IntentFilter("FCM_ROUTE_STATUS_UPDATE")
+        );
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(routeAlertReceiver);
+    }
+
+
+    private BroadcastReceiver routeAlertReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Guard clause: Only fetch live updates if the ticket is ACTIVE
+            if (!"ACTIVE".equalsIgnoreCase(currentTicketStatus)) {
+                return;
+            }
+
+            String routeIdStr = intent.getStringExtra("routeId");
+            if (routeIdStr != null) {
+                int routeId = Integer.parseInt(routeIdStr);
+                fetchLiveRouteStatus(routeId);
+                showErrorSnackbar("Route update! Fetching latest delay info...");
+            }
+        }
+    };
+
+    public void fetchLiveRouteStatus(int routeId) {
+        // FIX 1: Reverted 'this' to 'null' to match your ApiClient's expected parameter
+        UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+
+        apiService.getRouteStatus(routeId).enqueue(new Callback<RouteStatusResponse>() {
+            @Override
+            public void onResponse(Call<RouteStatusResponse> call, Response<RouteStatusResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    RouteStatusResponse status = response.body();
+
+                    TextView txtArrivalTitle = findViewById(R.id.txtArrivalTitle);
+
+                    // FIX 2: Added a strict null check for the alert object before calling getMessage()
+                    if (status.isHasDelay() && status.getAlert() != null) {
+
+                        txtArrivalTitle.setText(status.getAlert().getMessage());
+                        txtArrivalTitle.setTextColor(android.graphics.Color.parseColor("#FF5252"));
+                        showErrorSnackbar("Route delayed. UI updated.");
+
+                    } else {
+                        txtArrivalTitle.setText("Bus is on Route.");
+                        txtArrivalTitle.setTextColor(android.graphics.Color.parseColor("#E0FFFF"));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RouteStatusResponse> call, Throwable t) {
+                Log.e("API_ERROR", "Failed to fetch live status: " + t.getMessage());
+            }
+        });
     }
 }

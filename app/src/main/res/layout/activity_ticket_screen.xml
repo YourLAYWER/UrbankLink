@@ -100,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:text="Algoa Bus arriving in\n2 mins."
+                android:text="Bus is on Route."
                 android:textColor="#E0FFFF"
                 android:textSize="28sp"
                 android:textStyle="bold"
