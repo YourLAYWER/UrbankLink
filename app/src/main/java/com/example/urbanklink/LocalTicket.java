@@ -21,9 +21,10 @@ public class LocalTicket {
 
     public int startStopId;
     public int destStopId;
+    public int routeId;
 
     // Constructor
-    public LocalTicket(@NonNull String ticketReference, int journeyId, double totalCost, long purchaseDate, String estimatedArrivalTime, int startStopId, int destStopId, String ticketStatus) {
+    public LocalTicket(@NonNull String ticketReference, int journeyId, double totalCost, long purchaseDate, String estimatedArrivalTime, int startStopId, int destStopId, String ticketStatus, int routeId) {
         this.ticketReference = ticketReference;
         this.journeyId = journeyId;
         this.totalCost = totalCost;
@@ -33,5 +34,6 @@ public class LocalTicket {
         this.ticketStatus = ticketStatus;
         this.destStopId = destStopId;
         this.startStopId = startStopId;
+        this.routeId = routeId;
     }
 }

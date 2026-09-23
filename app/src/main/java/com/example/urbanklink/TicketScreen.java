@@ -70,6 +70,7 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
 
     private String currentTicketStatus = "ACTIVE";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,6 +123,9 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
 
         String ticketRef = getIntent().getStringExtra("TICKET_REF");
         String ticketRoute = getIntent().getStringExtra("TICKET_ROUTE");
+        int historyRouteId = getIntent().getIntExtra("TICKET_ROUTE_ID", -1);
+
+
 
         // 2. Use it safely in your existing logic
         if (ticketRef != null && !ticketRef.isEmpty()) {
@@ -130,6 +134,10 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
             if (ticketRoute != null) {
                 TextView txtCurrentLeg = findViewById(R.id.txtCurrentLeg);
                 if (txtCurrentLeg != null) txtCurrentLeg.setText(ticketRoute);
+            }
+
+            if (historyRouteId != -1 && "ACTIVE".equalsIgnoreCase(currentTicketStatus)) {
+                fetchLiveRouteStatus(historyRouteId); // Proactive fetch from History
             }
 
             loadSpecificTicketFromDatabase(ticketRef);

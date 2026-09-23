@@ -60,6 +60,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
             // NEW: Pass the status and route so the TicketScreen knows what to hide!
             intent.putExtra("TICKET_STATUS", item.getStatus());
             intent.putExtra("TICKET_ROUTE", item.getRouteSummary());
+            intent.putExtra("TICKET_ROUTE_ID", item.getRouteId());
 
             v.getContext().startActivity(intent);
         });

@@ -43,6 +43,7 @@ public class Ticket_details extends AppCompatActivity {
     private RecyclerView rvTimeline;
     private RouteTimelineAdapter timelineAdapter;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -203,16 +204,23 @@ public class Ticket_details extends AppCompatActivity {
                         }
                     }
 
+                    // NEW: Safely grab the first route ID to store in the local database
+                    int primaryRouteId = -1;
+                    if (data.getRouteIds() != null && !data.getRouteIds().isEmpty()) {
+                        primaryRouteId = data.getRouteIds().get(0);
+                    }
+
                     // 2. Create the offline ticket record
                     LocalTicket newTicket = new LocalTicket(
                             data.getTicketReference(),
                             data.getJourneyId(),
                             data.getTotalCost(),
-                            System.currentTimeMillis(),// Current time
+                            System.currentTimeMillis(), // Current time
                             data.getEstimatedArrivalTime(),
                             startId,
                             destId,
-                            data.getTicketStatus()
+                            data.getTicketStatus(),
+                            primaryRouteId
                     );
 
                     // 3. Save to Room database on a background thread (Room crashes if run on the main UI thread)
