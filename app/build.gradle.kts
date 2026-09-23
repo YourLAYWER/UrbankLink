@@ -3,6 +3,7 @@ import org.gradle.kotlin.dsl.implementation
 
 plugins {
     alias(libs.plugins.android.application)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -98,4 +99,5 @@ dependencies {
 
     //Firebase
     implementation("com.google.firebase:firebase-messaging:23.4.0")
+
 }
