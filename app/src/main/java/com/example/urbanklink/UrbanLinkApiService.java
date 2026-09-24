@@ -76,4 +76,13 @@ interface UrbanLinkApiService {
 
     @GET("api/Incident/routes/{routeId}/status")
     Call<RouteStatusResponse> getRouteStatus(@Path("routeId") int routeId);
+
+//    @GET("api/Journey/tickets/{ticketReference}/status")
+//    Call<RouteStatusResponse> getTicketStatus(@Path("ticketReference") String ticketReference);
+
+    @GET("api/Journey/tickets/{ticketReference}/status")
+    Call<RouteStatusResponse> getTicketStatus(
+            @Header("Authorization") String token,
+            @Path("ticketReference") String ticketReference
+    );
 }
