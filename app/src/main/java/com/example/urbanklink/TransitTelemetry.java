@@ -43,7 +43,11 @@ public class TransitTelemetry extends AppCompatActivity {
     private List<DestStop> cachedServerQueue = new ArrayList<>();
     private DestStop previousStop, currentStop, nextStop;
 
-    private int currentQueueIndex = 0;
+    //private int currentQueueIndex = 0;
+
+    private int highestClearedSequence = 0;
+    private DestStop lastClearedStop = null;
+    private List<DestStop> activeFilteredQueue = new ArrayList<>();
 
     // SignalR Hub Connection
     private HubConnection hubConnection;
@@ -92,6 +96,16 @@ public class TransitTelemetry extends AppCompatActivity {
         btnArrived = cardCurrentStop.findViewById(R.id.btnArrived);
     }
 
+    private void applySequenceFilter() {
+        activeFilteredQueue.clear();
+        for (DestStop stop : cachedServerQueue) {
+            // Only keep stops that the bus hasn't physically passed yet
+            if (stop.getSequenceNumber() > highestClearedSequence) {
+                activeFilteredQueue.add(stop);
+            }
+        }
+    }
+
     private void setupListeners() {
         // Driver taps "ARRIVED!" to progress to the next stop in sequence
         btnArrived.setOnClickListener(v -> {
@@ -133,65 +147,109 @@ public class TransitTelemetry extends AppCompatActivity {
         }).start();
     }
 
-    private void updateQueueData(List<DestStop> newServerQueue) {
-        if (newServerQueue == null || newServerQueue.isEmpty()) {
-            return;
-        }
+//    private void updateQueueData(List<DestStop> newServerQueue) {
+//        if (newServerQueue == null || newServerQueue.isEmpty()) {
+//            return;
+//        }
+//
+//        // 1. Cache the fresh server list
+//        cachedServerQueue = newServerQueue;
+//
+//        // 2. Re-align position or initialize if first load
+//        if (txtCurrentName.getText().toString().equals("BOARDWALK 1") && currentQueueIndex == 0 && cachedServerQueue.size() > 0) {
+//            // Keep index 0 on startup
+//        } else if (currentStopNameIsSet()) {
+//            boolean found = false;
+//            String activeName = txtCurrentName.getText().toString();
+//            for (int i = 0; i < cachedServerQueue.size(); i++) {
+//                if (cachedServerQueue.get(i).getName() != null && cachedServerQueue.get(i).getName().equalsIgnoreCase(activeName)) {
+//                    currentQueueIndex = i;
+//                    found = true;
+//                    break;
+//                }
+//            }
+//            if (!found && currentQueueIndex >= cachedServerQueue.size()) {
+//                currentQueueIndex = Math.max(0, cachedServerQueue.size() - 1);
+//            }
+//        }
+//
+//        refreshUIState();
+//    }
 
-        // 1. Cache the fresh server list
+    private void updateQueueData(List<DestStop> newServerQueue) {
+        if (newServerQueue == null) return;
+
+        // Cache the raw list from the server
         cachedServerQueue = newServerQueue;
 
-        // 2. Re-align position or initialize if first load
-        if (txtCurrentName.getText().toString().equals("BOARDWALK 1") && currentQueueIndex == 0 && cachedServerQueue.size() > 0) {
-            // Keep index 0 on startup
-        } else if (currentStopNameIsSet()) {
-            boolean found = false;
-            String activeName = txtCurrentName.getText().toString();
-            for (int i = 0; i < cachedServerQueue.size(); i++) {
-                if (cachedServerQueue.get(i).getName() != null && cachedServerQueue.get(i).getName().equalsIgnoreCase(activeName)) {
-                    currentQueueIndex = i;
-                    found = true;
-                    break;
-                }
-            }
-            if (!found && currentQueueIndex >= cachedServerQueue.size()) {
-                currentQueueIndex = Math.max(0, cachedServerQueue.size() - 1);
-            }
-        }
+        // Apply the "No Time Travel" filter
+        applySequenceFilter();
 
+        // Redraw the screen
         refreshUIState();
     }
-
     private boolean currentStopNameIsSet() {
         return txtCurrentName != null && !txtCurrentName.getText().toString().isEmpty();
     }
 
-    private void refreshUIState() {
-        if (cachedServerQueue.isEmpty()) return;
+//    private void refreshUIState() {
+//        if (cachedServerQueue.isEmpty()) return;
+//
+//        // 1. Previous Stop
+//        if (currentQueueIndex > 0 && currentQueueIndex - 1 < cachedServerQueue.size()) {
+//            cardPreviousStop.setVisibility(View.VISIBLE);
+//            DestStop prev = cachedServerQueue.get(currentQueueIndex - 1);
+//            txtPrevName.setText(prev.getName() != null ? prev.getName() : "");
+//        } else {
+//            cardPreviousStop.setVisibility(View.INVISIBLE);
+//        }
+//
+//        // 2. Current Target Stop
+//        if (currentQueueIndex < cachedServerQueue.size()) {
+//            cardCurrentStop.setVisibility(View.VISIBLE);
+//            DestStop current = cachedServerQueue.get(currentQueueIndex);
+//            txtCurrentName.setText(current.getName() != null ? current.getName() : "");
+//        } else {
+//            cardCurrentStop.setVisibility(View.INVISIBLE);
+//            txtCurrentName.setText("ROUTE COMPLETE");
+//        }
+//
+//        // 3. Subsequent Stop (Next)
+//        if (currentQueueIndex + 1 < cachedServerQueue.size()) {
+//            cardNextStop.setVisibility(View.VISIBLE);
+//            DestStop next = cachedServerQueue.get(currentQueueIndex + 1);
+//            txtNextName.setText(next.getName() != null ? next.getName() : "");
+//            txtNextPax.setText("EXPECTED: ~" + next.getPassengersDroppingOff() + " PAX");
+//        } else {
+//            cardNextStop.setVisibility(View.INVISIBLE);
+//        }
+//    }
 
-        // 1. Previous Stop
-        if (currentQueueIndex > 0 && currentQueueIndex - 1 < cachedServerQueue.size()) {
+    private void refreshUIState() {
+        // 1. Previous Stop (The one we just cleared)
+        if (lastClearedStop != null) {
             cardPreviousStop.setVisibility(View.VISIBLE);
-            DestStop prev = cachedServerQueue.get(currentQueueIndex - 1);
-            txtPrevName.setText(prev.getName() != null ? prev.getName() : "");
+            txtPrevName.setText(lastClearedStop.getName() != null ? lastClearedStop.getName() : "");
         } else {
             cardPreviousStop.setVisibility(View.INVISIBLE);
         }
 
-        // 2. Current Target Stop
-        if (currentQueueIndex < cachedServerQueue.size()) {
+        // 2. Current Target Stop (Always index 0 of the filtered queue)
+        if (activeFilteredQueue.size() > 0) {
             cardCurrentStop.setVisibility(View.VISIBLE);
-            DestStop current = cachedServerQueue.get(currentQueueIndex);
+            DestStop current = activeFilteredQueue.get(0);
             txtCurrentName.setText(current.getName() != null ? current.getName() : "");
+            btnArrived.setEnabled(true);
         } else {
             cardCurrentStop.setVisibility(View.INVISIBLE);
             txtCurrentName.setText("ROUTE COMPLETE");
+            btnArrived.setEnabled(false);
         }
 
-        // 3. Subsequent Stop (Next)
-        if (currentQueueIndex + 1 < cachedServerQueue.size()) {
+        // 3. Subsequent Stop (Always index 1 of the filtered queue)
+        if (activeFilteredQueue.size() > 1) {
             cardNextStop.setVisibility(View.VISIBLE);
-            DestStop next = cachedServerQueue.get(currentQueueIndex + 1);
+            DestStop next = activeFilteredQueue.get(1);
             txtNextName.setText(next.getName() != null ? next.getName() : "");
             txtNextPax.setText("EXPECTED: ~" + next.getPassengersDroppingOff() + " PAX");
         } else {
@@ -199,38 +257,80 @@ public class TransitTelemetry extends AppCompatActivity {
         }
     }
 
+//    private void animateRouteProgression() {
+//        // 1. Increment index to move to the next stop in sequence
+//        currentQueueIndex++;
+//
+//        int animDuration = 250;
+//
+//        // 2. Slide cards up and fade out
+//        cardPreviousStop.animate().translationY(-40f).alpha(0f).setDuration(animDuration);
+//        cardCurrentStop.animate().translationY(-40f).alpha(0f).setDuration(animDuration);
+//        cardNextStop.animate().translationY(-40f).alpha(0f).setDuration(animDuration).withEndAction(() -> {
+//
+//            // 3. Update Text Content mid-animation via index re-evaluation
+//            refreshUIState();
+//
+//            // 4. Reset vertical offsets
+//            cardPreviousStop.setTranslationY(40f);
+//            cardCurrentStop.setTranslationY(40f);
+//            cardNextStop.setTranslationY(40f);
+//
+//            // 5. Fade back in smoothly
+//            cardPreviousStop.animate().translationY(0f).alpha(1f).setDuration(animDuration);
+//            cardCurrentStop.animate().translationY(0f).alpha(1f).setDuration(animDuration);
+//
+//            if (currentQueueIndex + 1 < cachedServerQueue.size()) {
+//                cardNextStop.setVisibility(View.VISIBLE);
+//                cardNextStop.animate().translationY(0f).alpha(1f).setDuration(animDuration);
+//            } else {
+//                cardNextStop.setVisibility(View.INVISIBLE);
+//            }
+//
+//            // Re-enable arrival button
+//            btnArrived.setEnabled(true);
+//            btnArrived.setText("ARRIVED!");
+//        });
+//    }
+
     private void animateRouteProgression() {
-        // 1. Increment index to move to the next stop in sequence
-        currentQueueIndex++;
+        // 1. Lock the current stop into the past
+        if (activeFilteredQueue.size() > 0) {
+            DestStop current = activeFilteredQueue.get(0);
+            highestClearedSequence = current.getSequenceNumber(); // Move the pointer forward
+            lastClearedStop = current; // Save for the 'Previous' card
+        }
+
+        // 2. Re-filter the queue to drop the stop we just cleared
+        applySequenceFilter();
 
         int animDuration = 250;
 
-        // 2. Slide cards up and fade out
+        // 3. Slide cards up and fade out
         cardPreviousStop.animate().translationY(-40f).alpha(0f).setDuration(animDuration);
         cardCurrentStop.animate().translationY(-40f).alpha(0f).setDuration(animDuration);
         cardNextStop.animate().translationY(-40f).alpha(0f).setDuration(animDuration).withEndAction(() -> {
 
-            // 3. Update Text Content mid-animation via index re-evaluation
+            // 4. Update Text Content mid-animation
             refreshUIState();
 
-            // 4. Reset vertical offsets
+            // 5. Reset vertical offsets
             cardPreviousStop.setTranslationY(40f);
             cardCurrentStop.setTranslationY(40f);
             cardNextStop.setTranslationY(40f);
 
-            // 5. Fade back in smoothly
-            cardPreviousStop.animate().translationY(0f).alpha(1f).setDuration(animDuration);
-            cardCurrentStop.animate().translationY(0f).alpha(1f).setDuration(animDuration);
-
-            if (currentQueueIndex + 1 < cachedServerQueue.size()) {
-                cardNextStop.setVisibility(View.VISIBLE);
+            // 6. Fade back in smoothly
+            if (lastClearedStop != null) {
+                cardPreviousStop.animate().translationY(0f).alpha(1f).setDuration(animDuration);
+            }
+            if (activeFilteredQueue.size() > 0) {
+                cardCurrentStop.animate().translationY(0f).alpha(1f).setDuration(animDuration);
+            }
+            if (activeFilteredQueue.size() > 1) {
                 cardNextStop.animate().translationY(0f).alpha(1f).setDuration(animDuration);
-            } else {
-                cardNextStop.setVisibility(View.INVISIBLE);
             }
 
             // Re-enable arrival button
-            btnArrived.setEnabled(true);
             btnArrived.setText("ARRIVED!");
         });
     }
