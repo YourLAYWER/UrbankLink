@@ -63,6 +63,9 @@ public class MainActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationClient;
     private ActivityResultLauncher<String[]> locationPermissionRequest;
     private GoogleMap mMap;
+    private com.google.android.gms.maps.model.Polyline currentlySelectedPolyline = null;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -411,18 +414,17 @@ public class MainActivity extends AppCompatActivity {
 
         mMap.clear(); // Clears old lines before redrawing
 
+        currentlySelectedPolyline = null;
+
         for (LocalRoute route : routes) {
             if (route.encodedPolyline != null && !route.encodedPolyline.isEmpty()) {
-                // 1. Inflate the string back into GPS coordinates
                 List<LatLng> decodedPath = PolyUtil.decode(route.encodedPolyline);
 
-                // 2. Determine the color based on transit type
-                int routeColor = Color.parseColor("#2196F3"); // Default UrbanLink Blue for Bus
+                int routeColor = Color.parseColor("#2196F3");
                 if ("Train".equalsIgnoreCase(route.transportType) || "Rail".equalsIgnoreCase(route.transportType)) {
-                    routeColor = Color.parseColor("#4CAF50"); // Green for Rail
+                    routeColor = Color.parseColor("#4CAF50");
                 }
 
-                // 3. Configure the line style
                 PolylineOptions polylineOptions = new PolylineOptions()
                         .addAll(decodedPath)
                         .color(routeColor)
@@ -430,15 +432,47 @@ public class MainActivity extends AppCompatActivity {
                         .geodesic(true)
                         .clickable(true);
 
-                // 4. Paint it on the map!
-                mMap.addPolyline(polylineOptions);
+                // 1. Capture the polyline object that Google Maps just created
+                com.google.android.gms.maps.model.Polyline polyline = mMap.addPolyline(polylineOptions);
+
+                // 2. Hide the entire LocalRoute object inside the line!
+                polyline.setTag(route);
             }
         }
 
         // 5. Allow users to tap a route to see its name
         mMap.setOnPolylineClickListener(polyline -> {
-            Toast.makeText(MainActivity.this, "Route Selected", Toast.LENGTH_SHORT).show();
-            // Later, you can map the polyline back to its exact LocalRoute name here
+            // 1. Revert the previously selected line back to normal (if one exists)
+            if (currentlySelectedPolyline != null) {
+                LocalRoute prevRoute = (LocalRoute) currentlySelectedPolyline.getTag();
+                if (prevRoute != null) {
+                    // Figure out if it was originally blue or green
+                    int originalColor = Color.parseColor("#2196F3");
+                    if ("Train".equalsIgnoreCase(prevRoute.transportType) || "Rail".equalsIgnoreCase(prevRoute.transportType)) {
+                        originalColor = Color.parseColor("#4CAF50");
+                    }
+
+                    currentlySelectedPolyline.setColor(originalColor);
+                    currentlySelectedPolyline.setWidth(12f); // Back to normal width
+                    currentlySelectedPolyline.setZIndex(0);  // Push back down to normal layer
+                }
+            }
+
+            // 2. Highlight the new line the user just tapped
+            polyline.setColor(Color.parseColor("#FF9800")); // Vibrant Orange highlight
+            polyline.setWidth(22f); // Make it noticeably thicker
+            polyline.setZIndex(1);  // Bring it to the very front above all other lines
+
+            // 3. Save this new line as the active selection so we can reset it next time
+            currentlySelectedPolyline = polyline;
+
+            // 4. Extract the tag to show the route name
+            LocalRoute clickedRoute = (LocalRoute) polyline.getTag();
+            if (clickedRoute != null) {
+                Toast.makeText(MainActivity.this,
+                        "Selected: " + clickedRoute.routeName + " (" + clickedRoute.transportType + ")",
+                        Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
