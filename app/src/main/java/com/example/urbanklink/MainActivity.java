@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
@@ -29,10 +30,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import com.google.maps.android.PolyUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,6 +76,8 @@ public class MainActivity extends AppCompatActivity {
             mapFragment.getMapAsync(googleMap -> {
                 mMap = googleMap;
                 enableUserLocation();           // Try enabling if permissions were already granted previously
+
+                loadAndSyncMapRoutes();
             });
         }
 
@@ -356,6 +361,84 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("SYNC_ERROR", "Network error: " + t.getMessage());
                 // It's okay if this fails! The app will just use the offline Room data from yesterday.
             }
+        });
+    }
+
+    private void loadAndSyncMapRoutes() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        executor.execute(() -> {
+            UrbanLinkDatabase db = UrbanLinkDatabase.getInstance(getApplicationContext());
+
+            // 1. INSTANT LOAD: Grab whatever is in the local Room DB
+            List<LocalRoute> cachedRoutes = db.routeDao().getAllRoutes();
+
+            // Draw instantly if data exists
+            if (!cachedRoutes.isEmpty()) {
+                runOnUiThread(() -> drawRoutesOnMap(cachedRoutes));
+            }
+
+            // 2. BACKGROUND SYNC: Call the API to get fresh routes
+            UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+            apiService.getAllMapRoutes().enqueue(new Callback<List<LocalRoute>>() {
+                @Override
+                public void onResponse(Call<List<LocalRoute>> call, Response<List<LocalRoute>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        List<LocalRoute> freshRoutes = response.body();
+
+                        executor.execute(() -> {
+                            // Update local SQLite cache safely
+                            db.routeDao().updateRouteCache(freshRoutes);
+
+                            // If this was the first launch (cache was empty), draw the fresh routes now
+                            if (cachedRoutes.isEmpty()) {
+                                runOnUiThread(() -> drawRoutesOnMap(freshRoutes));
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<LocalRoute>> call, Throwable t) {
+                    Log.e("MAP_SYNC", "Failed to fetch routes. Relying on offline cache.");
+                }
+            });
+        });
+    }
+
+    private void drawRoutesOnMap(List<LocalRoute> routes) {
+        if (mMap == null || routes == null) return;
+
+        mMap.clear(); // Clears old lines before redrawing
+
+        for (LocalRoute route : routes) {
+            if (route.encodedPolyline != null && !route.encodedPolyline.isEmpty()) {
+                // 1. Inflate the string back into GPS coordinates
+                List<LatLng> decodedPath = PolyUtil.decode(route.encodedPolyline);
+
+                // 2. Determine the color based on transit type
+                int routeColor = Color.parseColor("#2196F3"); // Default UrbanLink Blue for Bus
+                if ("Train".equalsIgnoreCase(route.transportType) || "Rail".equalsIgnoreCase(route.transportType)) {
+                    routeColor = Color.parseColor("#4CAF50"); // Green for Rail
+                }
+
+                // 3. Configure the line style
+                PolylineOptions polylineOptions = new PolylineOptions()
+                        .addAll(decodedPath)
+                        .color(routeColor)
+                        .width(12f)
+                        .geodesic(true)
+                        .clickable(true);
+
+                // 4. Paint it on the map!
+                mMap.addPolyline(polylineOptions);
+            }
+        }
+
+        // 5. Allow users to tap a route to see its name
+        mMap.setOnPolylineClickListener(polyline -> {
+            Toast.makeText(MainActivity.this, "Route Selected", Toast.LENGTH_SHORT).show();
+            // Later, you can map the polyline back to its exact LocalRoute name here
         });
     }
 

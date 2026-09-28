@@ -1,0 +1,26 @@
+package com.example.urbanklink;
+
+import androidx.room.Dao;
+import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
+import androidx.room.Query;
+import androidx.room.Transaction;
+import java.util.List;
+@Dao
+public interface RouteDao {
+    @Query("SELECT * FROM local_routes")
+    List<LocalRoute> getAllRoutes();
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAll(List<LocalRoute> routes);
+
+    @Query("DELETE FROM local_routes")
+    void deleteAll();
+
+    // Safely wipes the old cache and saves the new API data
+    @Transaction
+    default void updateRouteCache(List<LocalRoute> freshRoutes) {
+        deleteAll();
+        insertAll(freshRoutes);
+    }
+}
