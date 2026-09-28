@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
@@ -32,6 +33,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
@@ -469,9 +471,7 @@ public class MainActivity extends AppCompatActivity {
             // 4. Extract the tag to show the route name
             LocalRoute clickedRoute = (LocalRoute) polyline.getTag();
             if (clickedRoute != null) {
-                Toast.makeText(MainActivity.this,
-                        "Selected: " + clickedRoute.routeName + " (" + clickedRoute.transportType + ")",
-                        Toast.LENGTH_SHORT).show();
+                showRouteBottomSheet(clickedRoute);
             }
         });
     }
@@ -536,5 +536,44 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void showRouteBottomSheet(LocalRoute clickedRoute) {
+        // 1. Initialize the Bottom Sheet
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(MainActivity.this);
+
+        // 2. Inflate your custom XML layout
+        View sheetView = getLayoutInflater().inflate(R.layout.bottom_sheet_route_details, null);
+        bottomSheetDialog.setContentView(sheetView);
+
+        // 3. Link the XML views
+        TextView txtRouteName = sheetView.findViewById(R.id.sheetRouteName);
+        TextView txtTransportType = sheetView.findViewById(R.id.sheetTransportType);
+        MaterialButton btnAction = sheetView.findViewById(R.id.sheetActionBtn);
+
+        // 4. Populate the data
+        txtRouteName.setText(clickedRoute.routeName);
+        txtTransportType.setText(clickedRoute.transportType + " Service");
+
+        // 5. Handle the button click
+        btnAction.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+
+            // Fire an Intent here to navigate the user to the ticket purchasing screen
+            // passing the specific route ID so the next screen knows what to load.
+            Toast.makeText(MainActivity.this,
+                    "Opening details for " + clickedRoute.routeName,
+                    Toast.LENGTH_SHORT).show();
+
+        /* Example Intent:
+        Intent intent = new Intent(MainActivity.this, ProviderListActivity.class);
+        intent.putExtra("TRANSPORT_TYPE", clickedRoute.transportType);
+        intent.putExtra("ROUTE_ID", clickedRoute.routeId);
+        startActivity(intent);
+        */
+        });
+
+        // 6. Show the sheet smoothly sliding up from the bottom
+        bottomSheetDialog.show();
     }
 }
