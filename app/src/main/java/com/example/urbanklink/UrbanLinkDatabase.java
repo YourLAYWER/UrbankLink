@@ -7,7 +7,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 // If you add a Tickets table later, it becomes: entities = {Stop.class, Ticket.class}
-@Database(entities = {Stop.class, LocalTicket.class,LocalUser.class}, version = 8, exportSchema = false)
+@Database(entities = {Stop.class, LocalTicket.class,LocalUser.class,LocalRoute.class}, version = 8, exportSchema = false)
 public abstract class UrbanLinkDatabase extends RoomDatabase {
     private static UrbanLinkDatabase instance;
 

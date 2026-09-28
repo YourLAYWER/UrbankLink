@@ -30,7 +30,7 @@
         <!-- ADD THIS METADATA TAG -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCEMADDL4FWQw0q8Qh5mVYCkfIzOd2QQSa" />
+            android:value="AIzaSyCEMADDL4FWQw0q8Qh5mVYCkfIzOd2QQSA" />
 
         <activity
             android:name=".TicketScreen"
