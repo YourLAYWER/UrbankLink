@@ -189,6 +189,24 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
                 .geodesic(false));
     }
 
+    private void drawTicketRouteOnMap(LocalRoute route) {
+        if (mMap == null || route == null || route.encodedPolyline == null || route.encodedPolyline.isEmpty()) return;
+
+        List<LatLng> decodedPath = PolyUtil.decode(route.encodedPolyline);
+
+        int routeColor = Color.parseColor("#2196F3"); // Bus - Blue
+        if ("Train".equalsIgnoreCase(route.transportType) || "Rail".equalsIgnoreCase(route.transportType)) {
+            routeColor = Color.parseColor("#4CAF50"); // Train - Green
+        }
+
+        mMap.addPolyline(new PolylineOptions()
+                .addAll(decodedPath)
+                .width(14f) // Slightly thicker so it stands out on the ticket screen
+                .color(routeColor)
+                .geodesic(true)
+                .zIndex(0)); // Maps markers always render above polylines by default
+    }
+
     // ==========================================
     // SNACKBAR HELPER METHODS
     // ==========================================
@@ -291,6 +309,8 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
                 Stop startStop = db.stopDao().getStopById(ticket.startStopId);
                 Stop destStop = db.stopDao().getStopById(ticket.destStopId);
 
+                LocalRoute ticketRoute = db.routeDao().getRouteById(ticket.routeId);
+
                 runOnUiThread(() -> {
                     if (startStop != null && destStop != null) {
                         TextView txtCurrentLeg = findViewById(R.id.txtCurrentLeg);
@@ -303,6 +323,7 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
 
                         if (mMap != null) {
                             drawStopsOnMap();
+                            drawTicketRouteOnMap(ticketRoute);
                         }
                     }
                 });
@@ -318,6 +339,8 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
             if (activeTicket != null && activeTicket.ticketReference != null) {
                 Stop startStop = db.stopDao().getStopById(activeTicket.startStopId);
                 Stop destStop = db.stopDao().getStopById(activeTicket.destStopId);
+
+                LocalRoute ticketRoute = db.routeDao().getRouteById(activeTicket.routeId);
 
                 runOnUiThread(() -> {
                     generateQRCode(activeTicket.ticketReference, "ACTIVE");
@@ -336,6 +359,7 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
 
                         if (mMap != null) {
                             drawStopsOnMap();
+                            drawTicketRouteOnMap(ticketRoute);
                         }
                     }
                 });

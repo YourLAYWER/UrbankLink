@@ -17,6 +17,9 @@ public interface RouteDao {
     @Query("DELETE FROM local_routes")
     void deleteAll();
 
+    @Query("SELECT * FROM local_routes WHERE routeId = :rId LIMIT 1")
+    LocalRoute getRouteById(int rId);
+
     // Safely wipes the old cache and saves the new API data
     @Transaction
     default void updateRouteCache(List<LocalRoute> freshRoutes) {
