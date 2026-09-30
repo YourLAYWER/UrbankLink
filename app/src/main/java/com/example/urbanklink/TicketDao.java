@@ -17,4 +17,7 @@ public interface TicketDao {
     // NEW: Call this when the C# server tells the app the ticket was scanned
     @Query("UPDATE tickets SET isClaimed = 1 WHERE ticketReference = :ref")
     void markTicketAsClaimed(String ref);
+
+    @Query("SELECT * FROM tickets WHERE ticketReference = :ref LIMIT 1")
+    LocalTicket getTicketByRef(String ref);
 }

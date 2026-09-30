@@ -62,6 +62,8 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap mMap; // The live map object
     private LatLng startStopCoord, destStopCoord; // Hold coords
 
+    private LocalRoute currentTicketRoute;
+
     private LatLng userCurrentCoord;
     private Polyline userToStartPolyline;
     private FusedLocationProviderClient fusedLocationClient;
@@ -118,7 +120,14 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
                 if (txtCurrentLeg != null) txtCurrentLeg.setText(ticketRoute);
             }
 
-            loadSpecificTicketFromDatabase(currentTicketRef);
+            if ("ACTIVE".equalsIgnoreCase(currentTicketStatus)) {
+                // It's the active ticket! Grab stops and route from local Room DB
+                loadSpecificTicketFromDatabase(currentTicketRef);
+            } else {
+                // It's a historical ticket from the API!
+                // Grab JUST the route polyline using the ID you passed in the Intent
+                loadHistoricalRoute(historyRouteId);
+            }
         } else {
             loadActiveTicketFromDatabase();
             showSnackbar("Offline Ticket Loaded");
@@ -132,61 +141,92 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
-    private void fetchWalkingRoute(LatLng origin, LatLng destination) {
+    private void loadHistoricalRoute(int routeId) {
+        if (routeId == -1) return;
+
         executor.execute(() -> {
-            // Replace with your actual Google Maps API Key or retrieve from strings.xml / BuildConfig
-            String apiKey = getString(R.string.google_maps_key);
+            UrbanLinkDatabase db = UrbanLinkDatabase.getInstance(TicketScreen.this);
+            // Fetch the polyline string from the locally synced routes
+            LocalRoute historyRoute = db.routeDao().getRouteById(routeId);
 
-            String cleanedUrl = "https://maps.googleapis.com/maps/api/directions/json"
-                    + "?origin=" + origin.latitude + "," + origin.longitude
-                    + "&destination=" + destination.latitude + "," + destination.longitude
-                    + "&mode=walking"
-                    + "&key=" + apiKey;
-
-            OkHttpClient client = new OkHttpClient();
-            Request request = new Request.Builder().url(cleanedUrl).build();
-
-            try {
-                okhttp3.Response response = client.newCall(request).execute();
-                String bodyString = response.body() != null ? response.body().string() : "";
-                Log.d("DIRECTIONS_API", "Code: " + response.code() + " | Body: " + bodyString);
-
-                if (response.isSuccessful() && !bodyString.isEmpty()) {
-                    JSONObject jsonObject = new JSONObject(bodyString);
-                    String status = jsonObject.optString("status");
-
-                    if ("OK".equals(status)) {
-                        JSONArray routes = jsonObject.getJSONArray("routes");
-                        if (routes.length() > 0) {
-                            JSONObject route = routes.getJSONObject(0);
-                            JSONObject overviewPolyline = route.getJSONObject("overview_polyline");
-                            String encodedPoints = overviewPolyline.getString("points");
-
-                            List<LatLng> decodedPath = PolyUtil.decode(encodedPoints);
-                            runOnUiThread(() -> drawWalkingPathOnMap(decodedPath));
-                        }
-                    } else {
-                        Log.e("DIRECTIONS_API", "API Error Status: " + status + " - " + jsonObject.optString("error_message"));
-                    }
+            runOnUiThread(() -> {
+                currentTicketRoute = historyRoute;
+                if (mMap != null) {
+                    renderTicketMap();
                 }
-            } catch (Exception e) {
-                Log.e("DIRECTIONS_API", "Exception: " + e.getMessage(), e);
-            }
+            });
         });
     }
 
-    private void drawWalkingPathOnMap(List<LatLng> pathPoints) {
-        if (mMap == null || pathPoints == null || pathPoints.isEmpty()) return;
+    private void enableUserLocationAndDrawPath() {
+        if (mMap == null) return;
 
-        if (userToStartPolyline != null) {
-            userToStartPolyline.remove();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+
+            fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+                if (location != null) {
+                    userCurrentCoord = new LatLng(location.getLatitude(), location.getLongitude());
+                    // Re-render the map to ensure the user's blue dot fits in the camera bounds
+                    renderTicketMap();
+                }
+            });
+        }
+    }
+
+    private void renderTicketMap() {
+        if (mMap == null) return; // Only return if the map itself isn't ready
+
+        mMap.clear();
+
+        // 1. Draw the Route Polyline (Works for BOTH Active and History tickets)
+        if (currentTicketRoute != null && currentTicketRoute.encodedPolyline != null && !currentTicketRoute.encodedPolyline.isEmpty()) {
+            List<LatLng> decodedPath = PolyUtil.decode(currentTicketRoute.encodedPolyline);
+
+            int routeColor = Color.parseColor("#2196F3");
+            if ("Train".equalsIgnoreCase(currentTicketRoute.transportType) || "Rail".equalsIgnoreCase(currentTicketRoute.transportType)) {
+                routeColor = Color.parseColor("#4CAF50");
+            }
+
+            mMap.addPolyline(new PolylineOptions()
+                    .addAll(decodedPath)
+                    .width(14f)
+                    .color(routeColor)
+                    .geodesic(true)
+                    .zIndex(0));
+
+            // For history tickets (where stops are null), zoom to fit the whole route
+            if (startStopCoord == null && destStopCoord == null) {
+                LatLngBounds.Builder routeBuilder = new LatLngBounds.Builder();
+                for (LatLng point : decodedPath) {
+                    routeBuilder.include(point);
+                }
+                mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(routeBuilder.build(), 120));
+            }
         }
 
-        userToStartPolyline = mMap.addPolyline(new PolylineOptions()
-                .addAll(pathPoints)
-                .width(12f)
-                .color(Color.parseColor("#00E5FF"))
-                .geodesic(false));
+        // 2. Drop the Markers & Zoom (Only executes for Active tickets that have stops)
+        if (startStopCoord != null && destStopCoord != null) {
+            mMap.addMarker(new MarkerOptions()
+                    .position(startStopCoord)
+                    .title("Boarding Stop")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+
+            mMap.addMarker(new MarkerOptions()
+                    .position(destStopCoord)
+                    .title("Destination Stop"));
+
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            builder.include(startStopCoord);
+            builder.include(destStopCoord);
+
+            if (userCurrentCoord != null) builder.include(userCurrentCoord);
+
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 120));
+        }
     }
 
     private void drawTicketRouteOnMap(LocalRoute route) {
@@ -234,7 +274,7 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
         checkLocationPermissionAndStart();
 
         if (startStopCoord != null && destStopCoord != null) {
-            drawStopsOnMap();
+            renderTicketMap();
         }
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
@@ -253,62 +293,17 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void enableUserLocationAndDrawPath() {
-        if (mMap == null) return;
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-            mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(true);
-
-            fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
-                if (location != null) {
-                    userCurrentCoord = new LatLng(location.getLatitude(), location.getLongitude());
-                    drawStopsOnMap();
-                }
-            });
-        }
-    }
-
-    private void drawStopsOnMap() {
-        if (mMap == null || startStopCoord == null || destStopCoord == null) return;
-
-        mMap.clear();
-
-        mMap.addMarker(new MarkerOptions()
-                .position(startStopCoord)
-                .title("Boarding Stop")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
-
-        mMap.addMarker(new MarkerOptions()
-                .position(destStopCoord)
-                .title("Destination Stop"));
-
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        builder.include(startStopCoord);
-        builder.include(destStopCoord);
-
-        if (userCurrentCoord != null) {
-            builder.include(userCurrentCoord);
-            // Request real road-snapped walking directions from Google
-            fetchWalkingRoute(userCurrentCoord, startStopCoord);
-        }
-
-        LatLngBounds bounds = builder.build();
-        int padding = 120;
-        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
-    }
-
     private void loadSpecificTicketFromDatabase(String specificTicketRef) {
         executor.execute(() -> {
             UrbanLinkDatabase db = UrbanLinkDatabase.getInstance(TicketScreen.this);
-            LocalTicket ticket = db.ticketDao().getActiveTicket();
 
-            if (ticket != null && specificTicketRef.equals(ticket.ticketReference)) {
+            // 1. THE FIX: Fetch the exact ticket by its reference, NOT just "the active one"
+            LocalTicket ticket = db.ticketDao().getTicketByRef(specificTicketRef);
+
+            // 2. We no longer need to check if the references match, because the SQL query did it for us
+            if (ticket != null) {
                 Stop startStop = db.stopDao().getStopById(ticket.startStopId);
                 Stop destStop = db.stopDao().getStopById(ticket.destStopId);
-
                 LocalRoute ticketRoute = db.routeDao().getRouteById(ticket.routeId);
 
                 runOnUiThread(() -> {
@@ -321,9 +316,11 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
                         startStopCoord = new LatLng(startStop.getLatitude(), startStop.getLongitude());
                         destStopCoord = new LatLng(destStop.getLatitude(), destStop.getLongitude());
 
+                        // 3. Save the route globally and render the map
+                        currentTicketRoute = ticketRoute;
+
                         if (mMap != null) {
-                            drawStopsOnMap();
-                            drawTicketRouteOnMap(ticketRoute);
+                            renderTicketMap();
                         }
                     }
                 });
@@ -357,9 +354,9 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
                         startStopCoord = new LatLng(startStop.getLatitude(), startStop.getLongitude());
                         destStopCoord = new LatLng(destStop.getLatitude(), destStop.getLongitude());
 
+                        currentTicketRoute = ticketRoute; // Save it globally
                         if (mMap != null) {
-                            drawStopsOnMap();
-                            drawTicketRouteOnMap(ticketRoute);
+                            renderTicketMap(); // Draw everything
                         }
                     }
                 });
