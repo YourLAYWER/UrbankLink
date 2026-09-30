@@ -7,6 +7,8 @@ import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 @Entity(tableName = "stops_table")
 public class Stop {
     @SerializedName("id")
@@ -25,6 +27,10 @@ public class Stop {
     @SerializedName("longitude")
     @ColumnInfo(name = "longitude")
     private double longitude;
+
+    @SerializedName("routeIds")
+    @ColumnInfo(name = "routeIds")
+    private List<Integer> routeIds;
 
     // 1. Room loves an empty constructor! It will use this to create the object.
     public Stop() {
@@ -45,12 +51,15 @@ public class Stop {
     public String getName() { return name; }
     public double getLatitude() { return latitude; }
     public double getLongitude() { return longitude; }
-
+    public List<Integer> getRouteIds() {return routeIds;}
     // 4. Setters (Room MUST have these to fill the empty constructor)
     public void setStopId(int stopId) { this.stopId = stopId; }
     public void setName(String name) { this.name = name; }
     public void setLatitude(double latitude) { this.latitude = latitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
+    public void setRouteIds(List<Integer> routeIds) {
+        this.routeIds = routeIds;
+    }
 
     // 5. Still crucial for your Dropdown UI!
     @Override

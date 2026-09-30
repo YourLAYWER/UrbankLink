@@ -28,4 +28,7 @@ public interface StopDao {
     //  Look up for stop base on ID
     @Query("SELECT * FROM stops_table WHERE stop_id = :stopId LIMIT 1")
     Stop getStopById(int stopId);
+
+    @Query("SELECT * FROM stops_table WHERE routeIds LIKE '%,' || :rId || ',%'")
+    List<Stop> getStopsByRouteId(int rId);
 }

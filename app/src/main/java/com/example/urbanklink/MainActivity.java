@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityResultLauncher<String[]> locationPermissionRequest;
     private GoogleMap mMap;
     private com.google.android.gms.maps.model.Polyline currentlySelectedPolyline = null;
+    private java.util.List<com.google.android.gms.maps.model.Marker> currentRouteMarkers = new java.util.ArrayList<>();
 
 
     @Override
@@ -444,34 +445,65 @@ public class MainActivity extends AppCompatActivity {
 
         // 5. Allow users to tap a route to see its name
         mMap.setOnPolylineClickListener(polyline -> {
-            // 1. Revert the previously selected line back to normal (if one exists)
+            // 1. REVERT PREVIOUS SELECTION
             if (currentlySelectedPolyline != null) {
                 LocalRoute prevRoute = (LocalRoute) currentlySelectedPolyline.getTag();
                 if (prevRoute != null) {
-                    // Figure out if it was originally blue or green
                     int originalColor = Color.parseColor("#2196F3");
                     if ("Train".equalsIgnoreCase(prevRoute.transportType) || "Rail".equalsIgnoreCase(prevRoute.transportType)) {
                         originalColor = Color.parseColor("#4CAF50");
                     }
-
                     currentlySelectedPolyline.setColor(originalColor);
-                    currentlySelectedPolyline.setWidth(12f); // Back to normal width
-                    currentlySelectedPolyline.setZIndex(0);  // Push back down to normal layer
+                    currentlySelectedPolyline.setWidth(12f);
+                    currentlySelectedPolyline.setZIndex(0);
                 }
             }
 
-            // 2. Highlight the new line the user just tapped
-            polyline.setColor(Color.parseColor("#FF9800")); // Vibrant Orange highlight
-            polyline.setWidth(22f); // Make it noticeably thicker
-            polyline.setZIndex(1);  // Bring it to the very front above all other lines
+            // 2. CLEAR PREVIOUS STOP MARKERS FROM THE MAP
+            for (com.google.android.gms.maps.model.Marker marker : currentRouteMarkers) {
+                marker.remove(); // Removes the pin from the Google Map
+            }
+            currentRouteMarkers.clear(); // Empties our tracking list
 
-            // 3. Save this new line as the active selection so we can reset it next time
+            // 3. HIGHLIGHT THE NEW ROUTE
+            polyline.setColor(Color.parseColor("#FF9800")); // Orange highlight
+            polyline.setWidth(22f);
+            polyline.setZIndex(1);
             currentlySelectedPolyline = polyline;
 
-            // 4. Extract the tag to show the route name
+            // 4. FETCH AND DRAW THE NEW STOPS
             LocalRoute clickedRoute = (LocalRoute) polyline.getTag();
             if (clickedRoute != null) {
+
+                // Show your bottom sheet
                 showRouteBottomSheet(clickedRoute);
+
+                // Fetch stops in the background to prevent UI freezing
+                java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newSingleThreadExecutor();
+                executor.execute(() -> {
+                    UrbanLinkDatabase db = UrbanLinkDatabase.getInstance(MainActivity.this);
+                    List<Stop> routeStops = db.stopDao().getStopsByRouteId(clickedRoute.routeId);
+
+                    runOnUiThread(() -> {
+                        for (Stop stop : routeStops) {
+                            LatLng position = new LatLng(stop.getLatitude(), stop.getLongitude());
+
+                            com.google.android.gms.maps.model.Marker m = mMap.addMarker(
+                                    new com.google.android.gms.maps.model.MarkerOptions()
+                                            .position(position)
+                                            .title(stop.getName())
+                                            // Make the markers match the orange highlight color
+                                            .icon(com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker(
+                                                    com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_ORANGE))
+                            );
+
+                            // Add the generated marker to our list so we can delete it later
+                            if (m != null) {
+                                currentRouteMarkers.add(m);
+                            }
+                        }
+                    });
+                });
             }
         });
     }
