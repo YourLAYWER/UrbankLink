@@ -51,8 +51,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_urbanlink_logo"
-            app:tint="#00FFFF" /> <!-- Cyan Logo -->
+            android:src="@drawable/logo_image" /> <!-- Cyan Logo -->
 
         <TextView
             android:layout_width="wrap_content"
