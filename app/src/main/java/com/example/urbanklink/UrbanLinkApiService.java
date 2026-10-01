@@ -17,6 +17,9 @@ interface UrbanLinkApiService {
     @POST("api/auth/register")
     Call<AuthResponse> registerUser(@Body RegistrationRequest request);
 
+    @POST("api/Auth/refresh")
+    Call<AuthModels.AuthResponse> refreshTokens(@Body AuthModels.RefreshRequest request);
+
     @GET("api/user/me")
     Call<UserProfileResponse> getUserProfile(@Header("Authorization") String authHeader);
 

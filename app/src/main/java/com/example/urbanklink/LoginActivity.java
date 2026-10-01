@@ -88,13 +88,13 @@ public class LoginActivity extends AppCompatActivity {
                 btnLogin.setText("Login");
 
                 if (response.isSuccessful() && response.body() != null) {
-                    // 4. We got a 200 OK! Extract the JWT
+                    // 4. We got a 200 OK! Extract the JWT and Refresh Token
                     String token = response.body().getToken();
-                    String role = response.body().getRole(); // Grab the role from the API
+                    String refreshToken = response.body().getRefreshToken(); // <-- NEW
+                    String role = response.body().getRole();
 
-                    // 5. Save the token to local storage
-                    // Save BOTH to local storage
-                    saveAuthDataToPrefs(token, role);
+                    // 5. Save all data to local storage
+                    saveAuthDataToPrefs(token, refreshToken, role); // <-- UPDATED
 
                     Toast.makeText(LoginActivity.this, "Welcome back!", Toast.LENGTH_SHORT).show();
 
@@ -128,11 +128,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     // --- Helper Method to Save the Token securely ---
-    private void saveAuthDataToPrefs(String token, String role) {
+    private void saveAuthDataToPrefs(String token, String refreshToken, String role) {
         SharedPreferences sharedPreferences = getSharedPreferences("UrbanLinkPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("JWT_TOKEN", token);
-        editor.putString("USER_ROLE", role); // Save the role for later
+        editor.putString("REFRESH_TOKEN", refreshToken); // <-- NEW
+        editor.putString("USER_ROLE", role);
         editor.apply();
     }
 }
