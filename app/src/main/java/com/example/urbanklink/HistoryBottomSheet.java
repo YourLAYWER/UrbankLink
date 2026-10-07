@@ -55,7 +55,10 @@ public class HistoryBottomSheet extends BottomSheetDialogFragment {
         String authHeader = "Bearer " + token.replace("\"", "").trim();
 
         // 2. Initialize Retrofit exactly the way your app does it
-        UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+        //UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+        // 2. Initialize Retrofit using the parent Activity's Application Context
+        UrbanLinkApiService apiService = ApiClient.getClient(requireContext().getApplicationContext()).create(UrbanLinkApiService.class);
+
 
         // 3. Execute the network call
         apiService.getJourneyHistory(authHeader).enqueue(new Callback<List<JourneyHistory>>() {

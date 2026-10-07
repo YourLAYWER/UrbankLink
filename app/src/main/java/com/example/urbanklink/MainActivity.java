@@ -386,7 +386,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // 2. BACKGROUND SYNC: Call the API to get fresh routes
-            UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+            //UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+            // Correct way to initialize it safely in any Activity
+            UrbanLinkApiService apiService = ApiClient.getClient(getApplicationContext()).create(UrbanLinkApiService.class);
+
             apiService.getAllMapRoutes().enqueue(new Callback<List<LocalRoute>>() {
                 @Override
                 public void onResponse(Call<List<LocalRoute>> call, Response<List<LocalRoute>> response) {

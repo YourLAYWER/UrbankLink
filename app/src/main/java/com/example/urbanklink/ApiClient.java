@@ -3,6 +3,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -31,47 +32,64 @@ public class ApiClient {
     private static Retrofit retrofit = null;
     private static Retrofit refreshRetrofit = null;
 
-    public static Retrofit getClient(Context context) { // CHANGED: Pass Context instead of String
+    public static Retrofit getClient(Context context) {
+        // 1. FAIL FAST: Prevent the OkHttp Dispatcher crash
+        if (context == null) {
+            throw new IllegalArgumentException("Fatal: ApiClient requires a valid Context.");
+        }
 
+        // 2. LEAK PREVENTION: Strip the Activity context to the app-level context
+        Context appContext = context.getApplicationContext();
+
+        // 3. THREAD SAFETY: Double-checked locking
         if (retrofit == null) {
-            // 1. Create the Logger
-            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            synchronized (ApiClient.class) {
+                if (retrofit == null) {
+                    HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+                    logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-            // 2. Build OkHttpClient with Logger, Interceptor, and Authenticator
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .addInterceptor(logging) // Wired your logger up so you can see requests in Logcat!
-                    .addInterceptor(new AuthInterceptor(context)) // Relies entirely on your dedicated class
-                    .authenticator(new TokenAuthenticator(context)) // Handles the 401 token refresh
-                    .build();
+                    OkHttpClient client = new OkHttpClient.Builder()
+                            .addInterceptor(logging)
+                            .addInterceptor(new AuthInterceptor(appContext)) // Safe context used
+                            .authenticator(new TokenAuthenticator(appContext)) // Safe context used
+                            .connectTimeout(30, TimeUnit.SECONDS)
+                            .readTimeout(30, TimeUnit.SECONDS)
+                            .build();
 
-            // 3. Build Retrofit
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .client(client)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
+                    retrofit = new Retrofit.Builder()
+                            .baseUrl(BASE_URL)
+                            .client(client)
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build();
+                }
+            }
         }
         return retrofit;
     }
 
     // 4. The Clean Client (For the TokenAuthenticator to use)
     public static Retrofit getRefreshClient() {
+        // THREAD SAFETY for the refresh client as well
         if (refreshRetrofit == null) {
-            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            synchronized (ApiClient.class) {
+                if (refreshRetrofit == null) {
+                    HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+                    logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-            // Notice there is NO AuthInterceptor or TokenAuthenticator attached here.
-            // This prevents an infinite loop if the refresh request itself fails!
-            OkHttpClient cleanClient = new OkHttpClient.Builder()
-                    .addInterceptor(logging)
-                    .build();
+                    // Notice there is NO AuthInterceptor or TokenAuthenticator attached here.
+                    OkHttpClient cleanClient = new OkHttpClient.Builder()
+                            .addInterceptor(logging)
+                            .connectTimeout(30, TimeUnit.SECONDS)
+                            .readTimeout(30, TimeUnit.SECONDS)
+                            .build();
 
-            refreshRetrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .client(cleanClient)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
+                    refreshRetrofit = new Retrofit.Builder()
+                            .baseUrl(BASE_URL)
+                            .client(cleanClient)
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build();
+                }
+            }
         }
         return refreshRetrofit;
     }
