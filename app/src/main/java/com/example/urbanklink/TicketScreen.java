@@ -489,12 +489,21 @@ public void fetchLiveRouteStatus(String currentTicketRef) {
                 }
 
                 // HANDLE DELAYS
+                TextView txtBusBadge = findViewById(R.id.badgeBus);
                 TextView txtArrivalTitle = findViewById(R.id.txtArrivalTitle);
                 if (txtArrivalTitle != null) {
                     if (status.isHasDelay() && status.getAlert() != null) {
-                        txtArrivalTitle.setText(status.getAlert().getMessage());
+
+                        String fleetNo = status.getAlert().getBusFleetNumber();
+                        String incidentMsg = status.getAlert().getMessage();
+                        String lincensePlate = status.getAlert().getBusLicensePlate();
+
+                        txtBusBadge.setText("\uD83D\uDE8D" + fleetNo);
+                        txtArrivalTitle.setText("Bus is Delayed: " + incidentMsg);
                         txtArrivalTitle.setTextColor(android.graphics.Color.parseColor("#FF5252"));
                     } else {
+                        String fleetNo = status.getAlert().getBusFleetNumber();
+                        txtBusBadge.setText("\uD83D\uDE8D" + fleetNo);
                         txtArrivalTitle.setText("Bus is on Route.");
                         txtArrivalTitle.setTextColor(android.graphics.Color.parseColor("#E0FFFF"));
                     }
