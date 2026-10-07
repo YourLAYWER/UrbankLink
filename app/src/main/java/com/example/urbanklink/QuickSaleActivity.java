@@ -23,7 +23,7 @@ import retrofit2.Response;
 
 public class QuickSaleActivity extends AppCompatActivity {
 
-    private TextView btnClose, txtQuantity, txtTotalAmount, txtBaseFare;
+    private TextView btnClose, txtQuantity, txtTotalAmount, txtBaseFare, txtRouteName;
     private ImageView btnMinus, btnPlus;
     private MaterialButton btnConfirmSale;
 
@@ -41,6 +41,9 @@ public class QuickSaleActivity extends AppCompatActivity {
         // 1. Grab JWT Token
         SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
         String token = prefs.getString("JWT_TOKEN", null);
+        float baseFare = prefs.getFloat("ACTIVE_BASE_FARE", 15.00f);
+        String routeName = prefs.getString("ACTIVE_ROUTE_NAME", "Unknown Route");
+
         if (token != null) {
             authHeader = "Bearer " + token.replace("\"", "").trim();
         }
@@ -55,10 +58,16 @@ public class QuickSaleActivity extends AppCompatActivity {
         btnMinus = findViewById(R.id.btnMinus);
         btnPlus = findViewById(R.id.btnPlus);
         btnConfirmSale = findViewById(R.id.btnConfirmSale);
+        txtRouteName = findViewById(R.id.txtRouteName);
 
         // 3. Setup Initial UI State
         updateTotalDisplay();
-        txtBaseFare.setText(String.format("R%.2f", BASE_FARE));
+        txtBaseFare = findViewById(R.id.txtBaseFare);
+        txtRouteName = findViewById(R.id.txtRouteName);
+
+        // Set the values!
+        if (txtRouteName != null) txtRouteName.setText(routeName);
+        if (txtBaseFare != null) txtBaseFare.setText(String.format("R%.2f", baseFare));
 
         // 4. Button Click Listeners
         btnClose.setOnClickListener(v -> finish());

@@ -58,7 +58,7 @@ public class ScannerActivity extends AppCompatActivity {
 
     private boolean isProcessing = false;
     private String authHeader;
-    private int activeShiftId = -1;
+    //private int activeShiftId = -1;
     private int currentPassengers = 0; // Starting demo capacity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,12 +67,15 @@ public class ScannerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scanner);
 
         btnCashSale = findViewById(R.id.btnCashSale);
+        View rootView = findViewById(android.R.id.content);
 
         // 1. LINK XML VIEWS FIRST (Moved to the top)
         viewFinder = findViewById(R.id.viewFinder);
         pillScanResult = findViewById(R.id.pillScanResult);
         txtCurrentCapacity = findViewById(R.id.txtCurrentCapacity);
         btnCashSale = findViewById(R.id.btnCashSale);
+
+        HeaderManager.loadHeaderData(this, rootView);
 
         // 2. INITIALIZE SERVICES FIRST
         cameraExecutor = java.util.concurrent.Executors.newSingleThreadExecutor();
@@ -91,7 +94,7 @@ public class ScannerActivity extends AppCompatActivity {
 
         currentPassengers = prefs.getInt("ACTIVE_PASSENGER_COUNT", 0);
         txtCurrentCapacity.setText(String.valueOf(currentPassengers));
-        fetchActiveShift();
+        //fetchActiveShift();
 
         // 1. Register the launcher to catch the result from QuickSaleActivity
         quickSaleLauncher = registerForActivityResult(
@@ -138,28 +141,28 @@ public class ScannerActivity extends AppCompatActivity {
 
     }
 
-    private void fetchActiveShift() {
-        UrbanLinkApiService apiService = ApiClient.getClient(this).create(UrbanLinkApiService.class);
-        apiService.getShiftSummary(authHeader).enqueue(new Callback<EndShiftResponse>() {
-            @Override
-            public void onResponse(Call<EndShiftResponse> call, Response<EndShiftResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    EndShiftResponse data = response.body();
-                    // Extract the active shift ID directly from the backend response model
-                    activeShiftId = data.shiftSummary.shiftId; // Ensure your EndShiftResponse model has this field
-
-                    Toast.makeText(ScannerActivity.this, "Active Shift Loaded", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(ScannerActivity.this, "No active shift found!", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<EndShiftResponse> call, Throwable t) {
-                Toast.makeText(ScannerActivity.this, "Failed to connect to server", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+//    private void fetchActiveShift() {
+//        UrbanLinkApiService apiService = ApiClient.getClient(this).create(UrbanLinkApiService.class);
+//        apiService.getShiftSummary(authHeader).enqueue(new Callback<EndShiftResponse>() {
+//            @Override
+//            public void onResponse(Call<EndShiftResponse> call, Response<EndShiftResponse> response) {
+//                if (response.isSuccessful() && response.body() != null) {
+//                    EndShiftResponse data = response.body();
+//                    // Extract the active shift ID directly from the backend response model
+//                    activeShiftId = data.shiftSummary.shiftId; // Ensure your EndShiftResponse model has this field
+//
+//                    Toast.makeText(ScannerActivity.this, "Active Shift Loaded", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Toast.makeText(ScannerActivity.this, "No active shift found!", Toast.LENGTH_LONG).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<EndShiftResponse> call, Throwable t) {
+//                Toast.makeText(ScannerActivity.this, "Failed to connect to server", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
 
     private void performLogout() {
         SharedPreferences.Editor editor = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE).edit();
@@ -244,7 +247,8 @@ public class ScannerActivity extends AppCompatActivity {
         String cleanQrData = qrData.replaceAll("(?i)urbanlink-", "").trim();
 
         // 3. Send the clean GUID to the server
-        ScanTicketRequest request = new ScanTicketRequest(activeShiftId, cleanQrData);
+        //ScanTicketRequest request = new ScanTicketRequest(activeShiftId, cleanQrData);
+        ScanTicketRequest request = new ScanTicketRequest(cleanQrData);
 
         UrbanLinkApiService apiService = ApiClient.getClient(ScannerActivity.this).create(UrbanLinkApiService.class);
 

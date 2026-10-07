@@ -274,7 +274,7 @@ public class ScannerTelemetry extends AppCompatActivity {
         }
 
         String cleanQrData = qrData.replaceAll("(?i)urbanlink-", "").trim();
-        ScanTicketRequest request = new ScanTicketRequest(activeShiftId, cleanQrData);
+        ScanTicketRequest request = new ScanTicketRequest(cleanQrData);
 
         UrbanLinkApiService apiService = ApiClient.getClient(ScannerTelemetry.this).create(UrbanLinkApiService.class);
 
