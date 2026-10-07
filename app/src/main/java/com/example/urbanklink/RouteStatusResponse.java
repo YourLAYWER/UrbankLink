@@ -40,6 +40,12 @@ public class RouteStatusResponse {
         @SerializedName("isEmergency")
         private boolean isEmergency;
 
+        @SerializedName("busFleetNumber")
+        private String busFleetNumber;
+
+        @SerializedName("busLicensePlate")
+        private String busLicensePlate;
+
         public String getMessage() {
             return message;
         }
@@ -51,5 +57,7 @@ public class RouteStatusResponse {
         public boolean isEmergency() {
             return isEmergency;
         }
+        public String getBusFleetNumber() { return busFleetNumber; }
+        public String getBusLicensePlate() { return busLicensePlate; }
     }
 }
