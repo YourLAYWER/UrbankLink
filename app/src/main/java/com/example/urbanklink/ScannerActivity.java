@@ -88,6 +88,9 @@ public class ScannerActivity extends AppCompatActivity {
             return;
         }
         authHeader = "Bearer " + token.replace("\"", "").trim();
+
+        currentPassengers = prefs.getInt("ACTIVE_PASSENGER_COUNT", 0);
+        txtCurrentCapacity.setText(String.valueOf(currentPassengers));
         fetchActiveShift();
 
         // 1. Register the launcher to catch the result from QuickSaleActivity
@@ -97,9 +100,13 @@ public class ScannerActivity extends AppCompatActivity {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         int addedPassengers = result.getData().getIntExtra("PASSENGERS_ADDED", 0);
 
-                        // Update the local capacity counter and refresh the UI text
+                        // 1. Update local counter
                         currentPassengers += addedPassengers;
                         txtCurrentCapacity.setText(String.valueOf(currentPassengers));
+
+                        // 2. <-- NEW: Save immediately to SharedPreferences!
+                        //SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
+                        prefs.edit().putInt("ACTIVE_PASSENGER_COUNT", currentPassengers).apply();
                     }
                 }
         );
@@ -254,6 +261,10 @@ public class ScannerActivity extends AppCompatActivity {
                     // Increment capacity
                     currentPassengers++;
                     txtCurrentCapacity.setText(String.valueOf(currentPassengers));
+
+                    // Save immediately to SharedPreferences!
+                    SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
+                    prefs.edit().putInt("ACTIVE_PASSENGER_COUNT", currentPassengers).apply();
 
                     // Hide the pill and unlock scanner after 2 seconds
                     viewFinder.postDelayed(() -> {
