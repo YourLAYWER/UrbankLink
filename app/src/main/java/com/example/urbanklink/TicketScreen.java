@@ -461,7 +461,8 @@ public void fetchLiveRouteStatus(String currentTicketRef) {
     String authHeader = "Bearer " + token.replace("\"", "").trim();
 
     // 2. Make the API Call WITH the token
-    UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+    //UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+    UrbanLinkApiService apiService = ApiClient.getClient(getApplicationContext()).create(UrbanLinkApiService.class);
 
     apiService.getTicketStatus(authHeader, currentTicketRef).enqueue(new Callback<RouteStatusResponse>() {
         @Override
@@ -502,8 +503,8 @@ public void fetchLiveRouteStatus(String currentTicketRef) {
                         txtArrivalTitle.setText("Bus is Delayed: " + incidentMsg);
                         txtArrivalTitle.setTextColor(android.graphics.Color.parseColor("#FF5252"));
                     } else {
-                        String fleetNo = status.getAlert().getBusFleetNumber();
-                        txtBusBadge.setText("\uD83D\uDE8D" + fleetNo);
+//                        String fleetNo = status.getAlert().getBusFleetNumber();
+//                        txtBusBadge.setText("\uD83D\uDE8D" + fleetNo);
                         txtArrivalTitle.setText("Bus is on Route.");
                         txtArrivalTitle.setTextColor(android.graphics.Color.parseColor("#E0FFFF"));
                     }

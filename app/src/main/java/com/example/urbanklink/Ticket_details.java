@@ -94,7 +94,8 @@ public class Ticket_details extends AppCompatActivity {
     }
 
     private void fetchRouteDetails(int start, int end) {
-        UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+        //UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+        UrbanLinkApiService apiService = ApiClient.getClient(getApplicationContext()).create(UrbanLinkApiService.class);
         RouteCalculateRequest request = new RouteCalculateRequest(start, end);
 
         apiService.calculateRoute(request).enqueue(new Callback<RouteCalculateResponse>() {
@@ -186,7 +187,8 @@ public class Ticket_details extends AppCompatActivity {
         BookTicketRequest request = new BookTicketRequest(startId,destId);
 
         // 4. Send to C#
-        UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+        //UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);\
+        UrbanLinkApiService apiService = ApiClient.getClient(getApplicationContext()).create(UrbanLinkApiService.class);
 
         apiService.bookJourney(authHeader, request).enqueue(new Callback<JourneyResponse>() {
             @Override

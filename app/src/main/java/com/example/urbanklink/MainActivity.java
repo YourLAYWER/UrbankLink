@@ -333,7 +333,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void syncStopsFromBackend() {
-        UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+        //UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+        UrbanLinkApiService apiService = ApiClient.getClient(getApplicationContext()).create(UrbanLinkApiService.class);
 
         apiService.getAllStops().enqueue(new Callback<List<Stop>>() {
             @Override
@@ -528,7 +529,8 @@ public class MainActivity extends AppCompatActivity {
         String authHeader = "Bearer " + cleanToken;
 
         // 5. Initialize the Retrofit service instance
-        UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+        //UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+        UrbanLinkApiService apiService = ApiClient.getClient(getApplicationContext()).create(UrbanLinkApiService.class);
 
         // 6. Make the API Call using the INSTANCE (apiService), not the Interface
         apiService.getUserProfile(authHeader).enqueue(new Callback<UserProfileResponse>() {

@@ -80,7 +80,8 @@ public class ProfileActivity extends AppCompatActivity {
         if (token == null) return;
 
         String authHeader = "Bearer " + token.replace("\"", "").trim();
-        UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+        //UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+        UrbanLinkApiService apiService = ApiClient.getClient(getApplicationContext()).create(UrbanLinkApiService.class);
 
         apiService.getUserProfile(authHeader).enqueue(new Callback<UserProfileResponse>() {
             @Override
