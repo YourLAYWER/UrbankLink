@@ -297,7 +297,7 @@
                                 android:insetBottom="0dp"
                                 app:backgroundTint="#1A1B22"
                                 app:cornerRadius="16dp"
-                                app:icon="@android:drawable/ic_media_pause"
+                                app:icon="@drawable/ic_minus"
                                 app:iconGravity="textStart"
                                 app:iconPadding="0dp"
                                 app:iconTint="#FFFFFF" />

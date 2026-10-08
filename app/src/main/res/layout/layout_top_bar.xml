@@ -42,22 +42,22 @@
     </LinearLayout>
 
     <!-- Telemetry Active Pill -->
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:background="@drawable/bg_pill"
-        android:backgroundTint="#12131A"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/routeInfo"
-        app:layout_constraintTop_toTopOf="parent">
-        <View android:layout_width="6dp" android:layout_height="6dp" android:background="@drawable/bg_pill" android:backgroundTint="#00E5FF" />
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="URBANLINK TRANSIT OS · TELEMETRY ACTIVE" android:textColor="#888888" android:textSize="10sp" android:textStyle="bold" />
-    </LinearLayout>
+<!--    <LinearLayout-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="32dp"-->
+<!--        android:background="@drawable/bg_pill"-->
+<!--        android:backgroundTint="#12131A"-->
+<!--        android:gravity="center_vertical"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:paddingHorizontal="16dp"-->
+<!--        android:paddingVertical="8dp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintStart_toEndOf="@id/routeInfo"-->
+<!--        app:layout_constraintTop_toTopOf="parent">-->
+<!--        <View android:layout_width="6dp" android:layout_height="6dp" android:background="@drawable/bg_pill" android:backgroundTint="#00E5FF" />-->
+<!--        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="URBANLINK TRANSIT OS · TELEMETRY ACTIVE" android:textColor="#888888" android:textSize="10sp" android:textStyle="bold" />-->
+<!--    </LinearLayout>-->
 
     <!-- Shift Hours -->
     <LinearLayout
