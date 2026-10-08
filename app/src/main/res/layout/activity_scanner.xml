@@ -1,303 +1,298 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#0A0A0A"
-        android:fitsSystemWindows="true"
-        tools:context=".ScannerActivity">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0A0A0A"
+    android:fitsSystemWindows="true"
+    tools:context=".ScannerActivity">
 
-        <!-- ========================================== -->
-        <!-- 1. TOP STATUS BAR (Sleek & Minimal)        -->
-        <!-- ========================================== -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/topBar"
+    <!-- ========================================== -->
+    <!-- 1. TOP STATUS BAR (Universal Header)       -->
+    <!-- ========================================== -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Universal App Header (Automatically populated by HeaderManager) -->
+        <include
+            android:id="@+id/topHeader"
+            layout="@layout/layout_top_header"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:paddingHorizontal="20dp"
+            android:layout_height="match_parent" />
+
+        <!-- Floating End Shift Button (Preserved so Java doesn't crash) -->
+        <LinearLayout
+            android:id="@+id/btnEndShift"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@android:drawable/ic_lock_power_off"
+                app:tint="#FF5252" />
+
             <TextView
-                android:id="@+id/txtRouteInfo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Route 1 • Bus ALGOA-042"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.02"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_marginStart="6dp"
+                android:text="End Shift"
+                android:textColor="#FF5252"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
-                android:id="@+id/btnEndShift"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+    <!-- ========================================== -->
+    <!-- 2. CAMERA SCANNER AREA (Modern Rounded)    -->
+    <!-- ========================================== -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/scannerContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="16dp"
+        app:cardBackgroundColor="#000000"
+        app:cardCornerRadius="28dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toTopOf="@id/dashboardContainer"
+        app:layout_constraintTop_toBottomOf="@id/topBar">
 
-                <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:src="@android:drawable/ic_lock_power_off"
-                    app:tint="#FF5252" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:text="End Shift"
-                    android:textColor="#FF5252"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!-- ========================================== -->
-        <!-- 2. CAMERA SCANNER AREA (Modern Rounded)    -->
-        <!-- ========================================== -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/scannerContainer"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="#000000"
-            app:cardCornerRadius="28dp"
-            app:cardElevation="0dp"
-            app:layout_constraintBottom_toTopOf="@id/dashboardContainer"
-            app:layout_constraintTop_toBottomOf="@id/topBar">
+            android:layout_height="match_parent">
 
-            <FrameLayout
+            <!-- CameraX Preview View -->
+            <androidx.camera.view.PreviewView
+                android:id="@+id/viewFinder"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent" />
 
-                <!-- CameraX Preview View -->
-                <androidx.camera.view.PreviewView
-                    android:id="@+id/viewFinder"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+            <!-- Cyan Viewfinder Overlay -->
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="40dp"
+                android:src="@drawable/bg_scanner_brackets" />
 
-                <!-- Cyan Viewfinder Overlay -->
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="40dp"
-                    android:src="@drawable/bg_scanner_brackets" />
+            <!-- Dynamic Result Pill (Glassmorphism style) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/pillScanResult"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center_horizontal"
+                android:layout_marginTop="32dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="#E600FF7F"
+                app:cardCornerRadius="24dp"
+                app:strokeWidth="0dp">
 
-                <!-- Dynamic Result Pill (Glassmorphism style) -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/pillScanResult"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="top|center_horizontal"
-                    android:layout_marginTop="32dp"
-                    android:visibility="gone"
-                    app:cardBackgroundColor="#E600FF7F"
-                    app:cardCornerRadius="24dp"
-                    app:strokeWidth="0dp">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="10dp">
 
-                    <LinearLayout
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/ic_input_add"
+                        app:tint="#0A0A0A" />
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:paddingHorizontal="20dp"
-                        android:paddingVertical="10dp">
+                        android:layout_marginStart="8dp"
+                        android:letterSpacing="0.05"
+                        android:text="VALID TICKET"
+                        android:textColor="#0A0A0A"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
 
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@android:drawable/ic_input_add"
-                            app:tint="#0A0A0A" />
+    <!-- ========================================== -->
+    <!-- 3. UNIFIED DASHBOARD CONTAINER             -->
+    <!-- ========================================== -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/dashboardContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
+        app:cardBackgroundColor="#1A1A1A"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavContainer">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="VALID TICKET"
-                            android:textColor="#0A0A0A"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:letterSpacing="0.05" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-            </FrameLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- ========================================== -->
-        <!-- 3. UNIFIED DASHBOARD CONTAINER             -->
-        <!-- ========================================== -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/dashboardContainer"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="#1A1A1A"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="0dp"
-            app:layout_constraintBottom_toTopOf="@id/bottomNavContainer">
+            android:orientation="vertical"
+            android:padding="20dp">
 
-            <LinearLayout
+            <!-- Top Row: Capacity & Toggle -->
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
+                android:layout_height="wrap_content">
 
-                <!-- Top Row: Capacity & Toggle -->
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                <!-- Capacity Block -->
+                <LinearLayout
+                    android:id="@+id/capacityCard"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    <!-- Capacity Block -->
-                    <LinearLayout
-                        android:id="@+id/capacityCard"
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        android:letterSpacing="0.1"
+                        android:text="PASSENGER COUNT"
+                        android:textColor="#888888"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:baselineAligned="true"
+                        android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/txtCurrentCapacity"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:letterSpacing="0.1"
-                            android:text="PASSENGER COUNT"
-                            android:textColor="#888888"
-                            android:textSize="11sp"
+                            android:text="0"
+                            android:textColor="#FFFFFF"
+                            android:textSize="40sp"
                             android:textStyle="bold" />
 
-                        <LinearLayout
+                        <TextView
+                            android:id="@+id/txtMaxCapacity"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:baselineAligned="true"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/txtCurrentCapacity"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0"
-                                android:textColor="#FFFFFF"
-                                android:textSize="40sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/txtMaxCapacity"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="6dp"
-                                android:text="/ 60"
-                                android:textColor="#00E5FF"
-                                android:textSize="20sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
+                            android:layout_marginStart="6dp"
+                            android:text="/ 60"
+                            android:textColor="#00E5FF"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
                     </LinearLayout>
+                </LinearLayout>
 
-                    <!-- Full Bus Toggle -->
-                    <LinearLayout
-                        android:id="@+id/toggleCard"
+                <!-- Full Bus Toggle -->
+                <LinearLayout
+                    android:id="@+id/toggleCard"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="end"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        android:text="Bus is Full"
+                        android:textColor="#E0E0E0"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Bus is Full"
-                            android:textColor="#E0E0E0"
-                            android:textSize="13sp"
-                            android:textStyle="bold"/>
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchBusFull"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="-4dp"
+                        app:thumbTint="#FFFFFF"
+                        app:trackTint="@color/material_dynamic_neutral_variant40" />
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                        <com.google.android.material.switchmaterial.SwitchMaterial
-                            android:id="@+id/switchBusFull"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="-4dp"
-                            app:thumbTint="#FFFFFF"
-                            app:trackTint="@color/material_dynamic_neutral_variant40" />
-                    </LinearLayout>
-                </androidx.constraintlayout.widget.ConstraintLayout>
+            <!-- Tonal Cash Sale Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCashSale"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="#2600E5FF"
+                android:letterSpacing="0.05"
+                android:text="CASH TICKET SALE"
+                android:textColor="#00E5FF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:cornerRadius="16dp"
+                app:icon="@android:drawable/ic_menu_agenda"
+                app:iconGravity="textStart"
+                app:iconTint="#00E5FF"
+                app:rippleColor="#4D00E5FF"
+                app:strokeWidth="0dp" />
 
-                <!-- Tonal Cash Sale Button -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnCashSale"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginTop="16dp"
-                    android:backgroundTint="#2600E5FF"
-                    android:text="CASH TICKET SALE"
-                    android:textColor="#00E5FF"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.05"
-                    app:cornerRadius="16dp"
-                    app:icon="@android:drawable/ic_menu_agenda"
-                    app:iconGravity="textStart"
-                    app:iconTint="#00E5FF"
-                    app:rippleColor="#4D00E5FF"
-                    app:strokeWidth="0dp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+    <!-- ========================================== -->
+    <!-- 4. BOTTOM NAVIGATION                       -->
+    <!-- ========================================== -->
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/bottomNavContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- ========================================== -->
-        <!-- 4. BOTTOM NAVIGATION                       -->
-        <!-- ========================================== -->
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:id="@+id/bottomNavContainer"
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottomAppBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent">
+            android:layout_gravity="bottom"
+            android:backgroundTint="#0A0A0A"
+            app:elevation="8dp"
+            app:fabAlignmentMode="center"
+            app:fabCradleMargin="8dp"
+            app:fabCradleRoundedCornerRadius="24dp">
 
-            <com.google.android.material.bottomappbar.BottomAppBar
-                android:id="@+id/bottomAppBar"
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottomNav"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:backgroundTint="#0A0A0A"
-                app:elevation="8dp"
-                app:fabAlignmentMode="center"
-                app:fabCradleMargin="8dp"
-                app:fabCradleRoundedCornerRadius="24dp">
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                app:elevation="0dp"
+                app:itemIconTint="@color/nav_item_colors"
+                app:itemTextColor="@color/nav_item_colors"
+                app:menu="@menu/driver_bottom_nav_menu" />
+        </com.google.android.material.bottomappbar.BottomAppBar>
 
-                <com.google.android.material.bottomnavigation.BottomNavigationView
-                    android:id="@+id/bottomNav"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@android:color/transparent"
-                    app:elevation="0dp"
-                    app:itemIconTint="@color/nav_item_colors"
-                    app:itemTextColor="@color/nav_item_colors"
-                    app:menu="@menu/driver_bottom_nav_menu" />
-            </com.google.android.material.bottomappbar.BottomAppBar>
+        <!-- The Large Center Scan Button -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabScan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#00E5FF"
+            android:src="@android:drawable/ic_menu_camera"
+            app:borderWidth="0dp"
+            app:elevation="4dp"
+            app:layout_anchor="@id/bottomAppBar"
+            app:tint="#0A0A0A" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-            <!-- The Large Center Scan Button -->
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fabScan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="#00E5FF"
-                android:src="@android:drawable/ic_menu_camera"
-                app:layout_anchor="@id/bottomAppBar"
-                app:tint="#0A0A0A"
-                app:borderWidth="0dp"
-                app:elevation="4dp"/>
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

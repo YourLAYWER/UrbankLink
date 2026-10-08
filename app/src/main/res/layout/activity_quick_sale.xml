@@ -1,345 +1,348 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/main"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0A0A0A"
+    android:fitsSystemWindows="true"
+    tools:context=".QuickSaleActivity">
+
+    <!-- ========================================== -->
+    <!-- 1. UNIVERSAL TOP HEADER                    -->
+    <!-- ========================================== -->
+    <include
+        android:id="@+id/topHeader"
+        layout="@layout/layout_top_header"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#0A0A0A"
-        android:fitsSystemWindows="true"
-        tools:context=".QuickSaleActivity">
+        android:layout_height="64dp"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- ========================================== -->
-        <!-- 1. TOP BAR (Sleek & Minimal)               -->
-        <!-- ========================================== -->
+    <!-- ========================================== -->
+    <!-- 2. SCREEN CONTROLS (Badge & Close Button)  -->
+    <!-- ========================================== -->
+    <LinearLayout
+        android:id="@+id/screenControls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/topHeader">
+
+        <!-- Modern Cash Sale Badge -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_pill_green"
+            android:backgroundTint="#1A00E5FF"
+            android:letterSpacing="0.1"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="CASH SALE"
+            android:textColor="#00E5FF"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <!-- Invisible spacer to push Close to the right -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <!-- ========================================== -->
+    <!-- 3. ROUTE INFO (Restored Floating Pill)     -->
+    <!-- ========================================== -->
+    <LinearLayout
+        android:id="@+id/routeInfoLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_pill_green"
+        android:backgroundTint="#1A1A1A"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/screenControls">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_route"
+            app:tint="#00E5FF" />
+
+        <TextView
+            android:id="@+id/txtRouteName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Route 1: Greenacres to Central"
+            android:textColor="#E0E0E0"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- ========================================== -->
+    <!-- 4. BASE FARE CARD (Borderless Surface)     -->
+    <!-- ========================================== -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/baseFareCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        app:cardBackgroundColor="#1A1A1A"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
+        app:layout_constraintTop_toBottomOf="@id/routeInfoLayout"
+        app:strokeWidth="0dp">
+
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/topBar"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:paddingHorizontal="20dp"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="20dp">
 
-            <TextView
-                android:id="@+id/btnClose"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
+            <ImageView
+                android:id="@+id/icCash"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_circle_dark"
+                android:backgroundTint="#2A2A2A"
                 android:padding="8dp"
-                android:text="Close"
-                android:textColor="#888888"
-                android:textSize="16sp"
-                android:textStyle="bold"
+                android:src="@android:drawable/ic_menu_myplaces"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="#A0A0A0" />
 
-            <TextView
-                android:id="@+id/txtScreenTitle"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:letterSpacing="0.02"
-                android:text="Cash Sale"
-                android:textColor="#FFFFFF"
-                android:textSize="20sp"
+                android:layout_marginStart="16dp"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/icCash"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="0.1"
+                    android:text="STANDARD BASE FARE"
+                    android:textColor="#888888"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txtBaseFare"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="R15.00"
+                    android:textColor="#FFFFFF"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Valid Status Pill (Glassmorphism Tint) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_green"
+                android:backgroundTint="#2600FF7F"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:text="✔ Valid"
+                android:textColor="#00FF7F"
+                android:textSize="12sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 
-        <!-- ========================================== -->
-        <!-- 2. ROUTE INFO (Modern Floating Pill)       -->
-        <!-- ========================================== -->
+    <!-- ========================================== -->
+    <!-- 5. QUANTITY SELECTOR CARD                  -->
+    <!-- ========================================== -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/quantityCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="12dp"
+        app:cardBackgroundColor="#1A1A1A"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
+        app:layout_constraintTop_toBottomOf="@id/baseFareCard"
+        app:strokeWidth="0dp">
+
         <LinearLayout
-            android:id="@+id/routeInfoLayout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_pill_green"
-            android:backgroundTint="#1E1E1E"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/topBar">
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:src="@drawable/ic_route"
-                app:tint="#00E5FF" />
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingVertical="24dp">
 
             <TextView
-                android:id="@+id/txtRouteName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Route 1: Greenacres to Central"
-                android:textColor="#E0E0E0"
-                android:textSize="13sp"
+                android:letterSpacing="0.1"
+                android:text="TICKET QUANTITY"
+                android:textColor="#888888"
+                android:textSize="11sp"
                 android:textStyle="bold" />
-        </LinearLayout>
 
-        <!-- ========================================== -->
-        <!-- 3. BASE FARE CARD (Borderless Surface)     -->
-        <!-- ========================================== -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/baseFareCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="24dp"
-            app:cardBackgroundColor="#1A1A1A"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="0dp"
-            app:layout_constraintTop_toBottomOf="@id/routeInfoLayout">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="24dp"
-                android:paddingVertical="20dp">
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:orientation="horizontal">
 
+                <!-- Minus Button -->
                 <ImageView
-                    android:id="@+id/icCash"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:id="@+id/btnMinus"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
                     android:background="@drawable/bg_circle_dark"
                     android:backgroundTint="#2A2A2A"
-                    android:padding="8dp"
-                    android:src="@android:drawable/ic_menu_myplaces"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="20dp"
+                    android:src="@android:drawable/ic_media_pause"
                     app:tint="#A0A0A0" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:orientation="vertical"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/icCash"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:letterSpacing="0.1"
-                        android:text="STANDARD BASE FARE"
-                        android:textColor="#888888"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/txtBaseFare"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="R15.00"
-                        android:textColor="#FFFFFF"
-                        android:textSize="22sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <!-- Valid Status Pill (Glassmorphism Tint) -->
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/txtQuantity"
+                    android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_pill_green"
-                    android:backgroundTint="#2600FF7F"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="6dp"
-                    android:text="✔ Valid"
-                    android:textColor="#00FF7F"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- ========================================== -->
-        <!-- 4. QUANTITY SELECTOR CARD                  -->
-        <!-- ========================================== -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/quantityCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="12dp"
-            app:cardBackgroundColor="#1A1A1A"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="0dp"
-            app:layout_constraintTop_toBottomOf="@id/baseFareCard">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:paddingVertical="24dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:letterSpacing="0.1"
-                    android:text="TICKET QUANTITY"
-                    android:textColor="#888888"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <!-- Minus Button -->
-                    <ImageView
-                        android:id="@+id/btnMinus"
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
-                        android:background="@drawable/bg_circle_dark"
-                        android:backgroundTint="#2A2A2A"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:padding="20dp"
-                        android:src="@android:drawable/ic_media_pause"
-                        app:tint="#A0A0A0" />
-
-                    <TextView
-                        android:id="@+id/txtQuantity"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:text="2"
-                        android:textAlignment="center"
-                        android:textColor="#FFFFFF"
-                        android:textSize="56sp"
-                        android:textStyle="bold" />
-
-                    <!-- Plus Button -->
-                    <ImageView
-                        android:id="@+id/btnPlus"
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
-                        android:background="@drawable/bg_circle_cyan"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:padding="20dp"
-                        android:src="@android:drawable/ic_input_add"
-                        app:tint="#0A0A0A" />
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- ========================================== -->
-        <!-- 5. AMOUNT DUE CARD (Tonal Cyan Glow)       -->
-        <!-- ========================================== -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/amountCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="12dp"
-            app:cardBackgroundColor="#1A00E5FF"
-            app:cardCornerRadius="32dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="0dp"
-            app:layout_constraintTop_toBottomOf="@id/quantityCard">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:paddingVertical="32dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:letterSpacing="0.1"
-                    android:text="TOTAL DUE"
-                    android:textColor="#00E5FF"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/txtTotalAmount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:shadowColor="#AA00E5FF"
-                    android:shadowDx="0"
-                    android:shadowDy="0"
-                    android:shadowRadius="32"
-                    android:text="R30.00"
+                    android:text="2"
+                    android:textAlignment="center"
                     android:textColor="#FFFFFF"
                     android:textSize="56sp"
                     android:textStyle="bold" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
 
-        <!-- ========================================== -->
-        <!-- 6. NFC TAP TO PAY ZONE                     -->
-        <!-- ========================================== -->
+                <!-- Plus Button -->
+                <ImageView
+                    android:id="@+id/btnPlus"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:background="@drawable/bg_circle_cyan"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="20dp"
+                    android:src="@android:drawable/ic_input_add"
+                    app:tint="#0A0A0A" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- ========================================== -->
+    <!-- 6. AMOUNT DUE CARD (Tonal Cyan Glow)       -->
+    <!-- ========================================== -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/amountCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="12dp"
+        app:cardBackgroundColor="#1A00E5FF"
+        app:cardCornerRadius="32dp"
+        app:cardElevation="0dp"
+        app:layout_constraintTop_toBottomOf="@id/quantityCard"
+        app:strokeWidth="0dp">
+
         <LinearLayout
-            android:id="@+id/nfcTapZone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
             android:gravity="center"
             android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@id/btnConfirmSale"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_contactless"
-                app:tint="#666666" />
+            android:paddingVertical="32dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Tap Card or Device to Pay"
-                android:textColor="#666666"
-                android:textSize="13sp"
+                android:letterSpacing="0.1"
+                android:text="TOTAL DUE"
+                android:textColor="#00E5FF"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtTotalAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:shadowColor="#AA00E5FF"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="32"
+                android:text="R30.00"
+                android:textColor="#FFFFFF"
+                android:textSize="56sp"
                 android:textStyle="bold" />
         </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
-        <!-- ========================================== -->
-        <!-- 7. CONFIRM BUTTON                          -->
-        <!-- ========================================== -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnConfirmSale"
-            android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginBottom="24dp"
-            android:letterSpacing="0.02"
-            android:text="CONFIRM &amp; ISSUE TICKET"
-            android:textColor="#0A0A0A"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:backgroundTint="#00E5FF"
-            app:cornerRadius="32dp"
-            app:icon="@drawable/ic_receipt"
-            app:iconGravity="textStart"
-            app:iconTint="#0A0A0A"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+    <!-- ========================================== -->
+    <!-- 7. NFC TAP TO PAY ZONE                     -->
+    <!-- ========================================== -->
+    <LinearLayout
+        android:id="@+id/nfcTapZone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@id/btnConfirmSale"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_contactless"
+            app:tint="#666666" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Tap Card or Device to Pay"
+            android:textColor="#666666"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- ========================================== -->
+    <!-- 8. CONFIRM BUTTON                          -->
+    <!-- ========================================== -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnConfirmSale"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="24dp"
+        android:letterSpacing="0.02"
+        android:text="CONFIRM &amp; ISSUE TICKET"
+        android:textColor="#0A0A0A"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:backgroundTint="#00E5FF"
+        app:cornerRadius="32dp"
+        app:icon="@drawable/ic_receipt"
+        app:iconGravity="textStart"
+        app:iconTint="#0A0A0A"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

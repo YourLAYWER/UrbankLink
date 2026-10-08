@@ -77,6 +77,8 @@ public class ScannerActivity extends AppCompatActivity {
 
         HeaderManager.loadHeaderData(this, rootView);
 
+        HeaderUtils.setupHeader(this, false, false);
+
         // 2. INITIALIZE SERVICES FIRST
         cameraExecutor = java.util.concurrent.Executors.newSingleThreadExecutor();
         scanner = com.google.mlkit.vision.barcode.BarcodeScanning.getClient();

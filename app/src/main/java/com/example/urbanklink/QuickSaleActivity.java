@@ -36,6 +36,9 @@ public class QuickSaleActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_quick_sale);
 
+        HeaderUtils.setupHeader(this, true, false);
+
+
         // 1. Grab SharedPreferences variables
         SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
         dynamicBaseFare = prefs.getFloat("ACTIVE_BASE_FARE", 15.00f);
@@ -44,7 +47,7 @@ public class QuickSaleActivity extends AppCompatActivity {
         toneGen = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
 
         // 2. Link UI
-        btnClose = findViewById(R.id.btnClose);
+       //btnClose = findViewById(R.id.btnClose);
         txtQuantity = findViewById(R.id.txtQuantity);
         txtTotalAmount = findViewById(R.id.txtTotalAmount);
         txtBaseFare = findViewById(R.id.txtBaseFare);
@@ -61,7 +64,7 @@ public class QuickSaleActivity extends AppCompatActivity {
         updateTotalDisplay();
 
         // 5. Button Click Listeners
-        btnClose.setOnClickListener(v -> finish());
+        //btnClose.setOnClickListener(v -> finish());
 
         btnMinus.setOnClickListener(v -> {
             if (quantity > 1) {

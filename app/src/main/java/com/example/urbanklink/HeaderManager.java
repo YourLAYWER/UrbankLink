@@ -20,7 +20,7 @@ public class HeaderManager {
         TextView txtRouteDirection = rootView.findViewById(R.id.txtHeaderRouteDirection);
 
         // 2. Find phone header views (Conductor ScannerActivity)
-        TextView txtRouteInfo = rootView.findViewById(R.id.txtRouteInfo);
+        //TextView txtRouteInfo = rootView.findViewById(R.id.txtRouteInfo);
 
         // Retrieve saved auth token (Bearer token)
         SharedPreferences prefs = activity.getSharedPreferences("UrbanLinkPrefs", Context.MODE_PRIVATE);
