@@ -1,96 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/main"
-        android:layout_width="match_parent"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0A0B10"
+    android:fitsSystemWindows="true"
+    tools:context=".IncidentTelemetry">
+
+    <!-- ========================================== -->
+    <!-- 1. MODULAR INCLUDES                        -->
+    <!-- ========================================== -->
+
+    <!-- Sidebar Navigation -->
+    <include
+        android:id="@+id/sideNavRail"
+        layout="@layout/layout_side_nav"
+        android:layout_width="100dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/navDivider"
+        android:layout_width="1dp"
         android:layout_height="match_parent"
-        android:background="#0A0B10"
-        android:fitsSystemWindows="true"
-        tools:context=".IncidentTelemetry">
+        android:background="#2A2B33"
+        app:layout_constraintStart_toEndOf="@id/sideNavRail" />
 
-        <!-- ========================================== -->
-        <!-- 1. MODULAR INCLUDES                        -->
-        <!-- ========================================== -->
+    <!-- Top Status Bar -->
+    <include
+        android:id="@+id/topBar"
+        layout="@layout/layout_top_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/navDivider"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Sidebar Navigation -->
-        <include
-            android:id="@+id/sideNavRail"
-            layout="@layout/layout_side_nav"
-            android:layout_width="100dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <View
+        android:id="@+id/topDivider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#2A2B33"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/navDivider"
+        app:layout_constraintTop_toBottomOf="@id/topBar" />
 
-        <View
-            android:id="@+id/navDivider"
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#2A2B33"
-            app:layout_constraintStart_toEndOf="@id/sideNavRail" />
+    <!-- Bottom Telemetry Bar -->
+    <include
+        android:id="@+id/bottomBar"
+        layout="@layout/layout_bottom_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/navDivider" />
 
-        <!-- Top Status Bar -->
-        <include
-            android:id="@+id/topBar"
-            layout="@layout/layout_top_bar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/navDivider"
-            app:layout_constraintTop_toTopOf="parent" />
+    <View
+        android:id="@+id/bottomDivider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#2A2B33"
+        app:layout_constraintBottom_toTopOf="@id/bottomBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/navDivider" />
 
-        <View
-            android:id="@+id/topDivider"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:background="#2A2B33"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/navDivider"
-            app:layout_constraintTop_toBottomOf="@id/topBar" />
+    <!-- ========================================== -->
+    <!-- 2. MAIN SPLIT CONTENT AREA                 -->
+    <!-- ========================================== -->
 
-        <!-- Bottom Telemetry Bar -->
-        <include
-            android:id="@+id/bottomBar"
-            layout="@layout/layout_bottom_bar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/navDivider" />
+    <!-- Guideline splitting screen approx 58% Left / 42% Right -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineSplit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.58" />
 
-        <View
-            android:id="@+id/bottomDivider"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:background="#2A2B33"
-            app:layout_constraintBottom_toTopOf="@id/bottomBar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/navDivider" />
+    <!-- ========================================== -->
+    <!-- LEFT COLUMN: CATEGORIES & SOS (Now Scrollable!) -->
+    <!-- ========================================== -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@id/bottomDivider"
+        app:layout_constraintEnd_toStartOf="@id/guidelineSplit"
+        app:layout_constraintStart_toEndOf="@id/navDivider"
+        app:layout_constraintTop_toBottomOf="@id/topDivider">
 
-        <!-- ========================================== -->
-        <!-- 2. MAIN SPLIT CONTENT AREA                 -->
-        <!-- ========================================== -->
-
-        <!-- Guideline splitting screen approx 58% Left / 42% Right -->
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidelineSplit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.58" />
-
-        <!-- ========================================== -->
-        <!-- LEFT COLUMN: CATEGORIES & SOS              -->
-        <!-- ========================================== -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:padding="32dp"
-            app:layout_constraintBottom_toTopOf="@id/bottomDivider"
-            app:layout_constraintEnd_toStartOf="@id/guidelineSplit"
-            app:layout_constraintStart_toEndOf="@id/navDivider"
-            app:layout_constraintTop_toBottomOf="@id/topDivider">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="32dp">
 
             <!-- Page Title Row -->
             <LinearLayout
@@ -246,7 +251,7 @@
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardRoutineIssues"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 app:cardBackgroundColor="#0D1117"
                 app:cardCornerRadius="12dp"
@@ -257,7 +262,7 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:padding="24dp">
 
                     <!-- Routine Header -->
@@ -622,8 +627,10 @@
                         android:id="@+id/statsDivider"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
+                        android:layout_marginTop="24dp"
                         android:layout_marginBottom="16dp"
                         android:background="#2A2B33"
+                        app:layout_constraintTop_toBottomOf="@id/gridCategories"
                         app:layout_constraintBottom_toTopOf="@id/rowBottomStats" />
 
                     <!-- Bottom Stats Row -->
@@ -632,6 +639,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
+                        app:layout_constraintTop_toBottomOf="@id/statsDivider"
                         app:layout_constraintBottom_toBottomOf="parent">
 
                         <TextView
@@ -655,218 +663,219 @@
             </com.google.android.material.card.MaterialCardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 
-        <!-- ========================================== -->
-        <!-- RIGHT COLUMN: DETAILS & SUBMIT             -->
-        <!-- ========================================== -->
-        <LinearLayout
-            android:layout_width="0dp"
+    <!-- ========================================== -->
+    <!-- RIGHT COLUMN: DETAILS & SUBMIT             -->
+    <!-- ========================================== -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:padding="32dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guidelineSplit"
+        app:layout_constraintTop_toBottomOf="@id/topDivider">
+
+        <!-- DETAILS WRAPPER CARD -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:orientation="vertical"
-            android:padding="32dp"
-            app:layout_constraintBottom_toTopOf="@id/bottomDivider"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/guidelineSplit"
-            app:layout_constraintTop_toBottomOf="@id/topDivider">
+            android:layout_weight="1"
+            app:cardBackgroundColor="#0D1117"
+            app:cardCornerRadius="12dp"
+            app:strokeColor="#2A2B33"
+            app:strokeWidth="1dp">
 
-            <!-- DETAILS WRAPPER CARD -->
-            <com.google.android.material.card.MaterialCardView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                app:cardBackgroundColor="#0D1117"
-                app:cardCornerRadius="12dp"
-                app:strokeColor="#2A2B33"
-                app:strokeWidth="1dp">
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="24dp">
 
+                <!-- Details Header -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="24dp">
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                    <!-- Details Header -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@android:drawable/ic_menu_sort_by_size"
+                        app:tint="#00E5FF" />
+
+                    <TextView
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:letterSpacing="0.05"
+                        android:text="DETAILS"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@android:drawable/ic_menu_sort_by_size"
-                            app:tint="#00E5FF" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:letterSpacing="0.1"
+                        android:text="OPTIONAL VOICE / TEXT"
+                        android:textColor="#666666"
+                        android:textSize="10sp" />
+                </LinearLayout>
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_weight="1"
-                            android:letterSpacing="0.05"
-                            android:text="DETAILS"
+                <!-- Text Input Area (Nested Card) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_weight="1"
+                    app:cardBackgroundColor="#0A0B10"
+                    app:cardCornerRadius="8dp"
+                    app:strokeColor="#1A1B22"
+                    app:strokeWidth="1dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="20dp">
+
+                        <EditText
+                            android:id="@+id/etIncidentDetails"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_marginBottom="16dp"
+                            android:background="@null"
+                            android:gravity="top|start"
+                            android:hint="Type details here..."
+                            android:lineSpacingExtra="4dp"
+                            android:text="Overheating alert triggered near Boardwalk 1 stop. Coolant level warning on telemetry cluster. Engine power derated."
                             android:textColor="#FFFFFF"
+                            android:textColorHint="#444444"
                             android:textSize="14sp"
-                            android:textStyle="bold" />
+                            app:layout_constraintBottom_toTopOf="@id/btnVoiceRecord"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <View
+                            android:layout_width="6dp"
+                            android:layout_height="6dp"
+                            android:background="@drawable/bg_pill"
+                            android:backgroundTint="#00E5FF"
+                            app:layout_constraintBottom_toBottomOf="@id/btnVoiceRecord"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/btnVoiceRecord" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:letterSpacing="0.1"
-                            android:text="OPTIONAL VOICE / TEXT"
+                            android:layout_marginStart="12dp"
+                            android:text="Audio Dispatch Ready"
                             android:textColor="#666666"
-                            android:textSize="10sp" />
-                    </LinearLayout>
+                            android:textSize="10sp"
+                            app:layout_constraintBottom_toBottomOf="@id/btnVoiceRecord"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/btnVoiceRecord" />
 
-                    <!-- Text Input Area (Nested Card) -->
-                    <com.google.android.material.card.MaterialCardView
+                        <ImageView
+                            android:id="@+id/btnVoiceRecord"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_nav_tab"
+                            android:backgroundTint="#1A1B22"
+                            android:padding="12dp"
+                            android:src="@android:drawable/ic_btn_speak_now"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:tint="#A0A0A0" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Diagnostics Card (Nested Card) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardBackgroundColor="#12131A"
+                    app:cardCornerRadius="8dp"
+                    app:strokeColor="#1A1B22"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_weight="1"
-                        app:cardBackgroundColor="#0A0B10"
-                        app:cardCornerRadius="8dp"
-                        app:strokeColor="#1A1B22"
-                        app:strokeWidth="1dp">
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="16dp">
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:padding="20dp">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@android:drawable/ic_menu_directions"
+                            app:tint="#00FF7F" />
 
-                            <EditText
-                                android:id="@+id/etIncidentDetails"
-                                android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_marginBottom="16dp"
-                                android:background="@null"
-                                android:gravity="top|start"
-                                android:hint="Type details here..."
-                                android:lineSpacingExtra="4dp"
-                                android:text="Overheating alert triggered near Boardwalk 1 stop. Coolant level warning on telemetry cluster. Engine power derated."
-                                android:textColor="#FFFFFF"
-                                android:textColorHint="#444444"
-                                android:textSize="14sp"
-                                app:layout_constraintBottom_toTopOf="@id/btnVoiceRecord"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                            <View
-                                android:layout_width="6dp"
-                                android:layout_height="6dp"
-                                android:background="@drawable/bg_pill"
-                                android:backgroundTint="#00E5FF"
-                                app:layout_constraintBottom_toBottomOf="@id/btnVoiceRecord"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="@id/btnVoiceRecord" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:orientation="vertical">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="12dp"
-                                android:text="Audio Dispatch Ready"
-                                android:textColor="#666666"
-                                android:textSize="10sp"
-                                app:layout_constraintBottom_toBottomOf="@id/btnVoiceRecord"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="@id/btnVoiceRecord" />
+                                android:text="Auto-attached Bus Diagnostics"
+                                android:textColor="#FFFFFF"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
 
-                            <ImageView
-                                android:id="@+id/btnVoiceRecord"
-                                android:layout_width="48dp"
-                                android:layout_height="48dp"
-                                android:background="@drawable/bg_nav_tab"
-                                android:backgroundTint="#1A1B22"
-                                android:padding="12dp"
-                                android:src="@android:drawable/ic_btn_speak_now"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:tint="#A0A0A0" />
-
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Diagnostics Card (Nested Card) -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        app:cardBackgroundColor="#12131A"
-                        app:cardCornerRadius="8dp"
-                        app:strokeColor="#1A1B22"
-                        app:strokeWidth="1dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:padding="16dp">
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@android:drawable/ic_menu_directions"
-                                app:tint="#00FF7F" />
-
-                            <LinearLayout
+                            <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="12dp"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Auto-attached Bus Diagnostics"
-                                    android:textColor="#FFFFFF"
-                                    android:textSize="12sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="CANBUS Log #84920-ZA · Odometer 118.4 km · 45 PAX"
-                                    android:textColor="#666666"
-                                    android:textSize="10sp" />
-                            </LinearLayout>
+                                android:text="CANBUS Log #84920-ZA · Odometer 118.4 km · 45 PAX"
+                                android:textColor="#666666"
+                                android:textSize="10sp" />
                         </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Action Buttons (Outside the Wrapper Card) -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:orientation="horizontal">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnClearForm"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="56dp"
-                    android:layout_marginEnd="12dp"
-                    android:text="CLEAR"
-                    android:textColor="#E0E0E0"
-                    app:cornerRadius="8dp"
-                    app:strokeColor="#2A2B33"
-                    app:strokeWidth="1dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSubmitReport"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="1"
-                    android:text="SUBMIT REPORT"
-                    android:textColor="#000000"
-                    android:textStyle="bold"
-                    app:backgroundTint="#00E5FF"
-                    app:cornerRadius="8dp"
-                    app:icon="@drawable/ic_send"
-                    app:iconGravity="textStart"
-                    app:iconTint="#000000" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
-        </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Action Buttons (Outside the Wrapper Card) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnClearForm"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                android:layout_marginEnd="12dp"
+                android:text="CLEAR"
+                android:textColor="#E0E0E0"
+                app:cornerRadius="8dp"
+                app:strokeColor="#2A2B33"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSubmitReport"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="SUBMIT REPORT"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                app:backgroundTint="#00E5FF"
+                app:cornerRadius="8dp"
+                app:icon="@drawable/ic_send"
+                app:iconGravity="textStart"
+                app:iconTint="#000000" />
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
