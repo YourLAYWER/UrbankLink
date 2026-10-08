@@ -132,7 +132,7 @@ public class ScannerActivity extends AppCompatActivity {
         FloatingActionButton fabScan = findViewById(R.id.fabScan);
 
         // Pass -1 for ScannerActivity since the active state belongs to the FAB, not the bottom menu
-        BottomDriverNavManager.setup(this, bottomNav, fabScan, -1);
+        BottomConductorNavManager.setup(this, bottomNav, fabScan, -1);
 
         // 5. START CAMERA LAST (Now that views and services are ready)
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {

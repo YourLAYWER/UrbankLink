@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Left Tab: Shift Summary / Stats -->
+    <item
+        android:id="@+id/nav_summary"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="Summary" />
+
+    <!-- Center Placeholder for the large FAB -->
+    <item
+        android:id="@+id/nav_placeholder"
+        android:enabled="false"
+        android:title="" />
+
+    <!-- Right Tab: Incident Reporting -->
+    <item
+        android:id="@+id/nav_incidents"
+        android:icon="@android:drawable/ic_dialog_alert"
+        android:title="Incidents" />
+
+</menu>

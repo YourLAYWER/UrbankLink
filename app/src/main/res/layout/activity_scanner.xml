@@ -279,7 +279,7 @@
                 app:elevation="0dp"
                 app:itemIconTint="@color/nav_item_colors"
                 app:itemTextColor="@color/nav_item_colors"
-                app:menu="@menu/driver_bottom_nav_menu" />
+                app:menu="@menu/conductor_bottom_nav_menu" />
         </com.google.android.material.bottomappbar.BottomAppBar>
 
         <!-- The Large Center Scan Button -->
