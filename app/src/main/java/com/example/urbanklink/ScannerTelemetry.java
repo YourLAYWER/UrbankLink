@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,6 +64,9 @@ public class ScannerTelemetry extends AppCompatActivity {
     private String authHeader;
     private int activeShiftId = -1;
     private int currentPassengers = 0; // Starting demo capacity based on your UI
+
+    private final int MAX_CAPACITY = 60;
+    private final int SEATING_CAPACITY = 40;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,13 +154,68 @@ public class ScannerTelemetry extends AppCompatActivity {
 
         // Load saved count, defaulting to 45 if nothing is stored yet
         currentPassengers = prefs.getInt("ACTIVE_PASSENGER_COUNT", 0);
+        updateCabinOccupancy(currentPassengers);
 
         if (txtOccupancyCount != null) {
             txtOccupancyCount.setText(String.valueOf(currentPassengers));
         }
     }
+
+    private void updateCabinOccupancy(int currentPassengers) {
+        // 1. Find the views
+        TextView txtOccupancyCount = findViewById(R.id.txtOccupancyCount);
+        TextView txtOccupancyPercentage = findViewById(R.id.txtOccupancyPercentage);
+        TextView txtSeatsRemaining = findViewById(R.id.txtSeatsRemaining);
+        TextView txtSeatedStanding = findViewById(R.id.txtSeatedStanding);
+        ProgressBar progressOccupancy = findViewById(R.id.progressOccupancy);
+        com.google.android.material.switchmaterial.SwitchMaterial switchBusFull = findViewById(R.id.switchBusFull); // If you gave the switch an ID
+
+        // 2. Prevent overflow
+        if (currentPassengers > MAX_CAPACITY) currentPassengers = MAX_CAPACITY;
+        if (currentPassengers < 0) currentPassengers = 0;
+
+        // 3. Calculate the math
+        int percentage = (int) (((float) currentPassengers / MAX_CAPACITY) * 100);
+        int remaining = MAX_CAPACITY - currentPassengers;
+
+        // Fill seats first, then standing room
+        int seated = Math.min(currentPassengers, SEATING_CAPACITY);
+        int standing = Math.max(0, currentPassengers - SEATING_CAPACITY);
+
+        // 4. Update the text fields
+        txtOccupancyCount.setText(String.valueOf(currentPassengers));
+        txtOccupancyPercentage.setText(percentage + "% FULL");
+        txtSeatedStanding.setText("SEATED: " + seated + " | STANDING: " + standing);
+        progressOccupancy.setProgress(currentPassengers);
+
+        // 5. Dynamic Colors & Logic
+        if (percentage >= 100) {
+            // Bus is completely full (Red warning)
+            txtSeatsRemaining.setText("BUS FULL");
+            txtSeatsRemaining.setTextColor(android.graphics.Color.parseColor("#FF5252")); // Red
+            txtOccupancyPercentage.setTextColor(android.graphics.Color.parseColor("#FF5252"));
+            progressOccupancy.setProgressTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#FF5252")));
+
+            if (switchBusFull != null) switchBusFull.setChecked(true); // Auto-toggle the "Mark Full" switch!
+
+        } else if (percentage >= 80) {
+            // Bus is getting crowded (Yellow/Orange warning)
+            txtSeatsRemaining.setText(remaining + " SPOTS REMAINING");
+            txtSeatsRemaining.setTextColor(android.graphics.Color.parseColor("#FFB74D")); // Orange
+            txtOccupancyPercentage.setTextColor(android.graphics.Color.parseColor("#FFB74D"));
+            progressOccupancy.setProgressTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#FFB74D")));
+
+        } else {
+            // Normal operation (Cyan/Green)
+            txtSeatsRemaining.setText(remaining + " SPOTS REMAINING");
+            txtSeatsRemaining.setTextColor(android.graphics.Color.parseColor("#00FF7F")); // Green
+            txtOccupancyPercentage.setTextColor(android.graphics.Color.parseColor("#00E5FF")); // Cyan
+            progressOccupancy.setProgressTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#00E5FF")));
+        }
+    }
     private void updatePassengerCount(int newCount) {
         currentPassengers = newCount;
+        updateCabinOccupancy(currentPassengers);
 
         if (txtOccupancyCount != null) {
             txtOccupancyCount.setText(String.valueOf(currentPassengers));

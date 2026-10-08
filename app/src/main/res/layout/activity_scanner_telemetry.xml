@@ -292,6 +292,7 @@
             app:layout_constraintTop_toBottomOf="@id/topDivider">
 
             <!-- Cabin Occupancy Card -->
+            <!-- Cabin Occupancy Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -327,20 +328,23 @@
                         app:layout_constraintStart_toEndOf="@id/icCabin"
                         app:layout_constraintTop_toTopOf="@id/icCabin" />
 
+                    <!-- ID ADDED: txtOccupancyPercentage -->
                     <TextView
+                        android:id="@+id/txtOccupancyPercentage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_pill"
                         android:backgroundTint="#003344"
                         android:paddingHorizontal="12dp"
                         android:paddingVertical="4dp"
-                        android:text="75% FULL"
+                        android:text="0% FULL"
                         android:textColor="#00E5FF"
                         android:textSize="10sp"
                         android:textStyle="bold"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
 
+                    <!-- ID ALREADY HERE -->
                     <TextView
                         android:id="@+id/txtOccupancyCount"
                         android:layout_width="wrap_content"
@@ -371,29 +375,37 @@
                         android:gravity="end"
                         app:layout_constraintBottom_toBottomOf="@id/txtOccupancyCount"
                         app:layout_constraintEnd_toEndOf="parent">
+
+                        <!-- ID ADDED: txtSeatsRemaining -->
                         <TextView
+                            android:id="@+id/txtSeatsRemaining"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="15 SEATS REMAINING"
+                            android:text="60 SEATS REMAINING"
                             android:textColor="#00FF7F"
                             android:textSize="12sp"
                             android:textStyle="bold" />
+
+                        <!-- ID ADDED: txtSeatedStanding -->
                         <TextView
+                            android:id="@+id/txtSeatedStanding"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:text="SEATED: 35 | STANDING: 10"
+                            android:text="SEATED: 0 | STANDING: 0"
                             android:textColor="#888888"
                             android:textSize="10sp" />
                     </LinearLayout>
 
+                    <!-- ID ADDED: progressOccupancy -->
                     <ProgressBar
+                        android:id="@+id/progressOccupancy"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="8dp"
                         android:layout_marginTop="24dp"
                         android:max="60"
-                        android:progress="45"
+                        android:progress="0"
                         android:progressTint="#00E5FF"
                         android:progressBackgroundTint="#2A2B33"
                         app:layout_constraintTop_toBottomOf="@id/txtOccupancyCount" />
@@ -499,11 +511,11 @@
 
                     <ImageView
                         android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_height="36dp"
                         android:background="@drawable/bg_nav_tab"
                         android:backgroundTint="#00E5FF"
                         android:padding="6dp"
-                        android:src="@android:drawable/ic_menu_camera"
+                        android:src="@drawable/ic_cash"
                         app:tint="#0A0B10" />
 
                     <LinearLayout
