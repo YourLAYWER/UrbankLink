@@ -14,10 +14,13 @@ import retrofit2.Response;
 public class HeaderManager {
 
     public static void loadHeaderData(Activity activity, View rootView) {
-        // Find header views from the included layout root or activity view
+        // 1. Find tablet header views (Driver POS)
         TextView txtBusTag = rootView.findViewById(R.id.txtHeaderBusTag);
         TextView txtRouteName = rootView.findViewById(R.id.txtHeaderRouteName);
         TextView txtRouteDirection = rootView.findViewById(R.id.txtHeaderRouteDirection);
+
+        // 2. Find phone header views (Conductor ScannerActivity)
+        TextView txtRouteInfo = rootView.findViewById(R.id.txtRouteInfo);
 
         // Retrieve saved auth token (Bearer token)
         SharedPreferences prefs = activity.getSharedPreferences("UrbanLinkPrefs", Context.MODE_PRIVATE);
@@ -31,16 +34,20 @@ public class HeaderManager {
                 if (response.isSuccessful() && response.body() != null) {
                     ShiftInfoResponse info = response.body();
 
-                    // Populate UI fields
+                    // Populate Tablet UI fields
                     if (txtBusTag != null) txtBusTag.setText("BUS #" + info.getBusFleetNumber());
                     if (txtRouteName != null) txtRouteName.setText(info.getRouteName().toUpperCase());
                     if (txtRouteDirection != null) txtRouteDirection.setText(info.getRouteDisplay());
 
-                    // Save routeId and baseFare locally for the POS screen
+                    // Populate Phone UI field (ScannerActivity)
+
+                    // Save EVERYTHING locally for the QuickSale and Incident screens
                     SharedPreferences prefs = activity.getSharedPreferences("UrbanLinkPrefs", Context.MODE_PRIVATE);
                     prefs.edit()
                             .putInt("ACTIVE_ROUTE_ID", info.getRouteId())
-                            .putFloat("ACTIVE_BASE_FARE", (float) info.getBaseFare()) // Save base fare
+                            .putFloat("ACTIVE_BASE_FARE", (float) info.getBaseFare())
+                            .putString("ACTIVE_ROUTE_NAME", info.getRouteName())
+                            .putString("ACTIVE_BUS_FLEET", info.getBusFleetNumber())
                             .apply();
                 } else {
                     Toast.makeText(activity, "Failed to load shift metadata", Toast.LENGTH_SHORT).show();

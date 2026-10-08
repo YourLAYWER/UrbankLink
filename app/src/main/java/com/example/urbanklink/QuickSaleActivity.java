@@ -11,9 +11,6 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.button.MaterialButton;
 
@@ -28,25 +25,21 @@ public class QuickSaleActivity extends AppCompatActivity {
     private MaterialButton btnConfirmSale;
 
     private int quantity = 1;
-    private final double BASE_FARE = 15.00; // In a full production app, you'd pass this via Intent from the Route data
-    private int activeShiftId = -1;
-    private String authHeader;
+    // We remove the hardcoded BASE_FARE and make dynamicBaseFare accessible globally
+    private double dynamicBaseFare = 15.00;
+
     private ToneGenerator toneGen;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_quick_sale);
 
-        // 1. Grab JWT Token
+        // 1. Grab SharedPreferences variables
         SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
-        String token = prefs.getString("JWT_TOKEN", null);
-        float baseFare = prefs.getFloat("ACTIVE_BASE_FARE", 15.00f);
+        dynamicBaseFare = prefs.getFloat("ACTIVE_BASE_FARE", 15.00f);
         String routeName = prefs.getString("ACTIVE_ROUTE_NAME", "Unknown Route");
-
-        if (token != null) {
-            authHeader = "Bearer " + token.replace("\"", "").trim();
-        }
 
         toneGen = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
 
@@ -55,21 +48,19 @@ public class QuickSaleActivity extends AppCompatActivity {
         txtQuantity = findViewById(R.id.txtQuantity);
         txtTotalAmount = findViewById(R.id.txtTotalAmount);
         txtBaseFare = findViewById(R.id.txtBaseFare);
+        txtRouteName = findViewById(R.id.txtRouteName);
         btnMinus = findViewById(R.id.btnMinus);
         btnPlus = findViewById(R.id.btnPlus);
         btnConfirmSale = findViewById(R.id.btnConfirmSale);
-        txtRouteName = findViewById(R.id.txtRouteName);
 
-        // 3. Setup Initial UI State
-        updateTotalDisplay();
-        txtBaseFare = findViewById(R.id.txtBaseFare);
-        txtRouteName = findViewById(R.id.txtRouteName);
-
-        // Set the values!
+        // 3. Inject the dynamic values into the UI
         if (txtRouteName != null) txtRouteName.setText(routeName);
-        if (txtBaseFare != null) txtBaseFare.setText(String.format("R%.2f", baseFare));
+        if (txtBaseFare != null) txtBaseFare.setText(String.format("R%.2f", dynamicBaseFare));
 
-        // 4. Button Click Listeners
+        // 4. Calculate initial total
+        updateTotalDisplay();
+
+        // 5. Button Click Listeners
         btnClose.setOnClickListener(v -> finish());
 
         btnMinus.setOnClickListener(v -> {
@@ -93,7 +84,8 @@ public class QuickSaleActivity extends AppCompatActivity {
 
     private void updateTotalDisplay() {
         txtQuantity.setText(String.valueOf(quantity));
-        double total = quantity * BASE_FARE;
+        // FIX: Now we multiply by the dynamic fare we loaded from memory!
+        double total = quantity * dynamicBaseFare;
         txtTotalAmount.setText(String.format("R%.2f", total));
     }
 
@@ -105,7 +97,6 @@ public class QuickSaleActivity extends AppCompatActivity {
 
         UrbanLinkApiService apiService = ApiClient.getClient(QuickSaleActivity.this).create(UrbanLinkApiService.class);
 
-        // Pass authHeader if your ApiClient doesn't already inject it automatically via interceptor
         apiService.recordCashSale(request).enqueue(new Callback<CashSaleResponse>() {
             @Override
             public void onResponse(Call<CashSaleResponse> call, Response<CashSaleResponse> response) {
@@ -120,7 +111,7 @@ public class QuickSaleActivity extends AppCompatActivity {
                     finish();
                 } else {
                     btnConfirmSale.setEnabled(true);
-                    btnConfirmSale.setText("Confirm & Issue Ticket");
+                    btnConfirmSale.setText("CONFIRM & ISSUE TICKET");
                     Toast.makeText(QuickSaleActivity.this, "Transaction Failed. Try again.", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -128,7 +119,7 @@ public class QuickSaleActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<CashSaleResponse> call, Throwable t) {
                 btnConfirmSale.setEnabled(true);
-                btnConfirmSale.setText("Confirm & Issue Ticket");
+                btnConfirmSale.setText("CONFIRM & ISSUE TICKET");
                 Toast.makeText(QuickSaleActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
             }
         });
