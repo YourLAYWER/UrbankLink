@@ -1,349 +1,336 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/main"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0A0A0A"
+    android:fitsSystemWindows="true"
+    tools:context=".IncidentReportActivity">
+
+    <!-- ========================================== -->
+    <!-- 1. UNIVERSAL TOP HEADER                    -->
+    <!-- ========================================== -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#0A0A0A"
-        android:fitsSystemWindows="true"
-        tools:context=".IncidentReportActivity">
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <!-- ========================================== -->
-        <!-- 1. TOP APP BAR                             -->
-        <!-- ========================================== -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/topBar"
+        <include
+            android:id="@+id/topHeader"
+            layout="@layout/layout_top_header"
             android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:paddingHorizontal="16dp"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="64dp" />
+    </com.google.android.material.appbar.AppBarLayout>
 
-            <!-- Modern circular back button -->
-            <ImageView
-                android:id="@+id/btnBack"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="@drawable/bg_circle_dark"
-                android:backgroundTint="#1A1A1A"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="12dp"
-                android:src="@android:drawable/ic_menu_revert"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="#E0E0E0" />
+    <!-- ========================================== -->
+    <!-- 2. SCREEN CONTROLS (Back Btn & Badge)      -->
+    <!-- ========================================== -->
+    <LinearLayout
+        android:id="@+id/screenControls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/btnBack"
-                app:layout_constraintTop_toTopOf="parent">
+        <!-- Modern circular back button (ID Preserved!) -->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:letterSpacing="0.02"
-                    android:text="Report Incident"
-                    android:textColor="#FFFFFF"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/txtRouteContext"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Bus ALGOA-042 • Route 1"
-                    android:textColor="#00E5FF"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Modern Incident Report Badge (Red Theme) -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_pill_green"
+            android:backgroundTint="#1AFF3B30"
+            android:letterSpacing="0.1"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="INCIDENT REPORT"
+            android:textColor="#FF3B30"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
-        <View
-            android:id="@+id/dividerTop"
+    <!-- ========================================== -->
+    <!-- SCROLLABLE CONTENT                         -->
+    <!-- ========================================== -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingBottom="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/screenControls">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#1A1A1A"
-            app:layout_constraintTop_toBottomOf="@id/topBar" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <!-- ========================================== -->
-        <!-- SCROLLABLE CONTENT                         -->
-        <!-- ========================================== -->
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:clipToPadding="false"
-            android:paddingBottom="100dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/dividerTop">
-
-            <LinearLayout
+            <!-- ========================================== -->
+            <!-- 3. EMERGENCY SOS CARD                      -->
+            <!-- ========================================== -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardEmergency"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                app:cardBackgroundColor="#1A1A1A"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
 
-                <!-- ========================================== -->
-                <!-- 2. EMERGENCY SOS CARD                      -->
-                <!-- ========================================== -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardEmergency"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardBackgroundColor="#1A1A1A"
-                    app:cardCornerRadius="24dp"
-                    app:cardElevation="0dp"
-                    app:strokeWidth="0dp">
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="20dp"
+                    android:paddingTop="24dp"
+                    android:paddingBottom="20dp">
 
-                    <LinearLayout
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnEmergencySOS"
+                        android:layout_width="match_parent"
+                        android:layout_height="64dp"
+                        android:letterSpacing="0.05"
+                        android:text="EMERGENCY SOS"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:backgroundTint="#FF3B30"
+                        app:cornerRadius="32dp"
+                        app:icon="@android:drawable/ic_dialog_alert"
+                        app:iconGravity="textStart"
+                        app:iconPadding="12dp"
+                        app:iconTint="#FFFFFF" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Instantly sends GPS coordinates to depot security."
+                        android:textAlignment="center"
+                        android:textColor="#888888"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ========================================== -->
+            <!-- 4. ROUTINE ISSUE CARD                      -->
+            <!-- ========================================== -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="#1A1A1A"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="24dp"
+                    android:paddingVertical="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:letterSpacing="0.1"
+                        android:text="LOG ROUTINE ISSUE"
+                        android:textColor="#888888"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroupIssues"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:paddingHorizontal="20dp"
-                        android:paddingTop="24dp"
-                        android:paddingBottom="20dp">
+                        app:chipSpacingHorizontal="8dp"
+                        app:chipSpacingVertical="8dp"
+                        app:selectionRequired="true"
+                        app:singleSelection="true">
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnEmergencySOS"
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipEngine"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:checked="true"
+                            android:text="Engine Trouble"
+                            android:textColor="@color/chip_text_color"
+                            app:chipBackgroundColor="@color/chip_bg_color"
+                            app:chipStrokeColor="@color/chip_stroke_color"
+                            app:chipStrokeWidth="1dp" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipTire"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="Flat Tire"
+                            android:textColor="@color/chip_text_color"
+                            app:chipBackgroundColor="@color/chip_bg_color"
+                            app:chipStrokeColor="@color/chip_stroke_color"
+                            app:chipStrokeWidth="1dp" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipScanner"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="Scanner Offline"
+                            android:textColor="@color/chip_text_color"
+                            app:chipBackgroundColor="@color/chip_bg_color"
+                            app:chipStrokeColor="@color/chip_stroke_color"
+                            app:chipStrokeWidth="1dp" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipMedical"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="Medical Event"
+                            android:textColor="@color/chip_text_color"
+                            app:chipBackgroundColor="@color/chip_bg_color"
+                            app:chipStrokeColor="@color/chip_stroke_color"
+                            app:chipStrokeWidth="1dp" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipDispute"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="Passenger Dispute"
+                            android:textColor="@color/chip_text_color"
+                            app:chipBackgroundColor="@color/chip_bg_color"
+                            app:chipStrokeColor="@color/chip_stroke_color"
+                            app:chipStrokeWidth="1dp" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipDelay"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="Delay"
+                            android:textColor="@color/chip_text_color"
+                            app:chipBackgroundColor="@color/chip_bg_color"
+                            app:chipStrokeColor="@color/chip_stroke_color"
+                            app:chipStrokeWidth="1dp" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipOther"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="Other"
+                            android:textColor="@color/chip_text_color"
+                            app:chipBackgroundColor="@color/chip_bg_color"
+                            app:chipStrokeColor="@color/chip_stroke_color"
+                            app:chipStrokeWidth="1dp" />
+
+                    </com.google.android.material.chip.ChipGroup>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ========================================== -->
+            <!-- 5. DETAILS CARD                            -->
+            <!-- ========================================== -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="#1A1A1A"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="24dp"
+                    android:paddingVertical="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:letterSpacing="0.1"
+                        android:text="ADDITIONAL DETAILS"
+                        android:textColor="#888888"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <!-- Text Input sunken into the card -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:boxBackgroundColor="#0A0A0A"
+                        app:boxCornerRadiusBottomEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxStrokeWidth="0dp"
+                        app:boxStrokeWidthFocused="0dp"
+                        app:endIconDrawable="@android:drawable/ic_btn_speak_now"
+                        app:endIconMode="custom"
+                        app:endIconTint="#00E5FF"
+                        app:hintEnabled="false">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/inputDetails"
                             android:layout_width="match_parent"
-                            android:layout_height="64dp"
-                            android:letterSpacing="0.05"
-                            android:text="EMERGENCY SOS"
+                            android:layout_height="wrap_content"
+                            android:gravity="top|start"
+                            android:hint="Add brief details (optional)..."
+                            android:lines="4"
+                            android:padding="16dp"
                             android:textColor="#FFFFFF"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            app:backgroundTint="#FF3B30"
-                            app:cornerRadius="32dp"
-                            app:icon="@android:drawable/ic_dialog_alert"
-                            app:iconGravity="textStart"
-                            app:iconPadding="12dp"
-                            app:iconTint="#FFFFFF" />
+                            android:textColorHint="#666666" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="Instantly sends GPS coordinates to depot security."
-                            android:textAlignment="center"
-                            android:textColor="#888888"
-                            android:textSize="13sp" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+    <!-- ========================================== -->
+    <!-- 6. SUBMIT BUTTON                           -->
+    <!-- ========================================== -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSubmitReport"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="24dp"
+        android:letterSpacing="0.02"
+        android:text="SUBMIT REPORT"
+        android:textColor="#0A0A0A"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:backgroundTint="#00FF7F"
+        app:cornerRadius="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-                <!-- ========================================== -->
-                <!-- 3. ROUTINE ISSUE CARD                      -->
-                <!-- ========================================== -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    app:cardBackgroundColor="#1A1A1A"
-                    app:cardCornerRadius="24dp"
-                    app:cardElevation="0dp"
-                    app:strokeWidth="0dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingHorizontal="24dp"
-                        android:paddingVertical="20dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="16dp"
-                            android:letterSpacing="0.1"
-                            android:text="LOG ROUTINE ISSUE"
-                            android:textColor="#888888"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
-                        <com.google.android.material.chip.ChipGroup
-                            android:id="@+id/chipGroupIssues"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            app:chipSpacingHorizontal="8dp"
-                            app:chipSpacingVertical="8dp"
-                            app:selectionRequired="true"
-                            app:singleSelection="true">
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipEngine"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:checkable="true"
-                                android:checked="true"
-                                android:text="Engine Trouble"
-                                android:textColor="@color/chip_text_color"
-                                app:chipBackgroundColor="@color/chip_bg_color"
-                                app:chipStrokeColor="@color/chip_stroke_color"
-                                app:chipStrokeWidth="1dp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipTire"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:checkable="true"
-                                android:text="Flat Tire"
-                                android:textColor="@color/chip_text_color"
-                                app:chipBackgroundColor="@color/chip_bg_color"
-                                app:chipStrokeColor="@color/chip_stroke_color"
-                                app:chipStrokeWidth="1dp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipScanner"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:checkable="true"
-                                android:text="Scanner Offline"
-                                android:textColor="@color/chip_text_color"
-                                app:chipBackgroundColor="@color/chip_bg_color"
-                                app:chipStrokeColor="@color/chip_stroke_color"
-                                app:chipStrokeWidth="1dp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipMedical"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:checkable="true"
-                                android:text="Medical Event"
-                                android:textColor="@color/chip_text_color"
-                                app:chipBackgroundColor="@color/chip_bg_color"
-                                app:chipStrokeColor="@color/chip_stroke_color"
-                                app:chipStrokeWidth="1dp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipDispute"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:checkable="true"
-                                android:text="Passenger Dispute"
-                                android:textColor="@color/chip_text_color"
-                                app:chipBackgroundColor="@color/chip_bg_color"
-                                app:chipStrokeColor="@color/chip_stroke_color"
-                                app:chipStrokeWidth="1dp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipDelay"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:checkable="true"
-                                android:text="Delay"
-                                android:textColor="@color/chip_text_color"
-                                app:chipBackgroundColor="@color/chip_bg_color"
-                                app:chipStrokeColor="@color/chip_stroke_color"
-                                app:chipStrokeWidth="1dp" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/chipOther"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:checkable="true"
-                                android:text="Other"
-                                android:textColor="@color/chip_text_color"
-                                app:chipBackgroundColor="@color/chip_bg_color"
-                                app:chipStrokeColor="@color/chip_stroke_color"
-                                app:chipStrokeWidth="1dp" />
-
-                        </com.google.android.material.chip.ChipGroup>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- ========================================== -->
-                <!-- 4. DETAILS CARD                            -->
-                <!-- ========================================== -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="16dp"
-                    app:cardBackgroundColor="#1A1A1A"
-                    app:cardCornerRadius="24dp"
-                    app:cardElevation="0dp"
-                    app:strokeWidth="0dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingHorizontal="24dp"
-                        android:paddingVertical="20dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="16dp"
-                            android:letterSpacing="0.1"
-                            android:text="ADDITIONAL DETAILS"
-                            android:textColor="#888888"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
-                        <!-- Text Input sunken into the card -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            app:boxBackgroundColor="#0A0A0A"
-                            app:boxCornerRadiusBottomEnd="12dp"
-                            app:boxCornerRadiusBottomStart="12dp"
-                            app:boxCornerRadiusTopEnd="12dp"
-                            app:boxCornerRadiusTopStart="12dp"
-                            app:boxStrokeWidth="0dp"
-                            app:boxStrokeWidthFocused="0dp"
-                            app:endIconDrawable="@android:drawable/ic_btn_speak_now"
-                            app:endIconMode="custom"
-                            app:endIconTint="#00E5FF"
-                            app:hintEnabled="false">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/inputDetails"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="top|start"
-                                android:hint="Add brief details (optional)..."
-                                android:lines="4"
-                                android:padding="16dp"
-                                android:textColor="#FFFFFF"
-                                android:textColorHint="#666666" />
-                        </com.google.android.material.textfield.TextInputLayout>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
-
-        <!-- ========================================== -->
-        <!-- 5. SUBMIT BUTTON                           -->
-        <!-- ========================================== -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSubmitReport"
-            android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginBottom="24dp"
-            android:letterSpacing="0.02"
-            android:text="SUBMIT REPORT"
-            android:textColor="#0A0A0A"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:backgroundTint="#00FF7F"
-            app:cornerRadius="32dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

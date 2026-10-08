@@ -30,6 +30,9 @@ public class ShiftCompleteActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_shift_complete);
 
+        // Tell HeaderUtils to paint the profile in the top right!
+        HeaderUtils.setupHeader(this, true, false);
+
         txtRouteCompleted = findViewById(R.id.txtRouteCompleted);
         txtTicketsScanned = findViewById(R.id.txtTicketsScanned);
         txtTotalCash = findViewById(R.id.txtTotalCash);

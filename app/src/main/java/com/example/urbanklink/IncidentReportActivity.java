@@ -48,6 +48,8 @@ public class IncidentReportActivity extends AppCompatActivity {
         // Initialize Location Client
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
+        HeaderUtils.setupHeader(this, true, false);
+
         // Setup Permission Launcher
         locationPermissionRequest = registerForActivityResult(
                 new ActivityResultContracts.RequestMultiplePermissions(),
@@ -68,32 +70,11 @@ public class IncidentReportActivity extends AppCompatActivity {
         // Check/Request Permissions immediately when the screen opens
         requestLocationPermissions();
 
-//        // 1. Setup Navigation
-//        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
-//        FloatingActionButton fabScan = findViewById(R.id.fabScan);
-//        BottomNavManager.setup(this, bottomNav, fabScan, R.id.nav_reports);
-
         // 2. Link Views
         btnEmergencySOS = findViewById(R.id.btnEmergencySOS);
         btnSubmitReport = findViewById(R.id.btnSubmitReport);
         chipGroupIssues = findViewById(R.id.chipGroupIssues);
         inputDetails = findViewById(R.id.inputDetails);
-
-        // 3. SOS Button Listener
-//        btnEmergencySOS.setOnClickListener(v -> {
-//            // Disable instantly to prevent spam clicks
-//            btnEmergencySOS.setEnabled(false);
-//            btnEmergencySOS.setText("SENDING SOS...");
-//
-//            // TODO: Fetch device GPS coordinates and push to backend
-//            Toast.makeText(this, "SOS Activated! Location being sent...", Toast.LENGTH_LONG).show();
-//
-//            // Re-enable after 3 seconds for demo purposes
-//            v.postDelayed(() -> {
-//                btnEmergencySOS.setEnabled(true);
-//                btnEmergencySOS.setText("EMERGENCY SOS");
-//            }, 3000);
-//        });
 
         btnEmergencySOS.setOnClickListener(v -> {
             btnEmergencySOS.setEnabled(false);
