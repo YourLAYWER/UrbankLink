@@ -98,7 +98,7 @@ public class RouteScheduleActivity extends AppCompatActivity {
         recyclerView.setVisibility(View.GONE);
 
         // Use your specific ApiClient class name here
-        UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+        UrbanLinkApiService apiService = ApiClient.getClient(getApplicationContext()).create(UrbanLinkApiService.class);
 
         apiService.getRoutesByProvider(id).enqueue(new Callback<RouteResponse>() {
             @Override

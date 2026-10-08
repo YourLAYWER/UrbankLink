@@ -75,7 +75,7 @@ public class ProviderListActivity extends AppCompatActivity {
         recyclerView.setVisibility(View.GONE);
         tvEmptyState.setVisibility(View.GONE);
 
-        UrbanLinkApiService apiService = ApiClient.getClient(null).create(UrbanLinkApiService.class);
+        UrbanLinkApiService apiService = ApiClient.getClient(getApplicationContext()).create(UrbanLinkApiService.class);
         Call<List<ProviderSummary>> call = apiService.getProvidersByType(type);
 
         call.enqueue(new Callback<List<ProviderSummary>>() {
