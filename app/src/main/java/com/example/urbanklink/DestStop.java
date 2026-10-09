@@ -4,6 +4,8 @@ import com.google.gson.annotations.SerializedName;
 
 public class DestStop {
 
+    @SerializedName("StopId") // Or "Id", depending on your C# DTO!
+    private int stopId;
     @SerializedName("Name")
     private String name;
 
@@ -17,6 +19,10 @@ public class DestStop {
     private String status;
 
     // Getters and Setters
+
+    public int getStopId() { return stopId; }
+    public void setStopId(int stopId) { this.stopId = stopId; }
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 

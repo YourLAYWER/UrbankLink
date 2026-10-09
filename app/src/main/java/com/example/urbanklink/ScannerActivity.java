@@ -75,7 +75,8 @@ public class ScannerActivity extends AppCompatActivity {
         txtCurrentCapacity = findViewById(R.id.txtCurrentCapacity);
         btnCashSale = findViewById(R.id.btnCashSale);
 
-        HeaderManager.loadHeaderData(this, rootView);
+        //HeaderManager.loadHeaderData(this, rootView);
+        HeaderManager.loadHeaderData(this, rootView, null);
 
         HeaderUtils.setupHeader(this, false, false);
 

@@ -36,7 +36,8 @@ public class ShiftHandoverTelemetry extends AppCompatActivity {
         View rootView = findViewById(android.R.id.content);
 
         // Automatically fetches and populates the header info across all screens!
-        HeaderManager.loadHeaderData(this, rootView);
+        //HeaderManager.loadHeaderData(this, rootView);
+        HeaderManager.loadHeaderData(this, rootView, null);
 
         // 2. Bind XML Views
         txtTotalScans = findViewById(R.id.txtTotalScans);

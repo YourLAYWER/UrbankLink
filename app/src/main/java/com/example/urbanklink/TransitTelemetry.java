@@ -27,11 +27,15 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.google.maps.android.PolyUtil;
 import com.microsoft.signalr.HubConnection;
 import com.microsoft.signalr.HubConnectionBuilder;
 import com.microsoft.signalr.HubConnectionState;
@@ -41,6 +45,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class TransitTelemetry extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -92,8 +98,11 @@ public class TransitTelemetry extends AppCompatActivity implements OnMapReadyCal
                 }
         );
 
-        // Now actively CHECK and ASK for the permission
+        //CHECK and ASK for the permission
         checkLocationPermissions();
+
+
+
 
         // --> 2. Initialize Map Fragment <--
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -105,9 +114,12 @@ public class TransitTelemetry extends AppCompatActivity implements OnMapReadyCal
         SideNavUtils.setupSideNavigation(this, R.id.navTabStops);
 
         View rootView = findViewById(android.R.id.content);
-
+        HeaderManager.loadHeaderData(this, rootView, () -> {
+            // INSTEAD of calling updateLiveMapFromRoom() directly here...
+            // Call the sync method so the Room DB gets populated first!
+            syncRoutesToLocalDatabase();
+        });
         // Automatically fetches and populates the header info across all screens!
-        HeaderManager.loadHeaderData(this, rootView);
 
         // Inside TransitTelemetry.java, instead of a hardcoded "1":
         SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
@@ -122,6 +134,36 @@ public class TransitTelemetry extends AppCompatActivity implements OnMapReadyCal
         restoreTelemetryState();
         connectSignalR();
     }
+
+    private void syncRoutesToLocalDatabase() {
+        UrbanLinkApiService apiService = ApiClient.getClient(getApplicationContext()).create(UrbanLinkApiService.class);
+
+        apiService.getAllMapRoutes().enqueue(new retrofit2.Callback<List<LocalRoute>>() {
+            @Override
+            public void onResponse(retrofit2.Call<List<LocalRoute>> call, retrofit2.Response<List<LocalRoute>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<LocalRoute> freshRoutes = response.body();
+
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    executor.execute(() -> {
+                        // 1. Save the routes to the offline Room cache
+                        UrbanLinkDatabase db = UrbanLinkDatabase.getInstance(getApplicationContext());
+                        db.routeDao().updateRouteCache(freshRoutes);
+
+                        // 2. Now that the database has the polyline, draw the map!
+                        runOnUiThread(() -> updateLiveMapFromRoom());
+                    });
+                } else {
+                    Log.e("MAP_SYNC", "Failed to fetch routes. Code: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<List<LocalRoute>> call, Throwable t) {
+                Log.e("MAP_SYNC", "Network error fetching routes: " + t.getMessage());
+            }
+        });
+    }
     private void checkLocationPermissions() {
         if (androidx.core.content.ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 androidx.core.content.ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -133,6 +175,53 @@ public class TransitTelemetry extends AppCompatActivity implements OnMapReadyCal
             });
         }
     }
+
+    private void updateLiveMapFromRoom() {
+        if (mMap == null) return;
+
+        SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
+        int activeRouteId = prefs.getInt("ACTIVE_ROUTE_ID", -1);
+
+        if (activeRouteId == -1) return;
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            UrbanLinkDatabase db = UrbanLinkDatabase.getInstance(getApplicationContext());
+
+            // Grab the Route and Stops from local offline cache
+            LocalRoute activeRoute = db.routeDao().getRouteById(activeRouteId);
+            List<Stop> allRouteStops = db.stopDao().getStopsByRouteId(activeRouteId);
+
+            runOnUiThread(() -> {
+                mMap.clear();
+
+                // 1. Draw the Route Line
+                if (activeRoute != null && activeRoute.encodedPolyline != null) {
+                    List<LatLng> decodedPath = PolyUtil.decode(activeRoute.encodedPolyline);
+                    mMap.addPolyline(new PolylineOptions()
+                            .addAll(decodedPath)
+                            .color(android.graphics.Color.parseColor("#008899"))
+                            .width(14f)
+                            .geodesic(true));
+                }
+
+                // 2. Draw the Orange Pins ONLY for upcoming stops in the active queue
+                for (DestStop upcomingDest : activeFilteredQueue) {
+                    for (Stop dbStop : allRouteStops) {
+                        if (dbStop.getStopId() == upcomingDest.getStopId()) {
+                            LatLng stopPos = new LatLng(dbStop.getLatitude(), dbStop.getLongitude());
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(stopPos)
+                                    .title(upcomingDest.getName())
+                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                            break;
+                        }
+                    }
+                }
+            });
+        });
+    }
+
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;

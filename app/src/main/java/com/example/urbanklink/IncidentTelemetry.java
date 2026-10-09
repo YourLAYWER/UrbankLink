@@ -59,7 +59,8 @@ public class IncidentTelemetry extends AppCompatActivity {
         View rootView = findViewById(android.R.id.content);
 
         // Automatically fetches and populates the header info across all screens!
-        HeaderManager.loadHeaderData(this, rootView);
+        //HeaderManager.loadHeaderData(this, rootView);
+        HeaderManager.loadHeaderData(this, rootView, null);
 
         // 2. Setup Auth Token
         SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);

@@ -47,7 +47,8 @@ public class PosTelemetry extends AppCompatActivity {
         View rootView = findViewById(android.R.id.content);
 
         // Automatically fetches and populates the header info across all screens!
-        HeaderManager.loadHeaderData(this, rootView);
+        //HeaderManager.loadHeaderData(this, rootView);
+        HeaderManager.loadHeaderData(this, rootView, null);
 
         // 2. Grab JWT Token
         SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);

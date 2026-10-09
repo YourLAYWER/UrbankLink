@@ -13,7 +13,7 @@ import retrofit2.Response;
 
 public class HeaderManager {
 
-    public static void loadHeaderData(Activity activity, View rootView) {
+    public static void loadHeaderData(Activity activity, View rootView, Runnable onComplete) {
         // 1. Find tablet header views (Driver POS)
         TextView txtBusTag = rootView.findViewById(R.id.txtHeaderBusTag);
         TextView txtRouteName = rootView.findViewById(R.id.txtHeaderRouteName);
@@ -49,6 +49,9 @@ public class HeaderManager {
                             .putString("ACTIVE_ROUTE_NAME", info.getRouteName())
                             .putString("ACTIVE_BUS_FLEET", info.getBusFleetNumber())
                             .apply();
+                    if (onComplete != null) {
+                        onComplete.run();
+                    }
                 } else {
                     Toast.makeText(activity, "Failed to load shift metadata", Toast.LENGTH_SHORT).show();
                 }

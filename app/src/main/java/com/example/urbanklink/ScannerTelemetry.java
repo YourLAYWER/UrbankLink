@@ -80,7 +80,8 @@ public class ScannerTelemetry extends AppCompatActivity {
         View rootView = findViewById(android.R.id.content);
 
         // Automatically fetches and populates the header info across all screens!
-        HeaderManager.loadHeaderData(this, rootView);
+        //HeaderManager.loadHeaderData(this, rootView);
+        HeaderManager.loadHeaderData(this, rootView, null);
 
         // 2. Link UI Elements
         viewFinder = findViewById(R.id.viewFinder);
