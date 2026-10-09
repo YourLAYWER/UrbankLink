@@ -1,6 +1,8 @@
 package com.example.urbanklink;
 
+import android.Manifest;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,11 +15,19 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.urbanklink.BuildConfig;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.gson.Gson;
@@ -32,7 +42,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-public class TransitTelemetry extends AppCompatActivity {
+public class TransitTelemetry extends AppCompatActivity implements OnMapReadyCallback {
 
     // UI Cards mapped from your XML
     private MaterialCardView cardPreviousStop, cardCurrentStop, cardNextStop;
@@ -54,12 +64,43 @@ public class TransitTelemetry extends AppCompatActivity {
     private final Gson gson = new Gson();
     private int activeBusId;
 
+    // Location Variables
+    private GoogleMap mMap;
+    private FusedLocationProviderClient fusedLocationClient;
+    private androidx.activity.result.ActivityResultLauncher<String[]> locationPermissionRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_transit_telemetry);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        locationPermissionRequest = registerForActivityResult(
+                new androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions(),
+                result -> {
+                    Boolean fineGranted = result.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false);
+                    Boolean coarseGranted = result.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false);
+
+                    if ((fineGranted != null && fineGranted) || (coarseGranted != null && coarseGranted)) {
+                        Toast.makeText(this, "Location permission granted", Toast.LENGTH_SHORT).show();
+                        enableDriverLocation(); // Turn on the blue dot now that we have permission!
+                    } else {
+                        Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+
+        // Now actively CHECK and ASK for the permission
+        checkLocationPermissions();
+
+        // --> 2. Initialize Map Fragment <--
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.mapFragment);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
 
         SideNavUtils.setupSideNavigation(this, R.id.navTabStops);
 
@@ -81,6 +122,47 @@ public class TransitTelemetry extends AppCompatActivity {
         restoreTelemetryState();
         connectSignalR();
     }
+    private void checkLocationPermissions() {
+        if (androidx.core.content.ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                androidx.core.content.ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            // This actually pops up the dialog asking the user!
+            locationPermissionRequest.launch(new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            });
+        }
+    }
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = googleMap;
+        enableDriverLocation(); // Call the location logic exactly like MainActivity
+    }
+
+    private void enableDriverLocation() {
+        if (mMap == null) return;
+
+        // Check if we have location permissions
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            // Turn on the blue dot
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+
+            // 1. Center immediately on Gqeberha as a clean default view
+            LatLng gqeberhaDefault = new LatLng(-33.9608, 25.6022);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(gqeberhaDefault, 15f));
+
+            // 2. Animate to the driver's actual GPS coordinates once retrieved
+            fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+                if (location != null && mMap != null) {
+                    LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f));
+                }
+            });
+        }
+    }
 
     private void initializeViews() {
         cardPreviousStop = findViewById(R.id.cardPreviousStop);
@@ -91,7 +173,7 @@ public class TransitTelemetry extends AppCompatActivity {
         txtPrevName = findViewById(R.id.txtPrevName);
         txtCurrentName = findViewById(R.id.txtCurrentName);
         txtNextName = findViewById(R.id.txtNextName);
-        txtNextPax = findViewById(R.id.txtNextPax);
+        //txtNextPax = findViewById(R.id.txtNextPax);
 
         // Bind the ARRIVED button inside the current stop card container
         btnArrived = cardCurrentStop.findViewById(R.id.btnArrived);
