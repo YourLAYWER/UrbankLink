@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#0A0B10"
-        android:fitsSystemWindows="true"
-        tools:context=".TransitTelemetry">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0A0B10"
+    android:fitsSystemWindows="true"
+    tools:context=".TransitTelemetry">
 
-        <!-- ========================================== -->
-        <!-- 1. LEFT NAVIGATION SIDEBAR                 -->
-        <!-- ========================================== -->
     <!-- 1. LEFT NAVIGATION SIDEBAR -->
-        <include
+    <include
         android:id="@+id/sideNavRail"
         layout="@layout/layout_side_nav"
         android:layout_width="100dp"
@@ -22,17 +19,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-        <View
-            android:id="@+id/navDivider"
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#2A2B33"
-            app:layout_constraintStart_toEndOf="@id/sideNavRail" />
+    <View
+        android:id="@+id/navDivider"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="#2A2B33"
+        app:layout_constraintStart_toEndOf="@id/sideNavRail" />
 
-        <!-- ========================================== -->
-        <!-- 2. TOP STATUS BAR                          -->
-        <!-- ========================================== -->
-        <include
+    <!-- 2. TOP STATUS BAR -->
+    <include
         android:id="@+id/topBar"
         layout="@layout/layout_top_bar"
         android:layout_width="0dp"
@@ -41,28 +36,32 @@
         app:layout_constraintStart_toEndOf="@id/navDivider"
         app:layout_constraintTop_toTopOf="parent" />
 
-        <View
-            android:id="@+id/topDivider"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:background="#2A2B33"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/navDivider"
-            app:layout_constraintTop_toBottomOf="@id/topBar" />
+    <View
+        android:id="@+id/topDivider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#2A2B33"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/navDivider"
+        app:layout_constraintTop_toBottomOf="@id/topBar" />
 
-        <!-- ========================================== -->
-        <!-- 3. TIMELINE CONTENT                        -->
-        <!-- ========================================== -->
+    <!-- SPLIT SCREEN GUIDELINE (45% Left / 55% Right) -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineSplit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.45" />
 
+    <!-- 3. LEFT COLUMN: TIMELINE CONTENT -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:padding="24dp"
         app:layout_constraintBottom_toTopOf="@id/bottomDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@id/guidelineSplit"
         app:layout_constraintStart_toEndOf="@id/navDivider"
-        app:layout_constraintTop_toBottomOf="@id/topDivider"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toBottomOf="@id/topDivider">
 
         <!-- Central Route Line -->
         <View
@@ -76,9 +75,9 @@
         <!-- PREVIOUS STOP -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardPreviousStop"
-            android:layout_width="500dp"
+            android:layout_width="0dp"
             android:layout_height="80dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="16dp"
             app:cardBackgroundColor="#12131A"
             app:cardCornerRadius="40dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -128,32 +127,16 @@
                         android:layout_height="wrap_content"
                         android:text="Peace Stop"
                         android:textColor="#D0D0D0"
-                        android:textSize="20sp"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
                 </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="32dp"
-                    android:background="@drawable/bg_pill"
-                    android:backgroundTint="#1A1B22"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="6dp"
-                    android:text="CLEARED"
-                    android:textColor="#888888"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- CURRENT TARGET STOP (GLOWING) -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardCurrentStop"
-            android:layout_width="600dp"
+            android:layout_width="0dp"
             android:layout_height="120dp"
             app:cardBackgroundColor="#0A0B10"
             app:cardCornerRadius="60dp"
@@ -171,9 +154,9 @@
 
                 <ImageView
                     android:id="@+id/icCurrent"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:layout_marginStart="16dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="8dp"
                     android:background="@drawable/bg_circle_dark"
                     android:backgroundTint="#003344"
                     android:padding="12dp"
@@ -186,7 +169,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
+                    android:layout_marginStart="16dp"
                     android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/icCurrent"
@@ -211,18 +194,18 @@
                         android:layout_marginTop="4dp"
                         android:text="BOARDWALK 1"
                         android:textColor="#FFFFFF"
-                        android:textSize="32sp"
+                        android:textSize="24sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnArrived"
-                    android:layout_width="160dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="64dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginEnd="8dp"
                     android:text="ARRIVED!"
                     android:textColor="#0A0B10"
-                    android:textSize="18sp"
+                    android:textSize="14sp"
                     android:textStyle="bold"
                     app:backgroundTint="#00E5FF"
                     app:cornerRadius="12dp"
@@ -234,30 +217,12 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Transit Corridor Label -->
-        <TextView
-            android:id="@+id/txtCorridor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/bg_pill"
-            android:backgroundTint="#003344"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="6dp"
-            android:text="↑ TRANSIT CORRIDOR NORTHBOUND"
-            android:textColor="#00E5FF"
-            android:textSize="10sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardCurrentStop" />
-
         <!-- SUBSEQUENT STOP -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardNextStop"
-            android:layout_width="500dp"
+            android:layout_width="0dp"
             android:layout_height="80dp"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="16dp"
             app:cardBackgroundColor="#12131A"
             app:cardCornerRadius="40dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -307,39 +272,7 @@
                         android:layout_height="wrap_content"
                         android:text="Glove Stop"
                         android:textColor="#D0D0D0"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="32dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <TextView
-                        android:id="@+id/txtNextPax"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="12dp"
-                        android:text="EXPECTED: ~8 PAX"
-                        android:textColor="#888888"
-                        android:textSize="10sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_pill"
-                        android:backgroundTint="#1A1B22"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="6dp"
-                        android:text="QUEUED"
-                        android:textColor="#888888"
-                        android:textSize="12sp"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -347,19 +280,39 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <View
-            android:id="@+id/bottomDivider"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:background="#2A2B33"
-            app:layout_constraintBottom_toTopOf="@id/bottomBar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/navDivider" />
+    <!-- 4. RIGHT COLUMN: GOOGLE MAPS -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="24dp"
+        app:cardBackgroundColor="#12131A"
+        app:cardCornerRadius="24dp"
+        app:strokeColor="#2A2B33"
+        app:strokeWidth="2dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guidelineSplit"
+        app:layout_constraintTop_toBottomOf="@id/topDivider">
 
-        <!-- ========================================== -->
-        <!-- 4. BOTTOM TELEMETRY BAR                    -->
-        <!-- ========================================== -->
-        <include
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/mapFragment"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <View
+        android:id="@+id/bottomDivider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#2A2B33"
+        app:layout_constraintBottom_toTopOf="@id/bottomBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/navDivider" />
+
+    <!-- 5. BOTTOM TELEMETRY BAR -->
+    <include
         android:id="@+id/bottomBar"
         layout="@layout/layout_bottom_bar"
         android:layout_width="0dp"
@@ -367,4 +320,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/navDivider" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
