@@ -115,9 +115,8 @@ public class TransitTelemetry extends AppCompatActivity implements OnMapReadyCal
 
         View rootView = findViewById(android.R.id.content);
         HeaderManager.loadHeaderData(this, rootView, () -> {
-            // INSTEAD of calling updateLiveMapFromRoom() directly here...
-            // Call the sync method so the Room DB gets populated first!
-            syncRoutesToLocalDatabase();
+            // Start the chain reaction: Stops -> Routes -> Draw Map
+            syncStopsToLocalDatabase();
         });
         // Automatically fetches and populates the header info across all screens!
 
@@ -161,6 +160,38 @@ public class TransitTelemetry extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onFailure(retrofit2.Call<List<LocalRoute>> call, Throwable t) {
                 Log.e("MAP_SYNC", "Network error fetching routes: " + t.getMessage());
+            }
+        });
+    }
+
+    private void syncStopsToLocalDatabase() {
+        UrbanLinkApiService apiService = ApiClient.getClient(getApplicationContext()).create(UrbanLinkApiService.class);
+
+        apiService.getAllStops().enqueue(new retrofit2.Callback<List<Stop>>() {
+            @Override
+            public void onResponse(retrofit2.Call<List<Stop>> call, retrofit2.Response<List<Stop>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Stop> freshStops = response.body();
+
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    executor.execute(() -> {
+                        // 1. Save all stops to the offline Room cache
+                        UrbanLinkDatabase db = UrbanLinkDatabase.getInstance(getApplicationContext());
+                        db.stopDao().insertStops(freshStops);
+
+                        // 2. Now trigger the route sync
+                        runOnUiThread(() -> syncRoutesToLocalDatabase());
+                    });
+                } else {
+                    Log.e("MAP_SYNC", "Failed to fetch stops. Code: " + response.code());
+                    syncRoutesToLocalDatabase(); // Fallback to route sync
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<List<Stop>> call, Throwable t) {
+                Log.e("MAP_SYNC", "Network error fetching stops: " + t.getMessage());
+                syncRoutesToLocalDatabase(); // Fallback to route sync
             }
         });
     }
