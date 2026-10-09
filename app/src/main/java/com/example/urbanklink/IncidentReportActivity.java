@@ -48,7 +48,8 @@ public class IncidentReportActivity extends AppCompatActivity {
         // Initialize Location Client
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        HeaderUtils.setupHeader(this, true, false);
+        // Initialize the top header (Show back button, hide standard logout button, hide profile button)
+        HeaderUtils.setupHeader(this, true, false, false);
 
         // Setup Permission Launcher
         locationPermissionRequest = registerForActivityResult(

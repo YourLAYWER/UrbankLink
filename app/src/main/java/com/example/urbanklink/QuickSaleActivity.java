@@ -36,7 +36,7 @@ public class QuickSaleActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_quick_sale);
 
-        HeaderUtils.setupHeader(this, true, false);
+        HeaderUtils.setupHeader(this, true, false, false);
 
 
         // 1. Grab SharedPreferences variables

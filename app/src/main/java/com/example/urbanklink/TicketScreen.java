@@ -83,7 +83,7 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
         imgQrCode = findViewById(R.id.ic_qr);
         ImageView btnBack = findViewById(R.id.btnBack);
 
-        HeaderUtils.setupHeader(this, true, false);
+        HeaderUtils.setupHeader(this, true, false, true);
 
         // Initialize Location Client & Permission Launcher
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);

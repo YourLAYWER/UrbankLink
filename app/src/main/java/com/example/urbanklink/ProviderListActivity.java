@@ -38,7 +38,7 @@ public class ProviderListActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_provider_list);
         // Set up the shared top header (false = hides the back button since this is a main tab)
-        HeaderUtils.setupHeader(this, true, false);
+        HeaderUtils.setupHeader(this, true, false, true);
 
         // Bind the UI components
         recyclerView = findViewById(R.id.recyclerViewProviders);

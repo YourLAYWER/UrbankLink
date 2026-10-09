@@ -67,7 +67,8 @@ public class ShiftStartActivity extends AppCompatActivity {
 
 
         // 1. Initialize the top header (Show back button, hide standard logout button)
-        HeaderUtils.setupHeader(this, true, false);
+        // Initialize the top header (Show back button, hide standard logout button, hide profile button)
+        HeaderUtils.setupHeader(this, true, false, false);
 
         // 2. Override the UI Back Button to force a logout instead of a standard finish()
         android.view.View btnBack = findViewById(R.id.btnHeaderBack);

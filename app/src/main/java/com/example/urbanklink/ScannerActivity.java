@@ -78,7 +78,7 @@ public class ScannerActivity extends AppCompatActivity {
         //HeaderManager.loadHeaderData(this, rootView);
         HeaderManager.loadHeaderData(this, rootView, null);
 
-        HeaderUtils.setupHeader(this, false, false);
+        HeaderUtils.setupHeader(this, true, false, false);
 
         // 2. INITIALIZE SERVICES FIRST
         cameraExecutor = java.util.concurrent.Executors.newSingleThreadExecutor();

@@ -438,7 +438,7 @@ public class TransitTelemetry extends AppCompatActivity implements OnMapReadyCal
             cardNextStop.setVisibility(View.VISIBLE);
             DestStop next = activeFilteredQueue.get(1);
             txtNextName.setText(next.getName() != null ? next.getName() : "");
-            txtNextPax.setText("EXPECTED: ~" + next.getPassengersDroppingOff() + " PAX");
+           // txtNextPax.setText("EXPECTED: ~" + next.getPassengersDroppingOff() + " PAX");
         } else {
             cardNextStop.setVisibility(View.INVISIBLE);
         }

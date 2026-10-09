@@ -109,7 +109,8 @@ public class MainActivity extends AppCompatActivity {
         checkLocationPermissions();
 
         // Set up the shared top header (false = hides the back button since this is a main tab)
-        HeaderUtils.setupHeader(this, false, true);
+        // Initialize the top header (Show back button, hide standard logout button, hide profile button)
+        HeaderUtils.setupHeader(this, false, false, true);
 
         txtGreeting = findViewById(R.id.greetingTitle);
         fetchUserData();

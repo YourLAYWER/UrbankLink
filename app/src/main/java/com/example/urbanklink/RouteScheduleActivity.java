@@ -64,7 +64,7 @@ public class RouteScheduleActivity extends AppCompatActivity {
 
 
         // 1. Top Header SetUp (This automatically handles the Back button!)
-        HeaderUtils.setupHeader(this, true, false);
+        HeaderUtils.setupHeader(this, true, false, true);
 
         recyclerView = findViewById(R.id.recyclerViewRoutes);
         progressBar = findViewById(R.id.progressBarSchedule);

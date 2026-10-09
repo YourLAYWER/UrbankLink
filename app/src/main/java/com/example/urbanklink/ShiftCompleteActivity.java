@@ -31,7 +31,7 @@ public class ShiftCompleteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_shift_complete);
 
         // Tell HeaderUtils to paint the profile in the top right!
-        HeaderUtils.setupHeader(this, true, false);
+        HeaderUtils.setupHeader(this, true, false, false);
 
         txtRouteCompleted = findViewById(R.id.txtRouteCompleted);
         txtTicketsScanned = findViewById(R.id.txtTicketsScanned);
