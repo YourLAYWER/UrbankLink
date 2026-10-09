@@ -74,6 +74,13 @@ public class TransitTelemetry extends AppCompatActivity implements OnMapReadyCal
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
     private androidx.activity.result.ActivityResultLauncher<String[]> locationPermissionRequest;
+    private java.util.List<Stop> cachedRouteStops = new java.util.ArrayList<>();
+    private java.util.List<com.google.android.gms.maps.model.Marker> activeStopMarkers = new java.util.ArrayList<>();
+    private boolean isRouteDrawn = false;
+
+    // Fast-lookup memory cache for coordinates
+    private java.util.HashMap<Integer, LatLng> stopCoordinateCache = new java.util.HashMap<>();
+    // Track active pins so we can delete them without using mMap.clear()
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,9 +107,6 @@ public class TransitTelemetry extends AppCompatActivity implements OnMapReadyCal
 
         //CHECK and ASK for the permission
         checkLocationPermissions();
-
-
-
 
         // --> 2. Initialize Map Fragment <--
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -207,50 +211,81 @@ public class TransitTelemetry extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // 1. Reload the latest pointer and queue from SharedPreferences
+        // (In case the driver cleared a stop or data synced on another screen)
+        restoreTelemetryState();
+
+        // 2. If the heavy lifting (cyan route and RAM cache) is already done,
+        // instantly redraw the pins to match the latest state!
+        if (isRouteDrawn) {
+            refreshMapPins();
+        }
+    }
+
     private void updateLiveMapFromRoom() {
         if (mMap == null) return;
 
         SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
         int activeRouteId = prefs.getInt("ACTIVE_ROUTE_ID", -1);
-
         if (activeRouteId == -1) return;
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            UrbanLinkDatabase db = UrbanLinkDatabase.getInstance(getApplicationContext());
+        // ONLY hit the database and draw the cyan line ONCE
+        if (!isRouteDrawn) {
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.execute(() -> {
+                UrbanLinkDatabase db = UrbanLinkDatabase.getInstance(getApplicationContext());
+                LocalRoute activeRoute = db.routeDao().getRouteById(activeRouteId);
+                List<Stop> allRouteStops = db.stopDao().getStopsByRouteId(activeRouteId);
 
-            // Grab the Route and Stops from local offline cache
-            LocalRoute activeRoute = db.routeDao().getRouteById(activeRouteId);
-            List<Stop> allRouteStops = db.stopDao().getStopsByRouteId(activeRouteId);
-
-            runOnUiThread(() -> {
-                mMap.clear();
-
-                // 1. Draw the Route Line
-                if (activeRoute != null && activeRoute.encodedPolyline != null) {
-                    List<LatLng> decodedPath = PolyUtil.decode(activeRoute.encodedPolyline);
-                    mMap.addPolyline(new PolylineOptions()
-                            .addAll(decodedPath)
-                            .color(android.graphics.Color.parseColor("#008899"))
-                            .width(14f)
-                            .geodesic(true));
+                // Build an instant-lookup dictionary of StopId -> Coordinates
+                for (Stop stop : allRouteStops) {
+                    stopCoordinateCache.put(stop.getStopId(), new LatLng(stop.getLatitude(), stop.getLongitude()));
                 }
 
-                // 2. Draw the Orange Pins ONLY for upcoming stops in the active queue
-                for (DestStop upcomingDest : activeFilteredQueue) {
-                    for (Stop dbStop : allRouteStops) {
-                        if (dbStop.getStopId() == upcomingDest.getStopId()) {
-                            LatLng stopPos = new LatLng(dbStop.getLatitude(), dbStop.getLongitude());
-                            mMap.addMarker(new MarkerOptions()
-                                    .position(stopPos)
-                                    .title(upcomingDest.getName())
-                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-                            break;
-                        }
+                runOnUiThread(() -> {
+                    if (activeRoute != null && activeRoute.encodedPolyline != null) {
+                        List<LatLng> decodedPath = PolyUtil.decode(activeRoute.encodedPolyline);
+                        mMap.addPolyline(new PolylineOptions()
+                                .addAll(decodedPath)
+                                .color(android.graphics.Color.parseColor("#008899"))
+                                .width(14f)
+                                .geodesic(true));
+                        isRouteDrawn = true;
                     }
-                }
+                    // Initial pin draw
+                    refreshMapPins();
+                });
             });
-        });
+        } else {
+            // The route is already drawn and coordinates are in RAM. Just update pins!
+            refreshMapPins();
+        }
+    }
+
+    private void refreshMapPins() {
+        // 1. Wipe ONLY the old pins, never the cyan route line
+        for (com.google.android.gms.maps.model.Marker marker : activeStopMarkers) {
+            marker.remove();
+        }
+        activeStopMarkers.clear();
+
+        // 2. Instantly drop new pins using the fast HashMap
+        for (DestStop upcomingDest : activeFilteredQueue) {
+            LatLng cachedPos = stopCoordinateCache.get(upcomingDest.getStopId());
+
+            if (cachedPos != null) {
+                com.google.android.gms.maps.model.Marker m = mMap.addMarker(new MarkerOptions()
+                        .position(cachedPos)
+                        .title(upcomingDest.getName())
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+
+                if (m != null) activeStopMarkers.add(m);
+            }
+        }
     }
 
     @Override
