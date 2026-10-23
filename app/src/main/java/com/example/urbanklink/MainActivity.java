@@ -82,31 +82,10 @@ public class MainActivity extends AppCompatActivity {
         // 1. Initialize ViewModel
         viewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication())).get(MainViewModel.class);
 
-        // 2. Setup standard UI
-        HeaderUtils.setupHeader(this, false, false, true);
-        txtGreeting = findViewById(R.id.greetingTitle);
-        etStartLocation = findViewById(R.id.etStartLocation);
-        etDestination = findViewById(R.id.etEndLocation);
-        findRouteBtn = findViewById(R.id.findRouteBtn);
+        // 2. Initialize Location Client
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        setupNavigationAndCards();
-        setupFindRouteButton();
-
-        // 3. Setup Observers (This replaces all Retrofit and Thread callbacks!)
-        setupObservers();
-
-        // 4. Initialize Map
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(googleMap -> {
-                mMap = googleMap;
-                enableUserLocation();
-
-                // Once map is ready, observe the routes to draw them
-                viewModel.getMapRoutes().observe(this, this::drawRoutesOnMap);
-            });
-        }
-
+        // 3. REGISTER THE PERMISSION LAUNCHER FIRST
         appPermissionRequest = registerForActivityResult(
                 new ActivityResultContracts.RequestMultiplePermissions(),
                 result -> {
@@ -128,6 +107,33 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
 
+        // 4. NOW YOU CAN SAFELY CHECK PERMISSIONS
+        checkAppPermissions();
+
+        // 5. Setup standard UI
+        HeaderUtils.setupHeader(this, false, false, true);
+        txtGreeting = findViewById(R.id.greetingTitle);
+        etStartLocation = findViewById(R.id.etStartLocation);
+        etDestination = findViewById(R.id.etEndLocation);
+        findRouteBtn = findViewById(R.id.findRouteBtn);
+
+        setupNavigationAndCards();
+        setupFindRouteButton();
+
+        // 6. Setup Observers
+        setupObservers();
+
+        // 7. Initialize Map
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(googleMap -> {
+                mMap = googleMap;
+                enableUserLocation();
+
+                // Once map is ready, observe the routes to draw them
+                viewModel.getMapRoutes().observe(this, this::drawRoutesOnMap);
+            });
+        }
 
     }
 
@@ -178,19 +184,26 @@ public class MainActivity extends AppCompatActivity {
 
         for (LocalRoute route : routes) {
             if (route.encodedPolyline != null && !route.encodedPolyline.isEmpty()) {
-                List<LatLng> decodedPath = PolyUtil.decode(route.encodedPolyline);
+                try {
+                    // Strip any accidental whitespace or newlines from the backend
+                    String cleanPolyline = route.encodedPolyline.trim().replace("\n", "").replace("\r", "");
+                    List<LatLng> decodedPath = PolyUtil.decode(cleanPolyline);
 
-                int routeColor = ("Train".equalsIgnoreCase(route.transportType) || "Rail".equalsIgnoreCase(route.transportType))
-                        ? Color.parseColor("#4CAF50") : Color.parseColor("#2196F3");
+                    int routeColor = ("Train".equalsIgnoreCase(route.transportType) || "Rail".equalsIgnoreCase(route.transportType))
+                            ? Color.parseColor("#4CAF50") : Color.parseColor("#2196F3");
 
-                PolylineOptions polylineOptions = new PolylineOptions()
-                        .addAll(decodedPath).color(routeColor).width(12f).geodesic(true).clickable(true);
+                    PolylineOptions polylineOptions = new PolylineOptions()
+                            .addAll(decodedPath).color(routeColor).width(12f).geodesic(true).clickable(true);
 
-                com.google.android.gms.maps.model.Polyline polyline = mMap.addPolyline(polylineOptions);
-                polyline.setTag(route);
+                    com.google.android.gms.maps.model.Polyline polyline = mMap.addPolyline(polylineOptions);
+                    polyline.setTag(route);
+
+                } catch (Exception e) {
+                    // Logs the error but allows the app to keep running and draw the other valid routes
+                    Log.e("MAP_ERROR", "Failed to decode polyline for route: " + route.routeName, e);
+                }
             }
         }
-
         mMap.setOnPolylineClickListener(polyline -> {
             // Revert previous polyline
             if (currentlySelectedPolyline != null) {
