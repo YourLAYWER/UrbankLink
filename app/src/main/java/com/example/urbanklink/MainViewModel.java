@@ -3,12 +3,13 @@ package com.example.urbanklink;
 import android.app.Application;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import java.util.List;
 
-public class MainViewModel {
+public class MainViewModel extends AndroidViewModel {
 
     private UserRepository userRepo;
     private TransitRepository transitRepo;
