@@ -1,5 +1,6 @@
 package com.example.urbanklink;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
@@ -26,4 +27,7 @@ public interface RouteDao {
         deleteAll();
         insertAll(freshRoutes);
     }
+
+    @Query("SELECT * FROM local_routes")
+    LiveData<List<LocalRoute>> getAllRoutesLiveData();
 }

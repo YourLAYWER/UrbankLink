@@ -1,5 +1,6 @@
 package com.example.urbanklink;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
@@ -31,4 +32,10 @@ public interface StopDao {
 
     @Query("SELECT * FROM stops_table WHERE routeIds LIKE '%,' || :rId || ',%'")
     List<Stop> getStopsByRouteId(int rId);
+
+    @Query("SELECT * FROM stops_table ORDER BY name ASC")
+    LiveData<List<Stop>> getAllStopsLiveData();
+
+    @Query("SELECT * FROM stops_table WHERE routeIds LIKE '%,' || :routeId || ',%'")
+    LiveData<List<Stop>> getStopsByRouteIdLiveData(int routeId);
 }
