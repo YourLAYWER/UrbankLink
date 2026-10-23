@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
 
         railCard.setOnClickListener(v -> {
             Intent intent = new Intent(this, ProviderListActivity.class);
-            intent.putExtra("TRANSPORT_TYPE", "Rail");
+            intent.putExtra("TRANSPORT_TYPE", "Train");
             startActivity(intent);
         });
 
