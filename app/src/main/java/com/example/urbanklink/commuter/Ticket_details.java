@@ -157,12 +157,12 @@ public class Ticket_details extends AppCompatActivity {
         });
 
         // Observe Errors
-        viewModel.getErrorMessage().observe(this, error -> {
-            if (error != null) {
-                viewModel.getIsLoading().setValue(false); // Force stop loading
-                showErrorSnackbar(error);
-            }
-        });
+//        viewModel.getErrorMessage().observe(this, error -> {
+//            if (error != null) {
+//                viewModel.getIsLoading().setValue(false); // Force stop loading
+//                showErrorSnackbar(error);
+//            }
+//        });
     }
 
     // ==========================================
