@@ -8,13 +8,13 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.appbar.MaterialToolbar;
+import com.example.urbanklink.commuter.HeaderUtils;
+import com.example.urbanklink.commuter.NavigationUtils;
+import com.example.urbanklink.network.ApiClient;
+import com.example.urbanklink.network.UrbanLinkApiService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
@@ -35,33 +35,6 @@ public class RouteScheduleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_route_schedule);
-
-//        //Top Header SetUp
-//        HeaderUtils.setupHeader(this, true, false);
-//
-//        recyclerView = findViewById(R.id.recyclerViewRoutes);
-//        progressBar = findViewById(R.id.progressBarSchedule);
-//        MaterialToolbar toolbar = findViewById(R.id.toolbarSchedule);
-//
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        toolbar.setNavigationOnClickListener(v -> onBackPressed());
-//
-//        // 1. Unpack the data sent from Level 2
-//        providerId = getIntent().getIntExtra("PROVIDER_ID", -1);
-//        providerName = getIntent().getStringExtra("PROVIDER_NAME");
-//
-//        if (providerName != null) {
-//            toolbar.setTitle(providerName + " Routes");
-//        }
-//
-//        if (providerId != -1) {
-//            fetchRoutes(providerId);
-//        }
-//
-//        // Bottom Navigation SetUp
-//        BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
-//        NavigationUtils.setupBottomNavigation(this, bottomNav, 0);
-
 
         // 1. Top Header SetUp (This automatically handles the Back button!)
         HeaderUtils.setupHeader(this, true, false, true);

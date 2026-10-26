@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#0A0A0A"
     android:fitsSystemWindows="true"
-    tools:context=".QuickSaleActivity">
+    tools:context=".conductor.QuickSaleActivity">
 
     <!-- ========================================== -->
     <!-- 1. UNIVERSAL TOP HEADER                    -->

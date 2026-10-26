@@ -33,20 +33,20 @@
             android:value="AIzaSyCEMADDL4FWQw0q8Qh5mVYCkfIzOd2QQSA" />
 
         <activity
-            android:name=".TicketScreen"
+            android:name=".commuter.TicketScreen"
             android:exported="false" />
         <activity
-            android:name=".Ticket_details"
+            android:name=".commuter.Ticket_details"
             android:exported="false" />
         <activity
-            android:name=".TicketBooking"
+            android:name=".commuter.TicketBooking"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".commuter.MainActivity"
             android:exported="false" />
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".auth.LoginActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
@@ -68,11 +68,11 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ProfileActivity"
+            android:name=".commuter.ProfileActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ProviderListActivity"
+            android:name=".commuter.ProviderListActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
@@ -84,44 +84,44 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ScannerActivity"
+            android:name=".conductor.ScannerActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".QuickSaleActivity"
+            android:name=".conductor.QuickSaleActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".IncidentReportActivity"
+            android:name=".conductor.IncidentReportActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ShiftCompleteActivity"
+            android:name=".conductor.ShiftCompleteActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".TransitTelemetry"
+            android:name=".driver.TransitTelemetry"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ScannerTelemetry"
+            android:name=".driver.ScannerTelemetry"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ShiftHandoverTelemetry"
+            android:name=".driver.ShiftHandoverTelemetry"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".IncidentTelemetry"
+            android:name=".driver.IncidentTelemetry"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".PosTelemetry"
+            android:name=".driver.PosTelemetry"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
         <service
-            android:name=".UrbanLinkFirebaseService"
+            android:name=".firebase.UrbanLinkFirebaseService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

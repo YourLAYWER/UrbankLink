@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -12,10 +11,17 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
+import com.example.urbanklink.auth.LoginActivity;
+import com.example.urbanklink.commuter.HeaderUtils;
+import com.example.urbanklink.conductor.ScannerActivity;
+import com.example.urbanklink.driver.ScannerTelemetry;
+import com.example.urbanklink.network.ApiClient;
+import com.example.urbanklink.network.UrbanLinkApiService;
+import com.example.urbanklink.requests.StartShiftRequest;
+import com.example.urbanklink.response.BusListResponse;
+import com.example.urbanklink.response.RouteListResponse;
+import com.example.urbanklink.response.StartShiftResponse;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
@@ -248,7 +254,7 @@ public class ShiftStartActivity extends AppCompatActivity {
 
                     if ("Driver".equalsIgnoreCase(userRole)) {
                         // Drivers go straight to the real-time non-scrolling tablet dashboard
-                        intent = new Intent(ShiftStartActivity.this,ScannerTelemetry.class);
+                        intent = new Intent(ShiftStartActivity.this, ScannerTelemetry.class);
                     } else {
                         // Conductors go to the Zebra handheld ticket scanning interface
                         intent = new Intent(ShiftStartActivity.this, ScannerActivity.class);

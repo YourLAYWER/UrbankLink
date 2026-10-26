@@ -10,6 +10,11 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.example.urbanklink.auth.LoginActivity;
+import com.example.urbanklink.commuter.MainActivity;
+import com.example.urbanklink.conductor.ScannerActivity;
+import com.example.urbanklink.driver.ScannerTelemetry;
+
 public class SplashActivity extends AppCompatActivity {
 
     @Override

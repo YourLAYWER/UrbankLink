@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         android:background="#0A0B10"
         android:fitsSystemWindows="true"
-        tools:context=".ShiftHandoverTelemetry">
+        tools:context=".driver.ShiftHandoverTelemetry">
 
         <!-- ========================================== -->
         <!-- 1. MODULAR INCLUDES                        -->

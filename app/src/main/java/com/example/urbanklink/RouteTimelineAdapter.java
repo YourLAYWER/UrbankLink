@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.urbanklink.database.RouteSegmentDto;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.ArrayList;

@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         android:background="#0A0B10"
         android:fitsSystemWindows="true"
-        tools:context=".ScannerTelemetry">
+        tools:context=".driver.ScannerTelemetry">
 
         <!-- ========================================== -->
         <!-- 1. LEFT NAVIGATION SIDEBAR                 -->
