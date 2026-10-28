@@ -21,7 +21,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 public class ProfileActivity extends AppCompatActivity {
 
     private ProfileViewModel viewModel;
-    private TextView txtUserName, txtUserStatus;
+    private TextView txtUserName, txtUserStatus, btnManagePayment;
     private MaterialButton btnLogout;
 
     @Override
@@ -56,6 +56,11 @@ public class ProfileActivity extends AppCompatActivity {
             HistoryBottomSheet bottomSheet = new HistoryBottomSheet();
             bottomSheet.show(getSupportFragmentManager(), "HistoryBottomSheet");
         });
+
+        TextView btnManagePayment = findViewById(R.id.btnManagePayment);
+        btnManagePayment.setOnClickListener(v -> {
+            startActivity(new Intent(this, ManageCardsActivity.class));
+        });
     }
 
     /**
@@ -68,6 +73,7 @@ public class ProfileActivity extends AppCompatActivity {
         txtUserName = findViewById(R.id.txtUserName);
         txtUserStatus = findViewById(R.id.txtUserStatus);
         btnLogout = findViewById(R.id.btnLogout);
+        btnManagePayment = findViewById(R.id.btnManagePayment);
     }
 
     /**

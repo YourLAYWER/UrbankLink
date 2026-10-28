@@ -1,5 +1,7 @@
 package com.example.urbanklink.network;
 
+import com.example.urbanklink.commuter.PaymentCard;
+import com.example.urbanklink.requests.AddCardRequest;
 import com.example.urbanklink.requests.BookTicketRequest;
 import com.example.urbanklink.response.BusListResponse;
 import com.example.urbanklink.requests.CashSaleRequest;
@@ -32,9 +34,11 @@ import java.util.List;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface UrbanLinkApiService {
@@ -115,4 +119,18 @@ public interface UrbanLinkApiService {
 
     @GET("api/TransitRoute/all-map-routes")
     Call<List<LocalRoute>> getAllMapRoutes();
+
+
+    // --- CARD MANAGEMENT ENDPOINTS ---
+    @GET("api/Cards")
+    Call<List<PaymentCard>> getMyCards(@Header("Authorization") String token);
+
+    @POST("api/Cards")
+    Call<PaymentCard> addCard(@Header("Authorization") String token, @Body AddCardRequest request);
+
+    @PUT("api/Cards/{id}/default")
+    Call<Void> setDefaultCard(@Header("Authorization") String token, @Path("id") String cardId);
+
+    @DELETE("api/Cards/{id}")
+    Call<Void> deleteCard(@Header("Authorization") String token, @Path("id") String cardId);
 }
