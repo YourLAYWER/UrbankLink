@@ -145,6 +145,77 @@
                                 app:layout_constraintStart_toEndOf="@id/iconJourney"
                                 app:layout_constraintTop_toTopOf="@id/iconJourney" />
 
+<!--                            <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                                android:id="@+id/inputsContainer"-->
+<!--                                android:layout_width="match_parent"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_marginTop="20dp"-->
+<!--                                app:layout_constraintTop_toBottomOf="@id/iconJourney">-->
+
+<!--                                <com.google.android.material.textfield.TextInputLayout-->
+<!--                                    android:id="@+id/inputLayoutLeaving"-->
+<!--                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
+<!--                                    android:layout_width="match_parent"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:hint="Current Location"-->
+<!--                                    app:boxBackgroundColor="#1A1A1A"-->
+<!--                                    app:boxCornerRadiusBottomEnd="12dp"-->
+<!--                                    app:boxCornerRadiusBottomStart="12dp"-->
+<!--                                    app:boxCornerRadiusTopEnd="12dp"-->
+<!--                                    app:boxCornerRadiusTopStart="12dp"-->
+<!--                                    app:boxStrokeColor="#333333"-->
+<!--                                    app:hintTextColor="#9E9E9E"-->
+<!--                                    app:startIconDrawable="@drawable/ic_my_location"-->
+<!--                                    app:startIconTint="#9E9E9E"-->
+<!--                                    app:layout_constraintTop_toTopOf="parent">-->
+
+<!--                                    <AutoCompleteTextView-->
+<!--                                        android:id="@+id/etStartLocation"-->
+<!--                                        android:layout_width="match_parent"-->
+<!--                                        android:layout_height="wrap_content"-->
+<!--                                        android:textColor="#FFFFFF"-->
+<!--                                        android:completionThreshold="2"-->
+<!--                                        android:inputType="textNoSuggestions" />-->
+<!--                                </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--                                <com.google.android.material.textfield.TextInputLayout-->
+<!--                                    android:id="@+id/inputLayoutGoing"-->
+<!--                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
+<!--                                    android:layout_width="match_parent"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:layout_marginTop="12dp"-->
+<!--                                    android:hint="Going to..."-->
+<!--                                    app:boxBackgroundColor="#1A1A1A"-->
+<!--                                    app:boxCornerRadiusBottomEnd="12dp"-->
+<!--                                    app:boxCornerRadiusBottomStart="12dp"-->
+<!--                                    app:boxCornerRadiusTopEnd="12dp"-->
+<!--                                    app:boxCornerRadiusTopStart="12dp"-->
+<!--                                    app:boxStrokeColor="#333333"-->
+<!--                                    app:hintTextColor="#9E9E9E"-->
+<!--                                    app:startIconDrawable="@drawable/ic_location_on"-->
+<!--                                    app:startIconTint="#00E5FF"-->
+<!--                                    app:layout_constraintTop_toBottomOf="@id/inputLayoutLeaving">-->
+
+<!--                                    <AutoCompleteTextView-->
+<!--                                        android:id="@+id/etEndLocation"-->
+<!--                                        android:layout_width="match_parent"-->
+<!--                                        android:layout_height="wrap_content"-->
+<!--                                        android:textColor="#FFFFFF"-->
+<!--                                        android:completionThreshold="2"-->
+<!--                                        android:inputType="textNoSuggestions" />-->
+<!--                                </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--                                <View-->
+<!--                                    android:layout_width="1dp"-->
+<!--                                    android:layout_height="20dp"-->
+<!--                                    android:layout_marginStart="24dp"-->
+<!--                                    android:background="#333333"-->
+<!--                                    app:layout_constraintBottom_toTopOf="@id/inputLayoutGoing"-->
+<!--                                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                                    app:layout_constraintTop_toBottomOf="@id/inputLayoutLeaving" />-->
+
+<!--                            </androidx.constraintlayout.widget.ConstraintLayout>-->
+
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:id="@+id/inputsContainer"
                                 android:layout_width="match_parent"
@@ -152,9 +223,10 @@
                                 android:layout_marginTop="20dp"
                                 app:layout_constraintTop_toBottomOf="@id/iconJourney">
 
+                                <!-- START LOCATION (Updated Style & InputType) -->
                                 <com.google.android.material.textfield.TextInputLayout
                                     android:id="@+id/inputLayoutLeaving"
-                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:hint="Current Location"
@@ -174,13 +246,14 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:textColor="#FFFFFF"
-                                        android:completionThreshold="2"
-                                        android:inputType="textNoSuggestions" />
+                                        android:completionThreshold="1"
+                                        android:inputType="text" />
                                 </com.google.android.material.textfield.TextInputLayout>
 
+                                <!-- DESTINATION (Updated Style & InputType) -->
                                 <com.google.android.material.textfield.TextInputLayout
                                     android:id="@+id/inputLayoutGoing"
-                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="12dp"
@@ -201,10 +274,11 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:textColor="#FFFFFF"
-                                        android:completionThreshold="2"
-                                        android:inputType="textNoSuggestions" />
+                                        android:completionThreshold="1"
+                                        android:inputType="text" />
                                 </com.google.android.material.textfield.TextInputLayout>
 
+                                <!-- The vertical connecting line -->
                                 <View
                                     android:layout_width="1dp"
                                     android:layout_height="20dp"

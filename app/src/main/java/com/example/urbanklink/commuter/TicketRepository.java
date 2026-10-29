@@ -57,7 +57,8 @@ public class TicketRepository {
     /**
      * Sends the booked journey to the backend, saves it locally, and subscribes to FCM.
      */
-    public void bookJourney(int startId, int destId, String paymentMethod, MutableLiveData<JourneyResponse> successData, MutableLiveData<String> errorData) {
+
+    public void bookJourney(int startId, int destId, String paymentMethod, Integer cardId, MutableLiveData<JourneyResponse> successData, MutableLiveData<String> errorData) {
         String token = prefs.getString("JWT_TOKEN", null);
         if (token == null) {
             errorData.postValue("Authentication error. Please log in again.");
@@ -66,9 +67,8 @@ public class TicketRepository {
 
         String authHeader = "Bearer " + token.replace("\"", "").trim();
 
-        // IMPORTANT: You will need to update BookTicketRequest in Java and C# to accept the paymentMethod string!
-        //BookTicketRequest request = new BookTicketRequest(startId, destId, paymentMethod);
-        BookTicketRequest request = new BookTicketRequest(startId, destId);
+        // Pass the cardId as the 4th argument
+        BookTicketRequest request = new BookTicketRequest(startId, destId, paymentMethod, cardId);
 
         apiService.bookJourney(authHeader, request).enqueue(new Callback<JourneyResponse>() {
             @Override
@@ -92,6 +92,12 @@ public class TicketRepository {
                     // 3. Notify ViewModel
                     successData.postValue(data);
                 } else {
+                    try {
+                        String serverError = response.errorBody() != null ? response.errorBody().string() : "Unknown Error";
+                        android.util.Log.e("API_ERROR", "Payment failed: " + serverError);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     errorData.postValue("Payment failed (Code: " + response.code() + ").");
                 }
             }

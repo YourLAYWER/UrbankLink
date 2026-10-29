@@ -58,9 +58,9 @@ public class TicketViewModel extends AndroidViewModel {
         // Delegate to the strategy to handle any required UI (like a PIN entry dialog)
         currentPaymentStrategy.processPaymentUI(uiContext, amount, new PaymentReadyCallback() {
             @Override
-            public void onPaymentReady(String paymentMethodIdentifier) {
-                // The strategy finished its validation, now tell the repository to hit the backend
-                repository.bookJourney(startId, destId, paymentMethodIdentifier, bookingSuccess, errorMessage);
+            public void onPaymentReady(String paymentMethodIdentifier, Integer cardId) { // <-- Receives the cardId here
+                // The strategy finished its validation, now pass BOTH to the repository
+                repository.bookJourney(startId, destId, paymentMethodIdentifier, cardId, bookingSuccess, errorMessage);
             }
 
             @Override

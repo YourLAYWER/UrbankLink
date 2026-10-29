@@ -7,8 +7,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -17,6 +20,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.urbanklink.payment.ProviderCardStrategy;
+import com.example.urbanklink.payment.SavedCardStrategy;
 import com.example.urbanklink.requests.BookTicketRequest;
 import com.example.urbanklink.response.JourneyResponse;
 import com.example.urbanklink.database.LocalTicket;
@@ -31,6 +36,11 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.messaging.FirebaseMessaging;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -50,6 +60,15 @@ public class Ticket_details extends AppCompatActivity {
     private RouteTimelineAdapter timelineAdapter;
 
     // Payment UI Toggles (You will need to add these to your XML)
+    private ManageCardsViewModel walletViewModel;
+    private AutoCompleteTextView dropdownPayment;
+    private MaterialButton btnConfirmBooking;
+
+    // Maps the dropdown display text back to the actual Card ID
+    private Map<String, String> paymentOptionsMap = new HashMap<>();
+
+    private String selectedPaymentStrategy = ""; // "ProviderCard" or "SavedCard"
+    private String selectedCardId = null;
     // private RadioButton radioProviderCard, radioDebitCard;
 
     @Override
@@ -90,20 +109,32 @@ public class Ticket_details extends AppCompatActivity {
             viewModel.executePayment(this, startId, destId, currentFinalCost);
         });
 
-        /* 5. Handle Strategy Switching (Example if you add RadioButtons)
-        radioProviderCard.setOnCheckedChangeListener((btn, isChecked) -> {
-            if (isChecked) viewModel.setPaymentStrategy(new ProviderCardStrategy());
-        });
-        radioDebitCard.setOnCheckedChangeListener((btn, isChecked) -> {
-            if (isChecked) viewModel.setPaymentStrategy(new DebitCardStrategy());
-        });
-        */
+        // Reusing the Wallet ViewModel to fetch the active cards
+        walletViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication())).get(ManageCardsViewModel.class);
+
+        setupDropdownObservers();
+
+        walletViewModel.loadCards(); // Fetch the cards for the dropdown
+
+//        btnConfirmBooking.setOnClickListener(v -> {
+//            if (selectedPaymentStrategy.isEmpty()) {
+//                Toast.makeText(this, "Please select a payment method.", Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//
+//            // TODO: Construct your BookTicketRequest and send to C#
+//            // Integer parsedCardId = selectedCardId != null ? Integer.parseInt(selectedCardId) : null;
+//            //BookTicketRequest request = new BookTicketRequest(startId, endId, selectedPaymentStrategy, parsedCardId);
+//        });
     }
 
     private void initializeUI() {
         txtTotalTime = findViewById(R.id.txtTotalTime);
         txtTotalDue = findViewById(R.id.txtTotalDue);
         btnConfirmPay = findViewById(R.id.btnConfirmPay);
+
+        // ADD THIS LINE to prevent a crash
+        dropdownPayment = findViewById(R.id.dropdownPayment);
 
         rvTimeline = findViewById(R.id.rvTimeline);
         rvTimeline.setLayoutManager(new LinearLayoutManager(this));
@@ -163,6 +194,67 @@ public class Ticket_details extends AppCompatActivity {
 //                showErrorSnackbar(error);
 //            }
 //        });
+    }
+
+
+    // ==========================================
+    // CARD METHODS
+    // ==========================================
+    private void setupDropdownObservers() {
+        walletViewModel.getSavedCards().observe(this, cards -> {
+            List<String> displayOptions = new ArrayList<>();
+            paymentOptionsMap.clear();
+
+            // 1. Add the default internal provider option
+            String providerOption = "UrbanLink Wallet Balance";
+            displayOptions.add(providerOption);
+            paymentOptionsMap.put(providerOption, "PROVIDER_WALLET");
+
+            // 2. Add all saved bank cards
+            if (cards != null) {
+                for (PaymentCard card : cards) {
+                    String displayText = "Card ending in " + card.getMaskedCardNumber().substring(card.getMaskedCardNumber().length() - 4);
+                    if (card.isDefault()) {
+                        displayText += " (Default)";
+                    }
+                    displayOptions.add(displayText);
+                    paymentOptionsMap.put(displayText, card.getCardId());
+                }
+            }
+
+            // 3. Bind to the AutoCompleteTextView
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayOptions);
+            dropdownPayment.setAdapter(adapter);
+
+            // 4. Handle Selection
+//            dropdownPayment.setOnItemClickListener((parent, view, position, id) -> {
+//                String selection = (String) parent.getItemAtPosition(position);
+//                String mappedId = paymentOptionsMap.get(selection);
+//
+//                if ("PROVIDER_WALLET".equals(mappedId)) {
+//                    selectedPaymentStrategy = "ProviderCard";
+//                    selectedCardId = null;
+//                } else {
+//                    selectedPaymentStrategy = "SavedCard";
+//                    selectedCardId = mappedId;
+//                }
+//            });
+
+            // 4. Handle Dropdown Selection
+            dropdownPayment.setOnItemClickListener((parent, view, position, id) -> {
+                String selection = (String) parent.getItemAtPosition(position);
+                String mappedId = paymentOptionsMap.get(selection);
+
+                if ("PROVIDER_WALLET".equals(mappedId)) {
+                    // Switch to the Provider strategy
+                    viewModel.setPaymentStrategy(new ProviderCardStrategy());
+                } else {
+                    // Switch to the Bank Card strategy, passing the specific Card ID
+                    Integer cardId = Integer.valueOf(mappedId);
+                    viewModel.setPaymentStrategy(new SavedCardStrategy(cardId));
+                }
+            });
+        });
     }
 
     // ==========================================

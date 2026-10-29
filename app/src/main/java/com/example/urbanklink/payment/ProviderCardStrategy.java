@@ -8,7 +8,7 @@ public class ProviderCardStrategy implements PaymentStrategy{
     public void processPaymentUI(Context context, double amount, PaymentReadyCallback callback) {
         // Here you would pop up a dialog asking the user for their 4-digit transit PIN.
         // For now, we simulate immediate success.
-        callback.onPaymentReady(getBackendPaymentMethodIdentifier());
+        callback.onPaymentReady(getBackendPaymentMethodIdentifier(), null);
     }
 
     @Override

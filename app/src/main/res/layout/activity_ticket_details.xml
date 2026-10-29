@@ -263,53 +263,79 @@
                 app:layout_constraintTop_toBottomOf="@id/icPass" />
 
             <!-- Payment Method Section -->
-            <ImageView
-                android:id="@+id/icPayment"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/ic_launcher_background"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/div3" />
+<!--            <ImageView-->
+<!--                android:id="@+id/icPayment"-->
+<!--                android:layout_width="40dp"-->
+<!--                android:layout_height="40dp"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:background="@drawable/ic_launcher_background"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/div3" />-->
 
-            <LinearLayout
-                android:id="@+id/paymentDetails"
-                android:layout_width="0dp"
+<!--            <LinearLayout-->
+<!--                android:id="@+id/paymentDetails"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="16dp"-->
+<!--                android:layout_marginEnd="16dp"-->
+<!--                android:orientation="vertical"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/icPayment"-->
+<!--                app:layout_constraintEnd_toStartOf="@id/icChevron"-->
+<!--                app:layout_constraintStart_toEndOf="@id/icPayment"-->
+<!--                app:layout_constraintTop_toTopOf="@id/icPayment">-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Visa ending in 4242"-->
+<!--                    android:textColor="#FFFFFF"-->
+<!--                    android:textSize="16sp"-->
+<!--                    android:textStyle="bold" />-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Primary Payment Method"-->
+<!--                    android:textColor="#A0A0A0"-->
+<!--                    android:textSize="12sp" />-->
+<!--            </LinearLayout>-->
+
+<!--            &lt;!&ndash; Chevron Down Icon &ndash;&gt;-->
+<!--            <ImageView-->
+<!--                android:id="@+id/icChevron"-->
+<!--                android:layout_width="24dp"-->
+<!--                android:layout_height="24dp"-->
+<!--                android:src="@android:drawable/arrow_down_float"-->
+<!--                app:tint="#A0A0A0"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/icPayment"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="@id/icPayment" />-->
+
+
+            <!-- Payment Method Selector -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/paymentSelectorLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="@id/icPayment"
-                app:layout_constraintEnd_toStartOf="@id/icChevron"
-                app:layout_constraintStart_toEndOf="@id/icPayment"
-                app:layout_constraintTop_toTopOf="@id/icPayment">
+                android:layout_marginTop="20dp"
+                android:hint="Select Payment Method"
+                app:boxBackgroundColor="#1E1E1E"
+                app:boxStrokeColor="#00FFFF"
+                app:hintTextColor="#00FFFF"
+                app:layout_constraintTop_toBottomOf="@id/div3"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <AutoCompleteTextView
+                    android:id="@+id/dropdownPayment"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Visa ending in 4242"
+                    android:inputType="none"
                     android:textColor="#FFFFFF"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Primary Payment Method"
-                    android:textColor="#A0A0A0"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <!-- Chevron Down Icon -->
-            <ImageView
-                android:id="@+id/icChevron"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@android:drawable/arrow_down_float"
-                app:tint="#A0A0A0"
-                app:layout_constraintBottom_toBottomOf="@id/icPayment"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/icPayment" />
+                    android:paddingTop="24dp"
+                    android:paddingBottom="12dp" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Fare Breakdown Header -->
             <TextView
@@ -323,7 +349,7 @@
                 android:textSize="12sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/paymentDetails" />
+                app:layout_constraintTop_toBottomOf="@id/paymentSelectorLayout" />
 
             <!-- Fare Items Container -->
             <LinearLayout

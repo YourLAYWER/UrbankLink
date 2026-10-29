@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.textfield.MaterialAutoCompleteTextView android:id="@+id/etStartLocation"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/text1"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="12dp"
     android:textColor="#FFFFFF"
-    android:completionThreshold="2"
-    android:inputType="textNoSuggestions"
     android:background="#1E1E1E"
-    xmlns:android="http://schemas.android.com/apk/res/android" /> <!-- Forces the dropdown to be dark -->
+    android:textSize="16sp" />
