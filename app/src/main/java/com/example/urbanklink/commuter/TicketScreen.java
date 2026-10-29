@@ -191,21 +191,29 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
         mMap.clear();
 
         if (currentTicketRoute != null && currentTicketRoute.encodedPolyline != null) {
-            List<LatLng> decodedPath = PolyUtil.decode(currentTicketRoute.encodedPolyline);
-            int routeColor = ("Train".equalsIgnoreCase(currentTicketRoute.transportType) || "Rail".equalsIgnoreCase(currentTicketRoute.transportType))
-                    ? Color.parseColor("#4CAF50") : Color.parseColor("#2196F3");
+            try {
+                // Sanitize the string to prevent StringIndexOutOfBoundsException
+                String cleanPolyline = currentTicketRoute.encodedPolyline.trim().replace("\n", "").replace("\r", "");
 
-            mMap.addPolyline(new PolylineOptions().addAll(decodedPath).width(14f).color(routeColor).geodesic(true).zIndex(0));
+                List<LatLng> decodedPath = PolyUtil.decode(cleanPolyline);
 
-            if (startStopCoord == null && destStopCoord == null) {
-                LatLngBounds.Builder routeBuilder = new LatLngBounds.Builder();
-                for (LatLng point : decodedPath) routeBuilder.include(point);
-                mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(routeBuilder.build(), 120));
+                int routeColor = ("Train".equalsIgnoreCase(currentTicketRoute.transportType) || "Rail".equalsIgnoreCase(currentTicketRoute.transportType))
+                        ? Color.parseColor("#4CAF50") : Color.parseColor("#2196F3");
+
+                mMap.addPolyline(new PolylineOptions().addAll(decodedPath).width(14f).color(routeColor).geodesic(true).zIndex(0));
+
+                if (startStopCoord == null && destStopCoord == null) {
+                    LatLngBounds.Builder routeBuilder = new LatLngBounds.Builder();
+                    for (LatLng point : decodedPath) routeBuilder.include(point);
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(routeBuilder.build(), 120));
+                }
+            } catch (Exception e) {
+                android.util.Log.e("MAP_ERROR", "Failed to decode polyline on Ticket Screen", e);
             }
         }
 
         if (startStopCoord != null && destStopCoord != null) {
-            mMap.addMarker(new MarkerOptions().position(startStopCoord).title("Boarding Stop").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+            mMap.addMarker(new MarkerOptions().position(startStopCoord).title("Boarding Stop").icon(com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker(com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_CYAN)));
             mMap.addMarker(new MarkerOptions().position(destStopCoord).title("Destination Stop"));
 
             LatLngBounds.Builder builder = new LatLngBounds.Builder().include(startStopCoord).include(destStopCoord);
