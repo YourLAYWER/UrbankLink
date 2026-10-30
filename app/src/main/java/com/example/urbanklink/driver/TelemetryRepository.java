@@ -8,7 +8,9 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.urbanklink.network.ApiClient;
 import com.example.urbanklink.network.UrbanLinkApiService;
+import com.example.urbanklink.requests.CashSaleRequest;
 import com.example.urbanklink.requests.ScanTicketRequest;
+import com.example.urbanklink.response.CashSaleResponse;
 import com.example.urbanklink.response.EndShiftResponse;
 import com.example.urbanklink.response.ScanTicketResponse;
 
@@ -78,6 +80,27 @@ public class TelemetryRepository {
             @Override
             public void onFailure(Call<ScanTicketResponse> call, Throwable t) {
                 errorLiveData.postValue("Network Error during scan");
+            }
+        });
+    }
+
+    // LINK: Triggered by PosViewModel.processCashSale() -> Updates success/error LiveData
+    public void processCashSale(int quantity, MutableLiveData<Boolean> successResult, MutableLiveData<String> errorLiveData) {
+        CashSaleRequest request = new CashSaleRequest(quantity);
+
+        apiService.recordCashSale(request).enqueue(new Callback<CashSaleResponse>() {
+            @Override
+            public void onResponse(Call<CashSaleResponse> call, Response<CashSaleResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    successResult.postValue(true);
+                } else {
+                    errorLiveData.postValue("Transaction Failed. Try again.");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CashSaleResponse> call, Throwable t) {
+                errorLiveData.postValue("Network Error");
             }
         });
     }
