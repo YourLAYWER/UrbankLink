@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.urbanklink.requests.IncidentReportRequest;
 import com.example.urbanklink.R;
@@ -34,19 +35,17 @@ import retrofit2.Response;
 
 public class IncidentTelemetry extends AppCompatActivity {
 
+    private IncidentViewModel viewModel;
+
     // UI Elements
     private MaterialButton btnTriggerSOS, btnSubmitReport, btnClearForm;
     private EditText etIncidentDetails;
-
-    // Category Cards Array for dynamic selection styling
     private MaterialCardView[] categoryCards;
-    private int selectedCategoryEnum = -1; // -1 means nothing selected
+    private final int[] categoryEnums = {1, 2, 3, 6, 4, 5, 7}; // Matches the card initialization order
 
-    // Location & Auth
+    // Location
     private FusedLocationProviderClient fusedLocationClient;
     private ActivityResultLauncher<String[]> locationPermissionRequest;
-    private String authHeader;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,24 +53,13 @@ public class IncidentTelemetry extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_incident_telemetry);
 
-        // 1. Tablet Sidebar Navigation
+        // 1. Initialize ViewModel
+        viewModel = new ViewModelProvider(this).get(IncidentViewModel.class);
+
+        // 2. Tablet Sidebar Navigation & Header
         SideNavUtils.setupSideNavigation(this, R.id.navTabReport);
-
         View rootView = findViewById(android.R.id.content);
-
-        // Automatically fetches and populates the header info across all screens!
-        //HeaderManager.loadHeaderData(this, rootView);
         HeaderManager.loadHeaderData(this, rootView, null);
-
-        // 2. Setup Auth Token
-        SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
-        String token = prefs.getString("JWT_TOKEN", null);
-        if (token == null) {
-            Toast.makeText(this, "Session expired", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-        authHeader = "Bearer " + token.replace("\"", "").trim();
 
         // 3. Initialize Location Client & Permissions
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -87,71 +75,92 @@ public class IncidentTelemetry extends AppCompatActivity {
         // 5. Setup Category Cards
         setupCategoryCards();
 
-        // 6. SOS Button Listener
-        btnTriggerSOS.setOnClickListener(v -> triggerEmergencySOS(v));
-
-        // 7. Submit Report Listener
+        // 6. Button Listeners -> Hardware Acquisition -> ViewModel execution
+        btnTriggerSOS.setOnClickListener(v -> triggerEmergencySOS());
         btnSubmitReport.setOnClickListener(v -> submitRoutineReport());
-
-        // 8. Clear Form Listener
         btnClearForm.setOnClickListener(v -> resetForm());
+
+        // 7. Observe ViewModel State
+        setupObservers();
     }
 
-    private void setupCategoryCards() {
-        // Link the XML cards
-        MaterialCardView cardEngine = findViewById(R.id.cardEngine);
-        MaterialCardView cardTire = findViewById(R.id.cardTire);
-        MaterialCardView cardScanner = findViewById(R.id.cardScanner);
-        MaterialCardView cardMedical = findViewById(R.id.cardMedical);
-        MaterialCardView cardDispute = findViewById(R.id.cardDispute);
-        MaterialCardView cardDelay = findViewById(R.id.cardDelay);
-        MaterialCardView cardOther = findViewById(R.id.cardOther);
-
-        categoryCards = new MaterialCardView[]{
-                cardEngine, cardTire, cardScanner, cardMedical, cardDispute, cardDelay, cardOther
-        };
-
-        // Attach click listeners to map to C# Enums
-        setupCardListener(cardEngine, 1);
-        setupCardListener(cardTire, 2);
-        setupCardListener(cardScanner, 3);
-        setupCardListener(cardMedical, 6);
-        setupCardListener(cardDispute, 4);
-        setupCardListener(cardDelay, 5);
-        setupCardListener(cardOther, 7);
-    }
-
-    private void setupCardListener(MaterialCardView card, int enumValue) {
-        if (card == null) return;
-        card.setOnClickListener(v -> {
-            // Dim all cards back to unselected gray
-            for (MaterialCardView c : categoryCards) {
-                if (c != null) c.setStrokeColor(Color.parseColor("#2A2B33"));
+    private void setupObservers() {
+        // LINK: Updates card UI based on ViewModel state
+        viewModel.getSelectedCategory().observe(this, selectedEnum -> {
+            for (int i = 0; i < categoryCards.length; i++) {
+                if (categoryCards[i] != null) {
+                    if (categoryEnums[i] == selectedEnum) {
+                        categoryCards[i].setStrokeColor(Color.parseColor("#00E5FF")); // Cyan
+                    } else {
+                        categoryCards[i].setStrokeColor(Color.parseColor("#2A2B33")); // Dim gray
+                    }
+                }
             }
-            // Highlight the tapped card in cyan
-            card.setStrokeColor(Color.parseColor("#00E5FF"));
-            selectedCategoryEnum = enumValue;
+        });
+
+        // LINK: Handles successful routine report
+        viewModel.getReportSuccess().observe(this, success -> {
+            if (success != null && success) {
+                Toast.makeText(this, "Report submitted successfully.", Toast.LENGTH_LONG).show();
+                resetForm();
+                resetButtons();
+                viewModel.resetProcessingState();
+            }
+        });
+
+        // LINK: Handles successful SOS dispatch
+        viewModel.getSosSuccess().observe(this, success -> {
+            if (success != null && success) {
+                Toast.makeText(this, "EMERGENCY SOS LOGGED!", Toast.LENGTH_LONG).show();
+                btnTriggerSOS.postDelayed(this::resetButtons, 3000);
+                viewModel.resetProcessingState();
+            }
+        });
+
+        // LINK: Handles API or validation errors (including session expiry)
+        viewModel.getErrorMessage().observe(this, error -> {
+            if (error != null) {
+                Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+                if (error.equals("Session expired")) finish();
+                resetButtons();
+                viewModel.resetProcessingState();
+            }
         });
     }
 
-    private void resetForm() {
-        for (MaterialCardView c : categoryCards) {
-            if (c != null) c.setStrokeColor(Color.parseColor("#2A2B33"));
+    private void setupCategoryCards() {
+        categoryCards = new MaterialCardView[]{
+                findViewById(R.id.cardEngine),
+                findViewById(R.id.cardTire),
+                findViewById(R.id.cardScanner),
+                findViewById(R.id.cardMedical),
+                findViewById(R.id.cardDispute),
+                findViewById(R.id.cardDelay),
+                findViewById(R.id.cardOther)
+        };
+
+        for (int i = 0; i < categoryCards.length; i++) {
+            final int enumValue = categoryEnums[i];
+            if (categoryCards[i] != null) {
+                // LINK: Pass the selection event straight to the ViewModel
+                categoryCards[i].setOnClickListener(v -> viewModel.selectCategory(enumValue));
+            }
         }
-        selectedCategoryEnum = -1;
+    }
+
+    private void resetForm() {
+        viewModel.resetCategory();
         etIncidentDetails.setText("");
         etIncidentDetails.clearFocus();
     }
 
-    private void triggerEmergencySOS(View v) {
+    private void triggerEmergencySOS() {
         btnTriggerSOS.setEnabled(false);
         btnTriggerSOS.setText("ACQUIRING GPS...");
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "Permission denied. Sending SOS without GPS.", Toast.LENGTH_SHORT).show();
-            // Assuming Enum 3 is SOS/Critical in your C# backend
-            sendReportToBackend(true, 3, "CRITICAL SOS TRIGGERED FROM TABLET", 0.0, 0.0);
-            resetSosButton(v);
+            viewModel.submitEmergencySOS(0.0, 0.0);
             return;
         }
 
@@ -160,91 +169,48 @@ public class IncidentTelemetry extends AppCompatActivity {
                 .addOnSuccessListener(this, location -> {
                     double lat = location != null ? location.getLatitude() : 0.0;
                     double lng = location != null ? location.getLongitude() : 0.0;
-                    sendReportToBackend(true, 3, "CRITICAL SOS TRIGGERED FROM TABLET", lat, lng);
-                    resetSosButton(v);
+                    viewModel.submitEmergencySOS(lat, lng);
                 })
                 .addOnFailureListener(e -> {
-                    sendReportToBackend(true, 3, "CRITICAL SOS TRIGGERED FROM TABLET", 0.0, 0.0);
-                    resetSosButton(v);
+                    viewModel.submitEmergencySOS(0.0, 0.0);
                 });
     }
 
     private void submitRoutineReport() {
-        if (selectedCategoryEnum == -1) {
+        String details = etIncidentDetails.getText() != null ? etIncidentDetails.getText().toString().trim() : "";
+
+        // Pre-validate UI state before locking buttons
+        if (viewModel.getSelectedCategory().getValue() == null || viewModel.getSelectedCategory().getValue() == -1) {
             Toast.makeText(this, "Please select an issue category", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String details = etIncidentDetails.getText() != null ? etIncidentDetails.getText().toString().trim() : "";
-
-        // Disable the button and show the user that GPS is being acquired
         btnSubmitReport.setEnabled(false);
         btnSubmitReport.setText("ACQUIRING GPS...");
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            sendReportToBackend(false, selectedCategoryEnum, details, 0.0, 0.0);
+            viewModel.submitRoutineReport(details, 0.0, 0.0);
             return;
         }
 
-        // Use getCurrentLocation for a forced, live GPS fix instead of relying on the cache
         CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cancellationTokenSource.getToken())
                 .addOnSuccessListener(this, location -> {
                     double lat = location != null ? location.getLatitude() : 0.0;
                     double lng = location != null ? location.getLongitude() : 0.0;
-                    sendReportToBackend(false, selectedCategoryEnum, details, lat, lng);
+                    viewModel.submitRoutineReport(details, lat, lng);
                 })
                 .addOnFailureListener(e -> {
-                    // If the GPS hardware fails to get a lock, send the report anyway with 0.0
-                    sendReportToBackend(false, selectedCategoryEnum, details, 0.0, 0.0);
+                    viewModel.submitRoutineReport(details, 0.0, 0.0);
                 });
     }
 
-    private void sendReportToBackend(boolean isEmergency, int category, String details, double lat, double lng) {
-        IncidentReportRequest request = new IncidentReportRequest(isEmergency, category, details, lat, lng);
-        UrbanLinkApiService apiService = ApiClient.getClient(this).create(UrbanLinkApiService.class);
+    private void resetButtons() {
+        btnTriggerSOS.setEnabled(true);
+        btnTriggerSOS.setText("TRIGGER INSTANT SOS");
 
-        apiService.logIncident(authHeader, request).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    String msg = isEmergency ? "EMERGENCY SOS LOGGED!" : "Report submitted successfully.";
-                    Toast.makeText(IncidentTelemetry.this, msg, Toast.LENGTH_LONG).show();
-
-                    if (!isEmergency) {
-                        resetForm();
-                        btnSubmitReport.setEnabled(true);
-                        btnSubmitReport.setText("SUBMIT REPORT");
-                    }
-                } else {
-                    Toast.makeText(IncidentTelemetry.this, "Failed to submit: " + response.code(), Toast.LENGTH_SHORT).show();
-                    resetFailedButtons(isEmergency);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(IncidentTelemetry.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                resetFailedButtons(isEmergency);
-            }
-        });
-    }
-
-    private void resetFailedButtons(boolean isEmergency) {
-        if (isEmergency) {
-            btnTriggerSOS.setEnabled(true);
-            btnTriggerSOS.setText("TRIGGER INSTANT SOS");
-        } else {
-            btnSubmitReport.setEnabled(true);
-            btnSubmitReport.setText("SUBMIT REPORT");
-        }
-    }
-
-    private void resetSosButton(View v) {
-        v.postDelayed(() -> {
-            btnTriggerSOS.setEnabled(true);
-            btnTriggerSOS.setText("TRIGGER INSTANT SOS");
-        }, 3000);
+        btnSubmitReport.setEnabled(true);
+        btnSubmitReport.setText("SUBMIT REPORT");
     }
 
     private void setupLocationPermissions() {
