@@ -24,6 +24,7 @@ import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.urbanklink.ShiftCompleteActivity;
 import com.example.urbanklink.driver.HeaderManager;
 import com.example.urbanklink.commuter.HeaderUtils;
 import com.example.urbanklink.R;

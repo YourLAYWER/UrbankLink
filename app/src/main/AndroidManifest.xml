@@ -96,7 +96,7 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".conductor.ShiftCompleteActivity"
+            android:name=".ShiftCompleteActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity

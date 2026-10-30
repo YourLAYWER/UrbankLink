@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.Menu;
 
 import com.example.urbanklink.R;
+import com.example.urbanklink.ShiftCompleteActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
