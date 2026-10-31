@@ -23,11 +23,13 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.urbanklink.ShiftCompleteActivity;
 import com.example.urbanklink.driver.HeaderManager;
 import com.example.urbanklink.commuter.HeaderUtils;
 import com.example.urbanklink.R;
+import com.example.urbanklink.driver.TelemetryViewModel;
 import com.example.urbanklink.requests.ScanTicketRequest;
 import com.example.urbanklink.response.ScanTicketResponse;
 import com.example.urbanklink.network.UrbanLinkApiService;
@@ -49,149 +51,125 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ScannerActivity extends AppCompatActivity {
+
+    private TelemetryViewModel viewModel;
+
+    // UI Elements
     private PreviewView viewFinder;
     private MaterialCardView pillScanResult;
     private TextView txtCurrentCapacity;
+    private MaterialButton btnCashSale;
 
+    // Camera Services
     private ExecutorService cameraExecutor;
     private BarcodeScanner scanner;
     private ToneGenerator toneGen;
 
-    private MaterialButton btnCashSale;
-
     private ActivityResultLauncher<Intent> quickSaleLauncher;
-
     private boolean isProcessing = false;
-    private String authHeader;
-    //private int activeShiftId = -1;
-    private int currentPassengers = 0; // Starting demo capacity
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_scanner);
 
-        btnCashSale = findViewById(R.id.btnCashSale);
-        View rootView = findViewById(android.R.id.content);
+        // 1. Initialize Reusable ViewModel
+        viewModel = new ViewModelProvider(this).get(TelemetryViewModel.class);
 
-        // 1. LINK XML VIEWS FIRST (Moved to the top)
+        // 2. Link Views
         viewFinder = findViewById(R.id.viewFinder);
         pillScanResult = findViewById(R.id.pillScanResult);
         txtCurrentCapacity = findViewById(R.id.txtCurrentCapacity);
         btnCashSale = findViewById(R.id.btnCashSale);
 
-        //HeaderManager.loadHeaderData(this, rootView);
+        // 3. Setup Headers
+        View rootView = findViewById(android.R.id.content);
         HeaderManager.loadHeaderData(this, rootView, null);
-
         HeaderUtils.setupHeader(this, true, false, false);
 
-        // 2. INITIALIZE SERVICES FIRST
+        // 4. Initialize Hardware
         cameraExecutor = java.util.concurrent.Executors.newSingleThreadExecutor();
         scanner = com.google.mlkit.vision.barcode.BarcodeScanning.getClient();
         toneGen = new ToneGenerator(android.media.AudioManager.STREAM_MUSIC, 100);
 
-        // 3. AUTH & SHIFT SETUP
-        SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
-        String token = prefs.getString("JWT_TOKEN", null);
+        // 5. Setup View Observers
+        setupObservers();
 
-        if (token == null) {
-            performLogout();
-            return;
-        }
-        authHeader = "Bearer " + token.replace("\"", "").trim();
-
-        currentPassengers = prefs.getInt("ACTIVE_PASSENGER_COUNT", 0);
-        txtCurrentCapacity.setText(String.valueOf(currentPassengers));
-        //fetchActiveShift();
-
-        // 1. Register the launcher to catch the result from QuickSaleActivity
+        // 6. Setup Cash Sale Return Intent
         quickSaleLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         int addedPassengers = result.getData().getIntExtra("PASSENGERS_ADDED", 0);
-
-                        // 1. Update local counter
-                        currentPassengers += addedPassengers;
-                        txtCurrentCapacity.setText(String.valueOf(currentPassengers));
-
-                        // 2. <-- NEW: Save immediately to SharedPreferences!
-                        //SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
-                        prefs.edit().putInt("ACTIVE_PASSENGER_COUNT", currentPassengers).apply();
+                        viewModel.addPassengers(addedPassengers); // ViewModel handles saving
                     }
                 }
         );
 
-        // 4. BUTTON LISTENERS
+        // 7. Setup Button Listeners
         btnCashSale.setOnClickListener(v -> {
             Intent intent = new Intent(ScannerActivity.this, QuickSaleActivity.class);
-            quickSaleLauncher.launch(intent); // Must use .launch(), not startActivity()
+            quickSaleLauncher.launch(intent);
         });
 
-        View btnEndShift = findViewById(R.id.btnEndShift);
-        btnEndShift.setOnClickListener(v -> {
-            Intent intent = new Intent(ScannerActivity.this, ShiftCompleteActivity.class);
-            startActivity(intent);
+        findViewById(R.id.btnEndShift).setOnClickListener(v -> {
+            startActivity(new Intent(ScannerActivity.this, ShiftCompleteActivity.class));
         });
 
+        // 8. Setup Bottom Navigation
         BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
         FloatingActionButton fabScan = findViewById(R.id.fabScan);
-
-        // Pass -1 for ScannerActivity since the active state belongs to the FAB, not the bottom menu
         BottomConductorNavManager.setup(this, bottomNav, fabScan, -1);
 
-        // 5. START CAMERA LAST (Now that views and services are ready)
+        // 9. Start Camera
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 100);
         } else {
             startCamera();
         }
 
+        viewModel.loadActiveShift();
     }
 
-//    private void fetchActiveShift() {
-//        UrbanLinkApiService apiService = ApiClient.getClient(this).create(UrbanLinkApiService.class);
-//        apiService.getShiftSummary(authHeader).enqueue(new Callback<EndShiftResponse>() {
-//            @Override
-//            public void onResponse(Call<EndShiftResponse> call, Response<EndShiftResponse> response) {
-//                if (response.isSuccessful() && response.body() != null) {
-//                    EndShiftResponse data = response.body();
-//                    // Extract the active shift ID directly from the backend response model
-//                    activeShiftId = data.shiftSummary.shiftId; // Ensure your EndShiftResponse model has this field
-//
-//                    Toast.makeText(ScannerActivity.this, "Active Shift Loaded", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    Toast.makeText(ScannerActivity.this, "No active shift found!", Toast.LENGTH_LONG).show();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<EndShiftResponse> call, Throwable t) {
-//                Toast.makeText(ScannerActivity.this, "Failed to connect to server", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//    }
+    private void setupObservers() {
+        // LINK: Auto-updates UI when passengers are added via QR or Cash Sale
+        viewModel.getCurrentPassengers().observe(this, passengers -> {
+            if (passengers != null) {
+                txtCurrentCapacity.setText(String.valueOf(passengers));
+            }
+        });
 
-    private void performLogout() {
-        SharedPreferences.Editor editor = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE).edit();
-        editor.clear();
-        editor.apply();
+        viewModel.getRequiresLogout().observe(this, requiresLogout -> {
+            if (requiresLogout != null && requiresLogout) performLogout();
+        });
 
-        Intent intent = new Intent(ScannerActivity.this, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
-    }
+        // LINK: Reacts to MLKit scanner validation results
+        viewModel.getTicketValidationSuccess().observe(this, isValid -> {
+            if (isValid == null) return;
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 100 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // The user just clicked "Allow", start the camera immediately
-            startCamera();
-        } else {
-            Toast.makeText(this, "Camera permission is required to scan tickets", Toast.LENGTH_SHORT).show();
-        }
+            if (isValid) {
+                viewModel.addPassengers(1);
+                toneGen.startTone(ToneGenerator.TONE_PROP_BEEP, 150);
+                pillScanResult.setVisibility(View.VISIBLE);
+
+                viewFinder.postDelayed(() -> {
+                    pillScanResult.setVisibility(View.GONE);
+                    isProcessing = false;
+                }, 2000);
+            } else {
+                toneGen.startTone(ToneGenerator.TONE_CDMA_ABBR_ALERT, 300);
+                Toast.makeText(this, "INVALID OR USED TICKET!", Toast.LENGTH_LONG).show();
+                viewFinder.postDelayed(() -> isProcessing = false, 2500);
+            }
+        });
+
+        viewModel.getErrorMessage().observe(this, error -> {
+            if (error != null) {
+                Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+                viewFinder.postDelayed(() -> isProcessing = false, error.contains("Invalid QR") ? 1500 : 2000);
+            }
+        });
     }
 
     private void startCamera() {
@@ -230,75 +208,33 @@ public class ScannerActivity extends AppCompatActivity {
                     for (Barcode barcode : barcodes) {
                         String rawValue = barcode.getRawValue();
                         if (rawValue != null) {
-                            validateTicketWithServer(rawValue);
-                            break; // Only scan one at a time
+                            isProcessing = true;
+                            // Route the scanned code right back to the shared ViewModel
+                            viewModel.processScannedQr(rawValue);
+                            break;
                         }
                     }
                 })
                 .addOnCompleteListener(task -> imageProxy.close());
     }
 
-    private void validateTicketWithServer(String qrData) {
-        isProcessing = true; // Lock the scanner
+    private void performLogout() {
+        SharedPreferences.Editor editor = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE).edit();
+        editor.clear().apply();
+        Intent intent = new Intent(ScannerActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
 
-        // 1. Verify this is actually an UrbanLink ticket before we even bother the server
-        if (!qrData.toLowerCase().startsWith("urbanlink-")) {
-            Toast.makeText(this, "Invalid QR: Not an UrbanLink Ticket", Toast.LENGTH_SHORT).show();
-
-            // Unlock the scanner quickly so they can try again
-            viewFinder.postDelayed(() -> isProcessing = false, 1500);
-            return;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 100 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            startCamera();
+        } else {
+            Toast.makeText(this, "Camera permission is required", Toast.LENGTH_SHORT).show();
         }
-
-        // 2. Strip out the prefix to get the pure GUID for the database
-        // (?i) makes it case-insensitive just in case!
-        String cleanQrData = qrData.replaceAll("(?i)urbanlink-", "").trim();
-
-        // 3. Send the clean GUID to the server
-        //ScanTicketRequest request = new ScanTicketRequest(activeShiftId, cleanQrData);
-        ScanTicketRequest request = new ScanTicketRequest(cleanQrData);
-
-        UrbanLinkApiService apiService = ApiClient.getClient(ScannerActivity.this).create(UrbanLinkApiService.class);
-
-        apiService.scanTicket(request).enqueue(new Callback<ScanTicketResponse>() {
-            @Override
-            public void onResponse(Call<ScanTicketResponse> call, Response<ScanTicketResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    // TICKET IS VALID
-                    toneGen.startTone(ToneGenerator.TONE_PROP_BEEP, 150); // Happy beep
-
-                    // Show the green pill
-                    pillScanResult.setVisibility(View.VISIBLE);
-
-                    // Increment capacity
-                    currentPassengers++;
-                    txtCurrentCapacity.setText(String.valueOf(currentPassengers));
-
-                    // Save immediately to SharedPreferences!
-                    SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
-                    prefs.edit().putInt("ACTIVE_PASSENGER_COUNT", currentPassengers).apply();
-
-                    // Hide the pill and unlock scanner after 2 seconds
-                    viewFinder.postDelayed(() -> {
-                        pillScanResult.setVisibility(View.GONE);
-                        isProcessing = false;
-                    }, 2000);
-
-                } else {
-                    // TICKET IS INVALID / ALREADY USED
-                    toneGen.startTone(ToneGenerator.TONE_CDMA_ABBR_ALERT, 300); // Angry beep
-                    Toast.makeText(ScannerActivity.this, "INVALID OR USED TICKET!", Toast.LENGTH_LONG).show();
-
-                    viewFinder.postDelayed(() -> isProcessing = false, 2500);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ScanTicketResponse> call, Throwable t) {
-                Toast.makeText(ScannerActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
-                viewFinder.postDelayed(() -> isProcessing = false, 2000);
-            }
-        });
     }
 
     @Override

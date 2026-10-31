@@ -11,29 +11,21 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
-import com.example.urbanklink.requests.CashSaleRequest;
-import com.example.urbanklink.response.CashSaleResponse;
+import com.example.urbanklink.driver.PosViewModel;
 import com.example.urbanklink.R;
-import com.example.urbanklink.network.UrbanLinkApiService;
 import com.example.urbanklink.commuter.HeaderUtils;
-import com.example.urbanklink.network.ApiClient;
 import com.google.android.material.button.MaterialButton;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class QuickSaleActivity extends AppCompatActivity {
 
-    private TextView btnClose, txtQuantity, txtTotalAmount, txtBaseFare, txtRouteName;
+    private PosViewModel viewModel;
+
+    private TextView txtQuantity, txtTotalAmount, txtBaseFare, txtRouteName;
     private ImageView btnMinus, btnPlus;
     private MaterialButton btnConfirmSale;
-
-    private int quantity = 1;
-    // We remove the hardcoded BASE_FARE and make dynamicBaseFare accessible globally
-    private double dynamicBaseFare = 15.00;
-
     private ToneGenerator toneGen;
 
     @Override
@@ -42,18 +34,13 @@ public class QuickSaleActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_quick_sale);
 
+        // 1. Initialize Reusable ViewModel
+        viewModel = new ViewModelProvider(this).get(PosViewModel.class);
+
         HeaderUtils.setupHeader(this, true, false, false);
-
-
-        // 1. Grab SharedPreferences variables
-        SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
-        dynamicBaseFare = prefs.getFloat("ACTIVE_BASE_FARE", 15.00f);
-        String routeName = prefs.getString("ACTIVE_ROUTE_NAME", "Unknown Route");
-
         toneGen = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
 
         // 2. Link UI
-       //btnClose = findViewById(R.id.btnClose);
         txtQuantity = findViewById(R.id.txtQuantity);
         txtTotalAmount = findViewById(R.id.txtTotalAmount);
         txtBaseFare = findViewById(R.id.txtBaseFare);
@@ -62,76 +49,74 @@ public class QuickSaleActivity extends AppCompatActivity {
         btnPlus = findViewById(R.id.btnPlus);
         btnConfirmSale = findViewById(R.id.btnConfirmSale);
 
-        // 3. Inject the dynamic values into the UI
+        // 3. Inject static Route Name from preferences
+        SharedPreferences prefs = getSharedPreferences("UrbanLinkPrefs", MODE_PRIVATE);
+        String routeName = prefs.getString("ACTIVE_ROUTE_NAME", "Unknown Route");
         if (txtRouteName != null) txtRouteName.setText(routeName);
-        if (txtBaseFare != null) txtBaseFare.setText(String.format("R%.2f", dynamicBaseFare));
 
-        // 4. Calculate initial total
-        updateTotalDisplay();
+        // 4. Button Click Listeners -> Route to ViewModel
+        btnMinus.setOnClickListener(v -> viewModel.decrementQuantity());
+        btnPlus.setOnClickListener(v -> viewModel.incrementQuantity());
+        btnConfirmSale.setOnClickListener(v -> viewModel.processCashSale());
 
-        // 5. Button Click Listeners
-        //btnClose.setOnClickListener(v -> finish());
+        // 5. Observe State Changes
+        setupObservers();
+    }
 
-        btnMinus.setOnClickListener(v -> {
-            if (quantity > 1) {
-                quantity--;
+    private void setupObservers() {
+        // LINK: Update math when quantity changes
+        viewModel.getQuantity().observe(this, q -> {
+            if (q != null) updateTotalDisplay();
+        });
+
+        // LINK: Update math when base fare loads
+        viewModel.getDynamicBaseFare().observe(this, fare -> {
+            if (fare != null) {
+                if (txtBaseFare != null) txtBaseFare.setText(String.format("R%.2f", fare));
                 updateTotalDisplay();
             }
         });
 
-        btnPlus.setOnClickListener(v -> {
-            if (quantity < 10) {
-                quantity++;
-                updateTotalDisplay();
-            } else {
-                Toast.makeText(this, "Maximum 10 tickets per transaction", Toast.LENGTH_SHORT).show();
+        // LINK: Disable button during API call
+        viewModel.getIsProcessing().observe(this, isProcessing -> {
+            if (isProcessing != null && isProcessing) {
+                btnConfirmSale.setEnabled(false);
+                btnConfirmSale.setText("Processing...");
             }
         });
 
-        btnConfirmSale.setOnClickListener(v -> processTransaction());
+        // LINK: Handle successful sale and return data to ScannerActivity
+        viewModel.getSaleSuccess().observe(this, success -> {
+            if (success != null && success) {
+                toneGen.startTone(ToneGenerator.TONE_PROP_BEEP, 150);
+                Toast.makeText(this, "Sale Successful", Toast.LENGTH_SHORT).show();
+
+                int soldQuantity = viewModel.getQuantity().getValue() != null ? viewModel.getQuantity().getValue() : 1;
+
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("PASSENGERS_ADDED", soldQuantity);
+                setResult(RESULT_OK, resultIntent);
+                finish();
+            }
+        });
+
+        // LINK: Handle API errors
+        viewModel.getErrorMessage().observe(this, error -> {
+            if (error != null) {
+                btnConfirmSale.setEnabled(true);
+                btnConfirmSale.setText("CONFIRM & ISSUE TICKET");
+                Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void updateTotalDisplay() {
-        txtQuantity.setText(String.valueOf(quantity));
-        // FIX: Now we multiply by the dynamic fare we loaded from memory!
-        double total = quantity * dynamicBaseFare;
+        int q = viewModel.getQuantity().getValue() != null ? viewModel.getQuantity().getValue() : 1;
+        float fare = viewModel.getDynamicBaseFare().getValue() != null ? viewModel.getDynamicBaseFare().getValue() : 15.00f;
+
+        txtQuantity.setText(String.valueOf(q));
+        double total = q * fare;
         txtTotalAmount.setText(String.format("R%.2f", total));
-    }
-
-    private void processTransaction() {
-        btnConfirmSale.setEnabled(false);
-        btnConfirmSale.setText("Processing...");
-
-        CashSaleRequest request = new CashSaleRequest(quantity);
-
-        UrbanLinkApiService apiService = ApiClient.getClient(QuickSaleActivity.this).create(UrbanLinkApiService.class);
-
-        apiService.recordCashSale(request).enqueue(new Callback<CashSaleResponse>() {
-            @Override
-            public void onResponse(Call<CashSaleResponse> call, Response<CashSaleResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    toneGen.startTone(ToneGenerator.TONE_PROP_BEEP, 150);
-                    Toast.makeText(QuickSaleActivity.this, "Sale Successful: R" + response.body().amountAdded, Toast.LENGTH_SHORT).show();
-
-                    Intent resultIntent = new Intent();
-                    resultIntent.putExtra("PASSENGERS_ADDED", quantity);
-                    setResult(RESULT_OK, resultIntent);
-
-                    finish();
-                } else {
-                    btnConfirmSale.setEnabled(true);
-                    btnConfirmSale.setText("CONFIRM & ISSUE TICKET");
-                    Toast.makeText(QuickSaleActivity.this, "Transaction Failed. Try again.", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<CashSaleResponse> call, Throwable t) {
-                btnConfirmSale.setEnabled(true);
-                btnConfirmSale.setText("CONFIRM & ISSUE TICKET");
-                Toast.makeText(QuickSaleActivity.this, "Network Error", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override
