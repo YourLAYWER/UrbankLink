@@ -16,6 +16,7 @@ import com.example.urbanklink.network.UrbanLinkApiService;
 import com.example.urbanklink.requests.BusLocationUpdateDto;
 import com.example.urbanklink.response.RouteStatusResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.gson.Gson;
 import com.microsoft.signalr.HubConnection;
 import com.microsoft.signalr.HubConnectionBuilder;
 import com.microsoft.signalr.HubConnectionState;
@@ -104,27 +105,59 @@ public class TicketScreenRepository {
         });
     }
 
+//    public void subscribeToBusLocation(int routeId, MutableLiveData<BusLocationUpdateDto> liveLocationData) {
+//        unsubscribeFromBusLocation(routeId);
+//
+//        String hubUrl = BuildConfig.BASE_URL + "transithub";
+//        android.util.Log.d("SignalR_Debug", "1. Attempting to connect to: " + hubUrl);
+//        hubConnection = HubConnectionBuilder.create(hubUrl).build();
+//
+//        // 1. Listen for the broadcast from the C# Hub
+//        hubConnection.on("ReceiveBusLocation", (data) -> {
+//            if (data != null) {
+//                liveLocationData.postValue(data);
+//            }
+//        }, BusLocationUpdateDto.class);
+//
+//        // 2. Start connection and join the specific route group
+//        new Thread(() -> {
+//            try {
+//                hubConnection.start().blockingAwait();
+//                // Matches the C# Hub method: public async Task JoinRouteGroup(int routeId)
+//                hubConnection.send("JoinRouteGroup", routeId);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }).start();
+//    }
+
     public void subscribeToBusLocation(int routeId, MutableLiveData<BusLocationUpdateDto> liveLocationData) {
-        unsubscribeFromBusLocation(routeId);
-
         String hubUrl = BuildConfig.BASE_URL + "transithub";
+        android.util.Log.d("SignalR_Debug", "1. Attempting to connect to: " + hubUrl);
+
         hubConnection = HubConnectionBuilder.create(hubUrl).build();
+        Gson gson = new Gson();
 
-        // 1. Listen for the broadcast from the C# Hub
-        hubConnection.on("ReceiveBusLocation", (data) -> {
-            if (data != null) {
+        hubConnection.on("ReceiveBusLocation", (payloadJson) -> {
+            android.util.Log.d("SignalR_Debug", "4. Received raw payload from C#: " + payloadJson);
+            try {
+                BusLocationUpdateDto data = gson.fromJson(payloadJson, BusLocationUpdateDto.class);
                 liveLocationData.postValue(data);
+                android.util.Log.d("SignalR_Debug", "5. Successfully parsed and posted to LiveData");
+            } catch (Exception e) {
+                android.util.Log.e("SignalR_Debug", "ERROR parsing JSON payload", e);
             }
-        }, BusLocationUpdateDto.class);
+        }, String.class);
 
-        // 2. Start connection and join the specific route group
         new Thread(() -> {
             try {
                 hubConnection.start().blockingAwait();
-                // Matches the C# Hub method: public async Task JoinRouteGroup(int routeId)
+                android.util.Log.d("SignalR_Debug", "2. Connection STARTED successfully.");
+
                 hubConnection.send("JoinRouteGroup", routeId);
+                android.util.Log.d("SignalR_Debug", "3. Sent JoinRouteGroup for Route: " + routeId);
             } catch (Exception e) {
-                e.printStackTrace();
+                android.util.Log.e("SignalR_Debug", "ERROR: Failed to start connection or join group", e);
             }
         }).start();
     }

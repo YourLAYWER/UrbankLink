@@ -176,10 +176,28 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
         });
 
         // --- Observe live bus location pings ---
-        viewModel.getLiveBusLocation().observe(this, busData -> {
-            if (busData != null && mMap != null) {
-                LatLng newPosition = new LatLng(busData.latitude, busData.longitude);
+//        viewModel.getLiveBusLocation().observe(this, busData -> {
+//            if (busData != null && mMap != null) {
+//                LatLng newPosition = new LatLng(busData.latitude, busData.longitude);
+//
+//                if (activeBusMarker == null) {
+//                    activeBusMarker = mMap.addMarker(new MarkerOptions()
+//                            .position(newPosition)
+//                            .title("Bus #" + busData.busId)
+//                            .icon(com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker(com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE)));
+//                } else {
+//                    activeBusMarker.setPosition(newPosition);
+//                }
+//            }
+//        });
 
+        viewModel.getLiveBusLocation().observe(this, busData -> {
+            android.util.Log.d("SignalR_Debug", "6. UI Observer triggered");
+
+            if (busData != null && mMap != null) {
+                android.util.Log.d("SignalR_Debug", "7. Drawing marker at Lat: " + busData.latitude + ", Lng: " + busData.longitude);
+
+                LatLng newPosition = new LatLng(busData.latitude, busData.longitude);
                 if (activeBusMarker == null) {
                     activeBusMarker = mMap.addMarker(new MarkerOptions()
                             .position(newPosition)
