@@ -72,16 +72,32 @@ public class TicketScreenViewModel extends AndroidViewModel {
 
     // Add this to your TicketViewModel or equivalent commuter ViewModel
     private final MutableLiveData<BusLocationUpdateDto> liveBusLocation = new MutableLiveData<>();
+    private int currentTrackingRouteId = -1;
 
     public LiveData<BusLocationUpdateDto> getLiveBusLocation() {
         return liveBusLocation;
     }
 
     public void startLiveTracking(int routeId) {
+        if (routeId <= 0 || routeId == currentTrackingRouteId) return;
+        currentTrackingRouteId = routeId;
         repository.subscribeToBusLocation(routeId, liveBusLocation);
     }
 
     public void stopLiveTracking(int routeId) {
-        repository.unsubscribeFromBusLocation(routeId);
+        if (routeId != -1) {
+            repository.unsubscribeFromBusLocation(routeId);
+            if (currentTrackingRouteId == routeId) {
+                currentTrackingRouteId = -1;
+            }
+        }
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        if (currentTrackingRouteId != -1) {
+            repository.unsubscribeFromBusLocation(currentTrackingRouteId);
+        }
     }
 }

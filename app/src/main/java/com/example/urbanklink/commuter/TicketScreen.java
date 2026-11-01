@@ -134,6 +134,11 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
 
             viewModel.refreshLiveStatus(currentTicketRef);
             if (mMap != null) renderTicketMap();
+
+            // --- Start live bus tracking dynamically when active ticket loads ---
+            if ("ACTIVE".equalsIgnoreCase(currentTicketStatus) && data.ticket != null) {
+                viewModel.startLiveTracking(data.ticket.routeId);
+            }
         });
 
         viewModel.getHistoricalRouteData().observe(this, route -> {
@@ -146,7 +151,7 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
                 applyQrStatusStyling("COMPLETED");
 
                 // --- Stop tracking and remove bus marker when scanned ---
-                int ticketRouteId = getIntent().getIntExtra("TICKET_ROUTE_ID", -1);
+                int ticketRouteId = currentTicketRoute != null ? currentTicketRoute.routeId : getIntent().getIntExtra("TICKET_ROUTE_ID", -1);
                 viewModel.stopLiveTracking(ticketRouteId);
                 if (activeBusMarker != null) {
                     activeBusMarker.remove();
@@ -215,7 +220,7 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
         if (currentTicketRoute != null) renderTicketMap();
 
         // --- Start live bus tracking when the map is ready ---
-        int ticketRouteId = getIntent().getIntExtra("TICKET_ROUTE_ID", -1);
+        int ticketRouteId = (currentTicketRoute != null) ? currentTicketRoute.routeId : getIntent().getIntExtra("TICKET_ROUTE_ID", -1);
         if (ticketRouteId != -1 && "ACTIVE".equalsIgnoreCase(currentTicketStatus)) {
             viewModel.startLiveTracking(ticketRouteId);
         }
@@ -224,6 +229,7 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
     private void renderTicketMap() {
         if (mMap == null) return;
         mMap.clear();
+        activeBusMarker = null; // Reset marker reference when map is cleared
 
         if (currentTicketRoute != null && currentTicketRoute.encodedPolyline != null) {
             try {
@@ -324,5 +330,14 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
         snackbar.getView().setBackgroundColor(Color.parseColor("#FF4C4C"));
         snackbar.setTextColor(Color.WHITE);
         snackbar.show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        int ticketRouteId = currentTicketRoute != null ? currentTicketRoute.routeId : getIntent().getIntExtra("TICKET_ROUTE_ID", -1);
+        if (ticketRouteId != -1) {
+            viewModel.stopLiveTracking(ticketRouteId);
+        }
     }
 }

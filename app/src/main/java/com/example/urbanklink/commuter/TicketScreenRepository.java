@@ -16,7 +16,6 @@ import com.example.urbanklink.network.UrbanLinkApiService;
 import com.example.urbanklink.requests.BusLocationUpdateDto;
 import com.example.urbanklink.response.RouteStatusResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.gson.Gson;
 import com.microsoft.signalr.HubConnection;
 import com.microsoft.signalr.HubConnectionBuilder;
 import com.microsoft.signalr.HubConnectionState;
@@ -106,19 +105,17 @@ public class TicketScreenRepository {
     }
 
     public void subscribeToBusLocation(int routeId, MutableLiveData<BusLocationUpdateDto> liveLocationData) {
+        unsubscribeFromBusLocation(routeId);
+
         String hubUrl = BuildConfig.BASE_URL + "transithub";
         hubConnection = HubConnectionBuilder.create(hubUrl).build();
-        Gson gson = new Gson();
 
         // 1. Listen for the broadcast from the C# Hub
-        hubConnection.on("ReceiveBusLocation", (payloadJson) -> {
-            try {
-                BusLocationUpdateDto data = gson.fromJson(payloadJson, BusLocationUpdateDto.class);
+        hubConnection.on("ReceiveBusLocation", (data) -> {
+            if (data != null) {
                 liveLocationData.postValue(data);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-        }, String.class);
+        }, BusLocationUpdateDto.class);
 
         // 2. Start connection and join the specific route group
         new Thread(() -> {
@@ -134,13 +131,15 @@ public class TicketScreenRepository {
 
     // LINK: Triggered when ticket becomes SCANNED or EXPIRED
     public void unsubscribeFromBusLocation(int routeId) {
-        if (hubConnection != null && hubConnection.getConnectionState() == HubConnectionState.CONNECTED) {
+        if (hubConnection != null) {
+            HubConnection connToClose = hubConnection;
+            hubConnection = null;
             new Thread(() -> {
                 try {
-                    // 1. Tell the C# Hub to remove this user from the specific route broadcast
-                    hubConnection.send("LeaveRouteGroup", routeId);
-                    // 2. Kill the WebSocket connection entirely
-                    hubConnection.stop();
+                    if (connToClose.getConnectionState() == HubConnectionState.CONNECTED) {
+                        connToClose.send("LeaveRouteGroup", routeId);
+                        connToClose.stop();
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
