@@ -13,6 +13,7 @@ import com.example.urbanklink.database.Stop;
 import com.example.urbanklink.database.UrbanLinkDatabase;
 import com.example.urbanklink.network.ApiClient;
 import com.example.urbanklink.network.UrbanLinkApiService;
+import com.example.urbanklink.requests.BusLocationUpdateDto;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.microsoft.signalr.HubConnection;
@@ -140,6 +141,14 @@ public class TransitRepository {
                 errorLiveData.postValue("Real-time sync offline");
             }
         });
+    }
+
+    public void broadcastBusLocation(int busId, int routeId, double lat, double lng) {
+        if (hubConnection != null && hubConnection.getConnectionState() == HubConnectionState.CONNECTED) {
+            BusLocationUpdateDto payload = new BusLocationUpdateDto(busId, routeId, lat, lng);
+            // Matches the exact method name in your C# TransitHub
+            hubConnection.send("BroadcastBusLocation", payload);
+        }
     }
 
     public void disconnectSignalR() {

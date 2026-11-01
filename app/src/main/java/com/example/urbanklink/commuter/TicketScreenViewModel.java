@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.urbanklink.database.LocalRoute;
+import com.example.urbanklink.requests.BusLocationUpdateDto;
 import com.example.urbanklink.response.RouteStatusResponse;
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
@@ -67,5 +68,20 @@ public class TicketScreenViewModel extends AndroidViewModel {
                 errorMessage.postValue("Failed to generate QR Code");
             }
         });
+    }
+
+    // Add this to your TicketViewModel or equivalent commuter ViewModel
+    private final MutableLiveData<BusLocationUpdateDto> liveBusLocation = new MutableLiveData<>();
+
+    public LiveData<BusLocationUpdateDto> getLiveBusLocation() {
+        return liveBusLocation;
+    }
+
+    public void startLiveTracking(int routeId) {
+        repository.subscribeToBusLocation(routeId, liveBusLocation);
+    }
+
+    public void stopLiveTracking(int routeId) {
+        repository.unsubscribeFromBusLocation(routeId);
     }
 }

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -26,7 +27,11 @@ import com.example.urbanklink.network.UrbanLinkApiService;
 import com.example.urbanklink.database.UrbanLinkDatabase;
 import com.example.urbanklink.network.ApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -64,6 +69,7 @@ public class TransitTelemetry extends AppCompatActivity implements OnMapReadyCal
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
     private ActivityResultLauncher<String[]> locationPermissionRequest;
+    private LocationCallback locationCallback;
 
     private final HashMap<Integer, LatLng> stopCoordinateCache = new HashMap<>();
     private final List<com.google.android.gms.maps.model.Marker> activeStopMarkers = new ArrayList<>();
@@ -125,23 +131,67 @@ public class TransitTelemetry extends AppCompatActivity implements OnMapReadyCal
         enableDriverLocation();
     }
 
+//    private void enableDriverLocation() {
+//        if (mMap == null) return;
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+//                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//
+//            mMap.setMyLocationEnabled(true);
+//            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+//
+//            LatLng gqeberhaDefault = new LatLng(-33.9608, 25.6022);
+//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(gqeberhaDefault, 15f));
+//
+//            fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+//                if (location != null && mMap != null) {
+//                    LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+//                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f));
+//                }
+//            });
+//        }
+//    }
+
     private void enableDriverLocation() {
         if (mMap == null) return;
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
-            LatLng gqeberhaDefault = new LatLng(-33.9608, 25.6022);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(gqeberhaDefault, 15f));
+            // 1. Configure the 3-second loop
+            LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3000)
+                    .setMinUpdateIntervalMillis(3000)
+                    .build();
 
-            fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
-                if (location != null && mMap != null) {
-                    LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f));
+            // 2. Define what happens every 3 seconds
+            locationCallback = new LocationCallback() {
+                @Override
+                public void onLocationResult(@NonNull LocationResult locationResult) {
+                    if (locationResult.getLastLocation() != null) {
+                        double lat = locationResult.getLastLocation().getLatitude();
+                        double lng = locationResult.getLastLocation().getLongitude();
+
+                        // Animate the driver's own map
+                        LatLng currentLatLng = new LatLng(lat, lng);
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f));
+
+                        // Broadcast to C# SignalR via ViewModel
+                        viewModel.broadcastCurrentLocation(lat, lng);
+                    }
                 }
-            });
+            };
+
+            // 3. Start the loop
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Stop the GPS loop to save battery when the driver closes the screen
+        if (fusedLocationClient != null && locationCallback != null) {
+            fusedLocationClient.removeLocationUpdates(locationCallback);
         }
     }
 

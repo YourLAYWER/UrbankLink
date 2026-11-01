@@ -104,6 +104,16 @@ public class TransitViewModel extends AndroidViewModel {
         activeFilteredQueue.postValue(filtered);
     }
 
+    // LINK: Called by TransitTelemetry's LocationCallback
+    public void broadcastCurrentLocation(double lat, double lng) {
+        int busId = repository.getActiveBusId();
+        int routeId = repository.getActiveRouteId();
+
+        if (busId != -1 && routeId != -1) {
+            repository.broadcastBusLocation(busId, routeId, lat, lng);
+        }
+    }
+
     private void saveState() {
         repository.saveQueueState(highestClearedSequence, lastClearedStop.getValue(), rawServerQueue);
     }

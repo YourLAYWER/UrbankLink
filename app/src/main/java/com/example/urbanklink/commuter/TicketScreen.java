@@ -30,6 +30,7 @@ import com.example.urbanklink.database.UrbanLinkDatabase;
 import com.example.urbanklink.network.ApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -44,6 +45,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -61,6 +64,7 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
 
     private TicketScreenViewModel viewModel;
     private GoogleMap mMap;
+    private Marker activeBusMarker; // Keep track of the bus icon
     private LatLng startStopCoord, destStopCoord, userCurrentCoord;
     private LocalRoute currentTicketRoute;
     private String currentTicketRef;
@@ -140,6 +144,15 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
         viewModel.getLiveStatusData().observe(this, status -> {
             if ("COMPLETED".equalsIgnoreCase(status.getTicketStatus())) {
                 applyQrStatusStyling("COMPLETED");
+
+                // --- Stop tracking and remove bus marker when scanned ---
+                int ticketRouteId = getIntent().getIntExtra("TICKET_ROUTE_ID", -1);
+                viewModel.stopLiveTracking(ticketRouteId);
+                if (activeBusMarker != null) {
+                    activeBusMarker.remove();
+                    activeBusMarker = null;
+                }
+                Toast.makeText(this, "Journey Complete. Tracking stopped.", Toast.LENGTH_SHORT).show();
             }
             if (txtArrivalTitle != null) {
                 if (status.isHasDelay() && status.getAlert() != null) {
@@ -155,6 +168,22 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
 
         viewModel.getErrorMessage().observe(this, error -> {
             if (error != null) showErrorSnackbar(error);
+        });
+
+        // --- Observe live bus location pings ---
+        viewModel.getLiveBusLocation().observe(this, busData -> {
+            if (busData != null && mMap != null) {
+                LatLng newPosition = new LatLng(busData.latitude, busData.longitude);
+
+                if (activeBusMarker == null) {
+                    activeBusMarker = mMap.addMarker(new MarkerOptions()
+                            .position(newPosition)
+                            .title("Bus #" + busData.busId)
+                            .icon(com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker(com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE)));
+                } else {
+                    activeBusMarker.setPosition(newPosition);
+                }
+            }
         });
     }
 
@@ -184,6 +213,12 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
         mMap.getUiSettings().setMapToolbarEnabled(false);
         checkLocationPermissionAndStart();
         if (currentTicketRoute != null) renderTicketMap();
+
+        // --- Start live bus tracking when the map is ready ---
+        int ticketRouteId = getIntent().getIntExtra("TICKET_ROUTE_ID", -1);
+        if (ticketRouteId != -1 && "ACTIVE".equalsIgnoreCase(currentTicketStatus)) {
+            viewModel.startLiveTracking(ticketRouteId);
+        }
     }
 
     private void renderTicketMap() {

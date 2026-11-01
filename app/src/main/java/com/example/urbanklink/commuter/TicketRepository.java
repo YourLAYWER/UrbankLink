@@ -6,15 +6,20 @@ import android.content.SharedPreferences;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.urbanklink.BuildConfig;
 import com.example.urbanklink.database.LocalTicket;
 import com.example.urbanklink.database.UrbanLinkDatabase;
 import com.example.urbanklink.network.ApiClient;
 import com.example.urbanklink.network.UrbanLinkApiService;
 import com.example.urbanklink.requests.BookTicketRequest;
+import com.example.urbanklink.requests.BusLocationUpdateDto;
 import com.example.urbanklink.requests.RouteCalculateRequest;
 import com.example.urbanklink.response.JourneyResponse;
 import com.example.urbanklink.response.RouteCalculateResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.gson.Gson;
+import com.microsoft.signalr.HubConnection;
+import com.microsoft.signalr.HubConnectionBuilder;
 
 import java.util.concurrent.Executors;
 
