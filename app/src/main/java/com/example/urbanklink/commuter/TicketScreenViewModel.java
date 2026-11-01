@@ -40,7 +40,6 @@ public class TicketScreenViewModel extends AndroidViewModel {
 
     public void initializeTicket(String ticketRef, String status, int historyRouteId) {
         if (ticketRef != null && !ticketRef.isEmpty()) {
-            generateQRCode(ticketRef);
             if ("ACTIVE".equalsIgnoreCase(status)) {
                 repository.loadSpecificTicket(ticketRef, activeTicketData);
             } else {
@@ -57,7 +56,7 @@ public class TicketScreenViewModel extends AndroidViewModel {
         }
     }
 
-    private void generateQRCode(String ticketRef) {
+    public void generateQRCode(String ticketRef) {
         executor.execute(() -> {
             try {
                 String ticketData = "URBANLINK-" + ticketRef.toUpperCase();
@@ -70,7 +69,7 @@ public class TicketScreenViewModel extends AndroidViewModel {
         });
     }
 
-    // Add this to your TicketViewModel or equivalent commuter ViewModel
+
     private final MutableLiveData<BusLocationUpdateDto> liveBusLocation = new MutableLiveData<>();
     private int currentTrackingRouteId = -1;
 

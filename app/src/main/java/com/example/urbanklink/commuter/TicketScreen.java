@@ -132,6 +132,9 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
             txtCurrentLeg.setText(data.startStop.getName() + " to " + data.destStop.getName());
             txtArrivalTime.setText(data.ticket.estimatedArrivalTime);
 
+            // --- Guarantee the QR code generates from local DB data! ---
+            viewModel.generateQRCode(currentTicketRef);
+
             viewModel.refreshLiveStatus(currentTicketRef);
             if (mMap != null) renderTicketMap();
 
