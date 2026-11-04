@@ -78,7 +78,11 @@ public class TicketScreenViewModel extends AndroidViewModel {
     }
 
     public void startLiveTracking(int routeId) {
-        if (routeId <= 0 || routeId == currentTrackingRouteId) return;
+        android.util.Log.d("SignalR_Debug", "B. startLiveTracking called. routeId=" + routeId + ", currentTrackingRouteId=" + currentTrackingRouteId);
+        if (routeId <= 0 || routeId == currentTrackingRouteId) {
+            android.util.Log.d("SignalR_Debug", "C. SILENTLY ABORTING! Failed the guardrail check.");
+            return;
+        }
         currentTrackingRouteId = routeId;
         repository.subscribeToBusLocation(routeId, liveBusLocation);
     }

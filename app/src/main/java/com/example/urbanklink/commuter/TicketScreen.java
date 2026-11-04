@@ -138,6 +138,8 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
             viewModel.refreshLiveStatus(currentTicketRef);
             if (mMap != null) renderTicketMap();
 
+            android.util.Log.d("SignalR_Debug", "A. Ticket loaded. Status is: '" + currentTicketStatus + "', RouteId is: " + data.ticket.routeId);
+
             // --- Start live bus tracking dynamically when active ticket loads ---
             if ("ACTIVE".equalsIgnoreCase(currentTicketStatus) && data.ticket != null) {
                 viewModel.startLiveTracking(data.ticket.routeId);
@@ -177,22 +179,6 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
         viewModel.getErrorMessage().observe(this, error -> {
             if (error != null) showErrorSnackbar(error);
         });
-
-        // --- Observe live bus location pings ---
-//        viewModel.getLiveBusLocation().observe(this, busData -> {
-//            if (busData != null && mMap != null) {
-//                LatLng newPosition = new LatLng(busData.latitude, busData.longitude);
-//
-//                if (activeBusMarker == null) {
-//                    activeBusMarker = mMap.addMarker(new MarkerOptions()
-//                            .position(newPosition)
-//                            .title("Bus #" + busData.busId)
-//                            .icon(com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker(com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE)));
-//                } else {
-//                    activeBusMarker.setPosition(newPosition);
-//                }
-//            }
-//        });
 
         viewModel.getLiveBusLocation().observe(this, busData -> {
             android.util.Log.d("SignalR_Debug", "6. UI Observer triggered");
