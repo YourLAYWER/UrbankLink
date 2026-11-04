@@ -148,6 +148,7 @@ public class TransitRepository {
             BusLocationUpdateDto payload = new BusLocationUpdateDto(busId, routeId, lat, lng);
             // Matches the exact method name in your C# TransitHub
             hubConnection.send("BroadcastBusLocation", payload);
+            android.util.Log.d("Driver_SignalR", "Broadcasted GPS: " + lat + ", " + lng);
         }
     }
 

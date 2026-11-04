@@ -84,19 +84,28 @@ public class TransitTelemetry extends AppCompatActivity implements OnMapReadyCal
         // 1. Initialize ViewModel
         viewModel = new ViewModelProvider(this).get(TransitViewModel.class);
 
-        // 2. Setup Location & Permissions
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // 2. Setup Location & Permissions
+        // 1. Define the permission callback
         locationPermissionRequest = registerForActivityResult(
                 new ActivityResultContracts.RequestMultiplePermissions(),
                 result -> {
                     Boolean fineGranted = result.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false);
                     Boolean coarseGranted = result.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false);
+
                     if ((fineGranted != null && fineGranted) || (coarseGranted != null && coarseGranted)) {
+                        // Permission Granted! Safe to start the hardware loop.
+                        android.util.Log.d("Driver_GPS", "Permissions granted. Starting telemetry.");
                         enableDriverLocation();
+                    } else {
+                        Toast.makeText(this, "Location permission is required to track the bus.", Toast.LENGTH_LONG).show();
                     }
                 }
         );
-        checkLocationPermissions();
+
+        // 2. Trigger the check
+        checkAndRequestPermissions();
 
         // 3. Setup Navigation, Header, & Map
         SideNavUtils.setupSideNavigation(this, R.id.navTabStops);
@@ -114,10 +123,12 @@ public class TransitTelemetry extends AppCompatActivity implements OnMapReadyCal
         // 5. Fire off the backend sync and socket connection!
         viewModel.initializeDataAndSockets();
     }
-
-    private void checkLocationPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+    private void checkAndRequestPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Permission already exists
+            enableDriverLocation();
+        } else {
+            // Prompt the driver
             locationPermissionRequest.launch(new String[]{
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION
@@ -130,40 +141,20 @@ public class TransitTelemetry extends AppCompatActivity implements OnMapReadyCal
         mMap = googleMap;
         enableDriverLocation();
     }
-
-//    private void enableDriverLocation() {
-//        if (mMap == null) return;
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-//                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-//
-//            mMap.setMyLocationEnabled(true);
-//            mMap.getUiSettings().setMyLocationButtonEnabled(true);
-//
-//            LatLng gqeberhaDefault = new LatLng(-33.9608, 25.6022);
-//            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(gqeberhaDefault, 15f));
-//
-//            fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
-//                if (location != null && mMap != null) {
-//                    LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-//                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f));
-//                }
-//            });
-//        }
-//    }
-
     private void enableDriverLocation() {
+        // Ensure map is ready and permissions are granted before starting
         if (mMap == null) return;
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
-            // 1. Configure the 3-second loop
+            // 1. Configure the 3-second GPS loop
             LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3000)
                     .setMinUpdateIntervalMillis(3000)
                     .build();
 
-            // 2. Define what happens every 3 seconds
+            // 2. Define what happens every time the tablet's GPS pings
             locationCallback = new LocationCallback() {
                 @Override
                 public void onLocationResult(@NonNull LocationResult locationResult) {
@@ -171,17 +162,17 @@ public class TransitTelemetry extends AppCompatActivity implements OnMapReadyCal
                         double lat = locationResult.getLastLocation().getLatitude();
                         double lng = locationResult.getLastLocation().getLongitude();
 
-                        // Animate the driver's own map
+                        // Keep the tablet's map centered on the bus
                         LatLng currentLatLng = new LatLng(lat, lng);
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f));
 
-                        // Broadcast to C# SignalR via ViewModel
+                        // Broadcast to C# SignalR via your ViewModel
                         viewModel.broadcastCurrentLocation(lat, lng);
                     }
                 }
             };
 
-            // 3. Start the loop
+            // 3. Start the hardware loop
             fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
         }
     }

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.LocationRequest;
 import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.util.Log;
@@ -141,6 +142,7 @@ public class ScannerTelemetry extends AppCompatActivity {
 
         viewModel.loadActiveShift();
     }
+
 
     // LINK: Binds UI to TelemetryViewModel outputs. Called in onCreate().
     private void setupObservers() {

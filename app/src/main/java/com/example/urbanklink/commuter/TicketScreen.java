@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -21,28 +20,16 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.urbanklink.database.LocalRoute;
-import com.example.urbanklink.database.LocalTicket;
 import com.example.urbanklink.R;
-import com.example.urbanklink.response.RouteStatusResponse;
-import com.example.urbanklink.database.Stop;
-import com.example.urbanklink.network.UrbanLinkApiService;
-import com.example.urbanklink.database.UrbanLinkDatabase;
-import com.example.urbanklink.network.ApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.maps.android.PolyUtil;
-import com.google.zxing.BarcodeFormat;
-import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,14 +38,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class TicketScreen extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -191,7 +173,7 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
                     activeBusMarker = mMap.addMarker(new MarkerOptions()
                             .position(newPosition)
                             .title("Bus #" + busData.busId)
-                            .icon(com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker(com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE)));
+                            .icon(bitmapDescriptorFromVector(this, R.drawable.ic_bus_render)));
                 } else {
                     activeBusMarker.setPosition(newPosition);
                 }
@@ -346,5 +328,23 @@ public class TicketScreen extends AppCompatActivity implements OnMapReadyCallbac
         if (ticketRouteId != -1) {
             viewModel.stopLiveTracking(ticketRouteId);
         }
+    }
+
+    private com.google.android.gms.maps.model.BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        android.graphics.drawable.Drawable vectorDrawable = androidx.core.content.ContextCompat.getDrawable(context, vectorResId);
+        if (vectorDrawable == null) return com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker();
+
+        // Make the icon a bit larger by multiplying intrinsic bounds by a scale factor if desired
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth() * 2, vectorDrawable.getIntrinsicHeight() * 2);
+
+        android.graphics.Bitmap bitmap = android.graphics.Bitmap.createBitmap(
+                vectorDrawable.getIntrinsicWidth() * 2,
+                vectorDrawable.getIntrinsicHeight() * 2,
+                android.graphics.Bitmap.Config.ARGB_8888);
+
+        android.graphics.Canvas canvas = new android.graphics.Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+
+        return com.google.android.gms.maps.model.BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 }

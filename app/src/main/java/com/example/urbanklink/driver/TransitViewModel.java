@@ -10,12 +10,16 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.urbanklink.database.DestStop;
 import com.example.urbanklink.database.LocalRoute;
 import com.example.urbanklink.database.Stop;
+import com.example.urbanklink.requests.BusLocationUpdateDto;
+import com.microsoft.signalr.HubConnection;
+import com.microsoft.signalr.HubConnectionState;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TransitViewModel extends AndroidViewModel {
     private final TransitRepository repository;
+    private HubConnection hubConnection;
 
     // State Variables
     private List<DestStop> rawServerQueue = new ArrayList<>();
@@ -122,5 +126,17 @@ public class TransitViewModel extends AndroidViewModel {
     protected void onCleared() {
         super.onCleared();
         repository.disconnectSignalR(); // Cleanly close WebSocket when Activity dies
+    }
+
+    public void broadcastBusLocation(int busId, int routeId, double lat, double lng) {
+        if (hubConnection != null && hubConnection.getConnectionState() == HubConnectionState.CONNECTED) {
+            BusLocationUpdateDto payload = new BusLocationUpdateDto(busId, routeId, lat, lng);
+
+            // Send the payload up to the C# TransitHub
+            hubConnection.send("BroadcastBusLocation", payload);
+            android.util.Log.d("Driver_SignalR", "Broadcasted GPS: " + lat + ", " + lng);
+        } else {
+            android.util.Log.w("Driver_SignalR", "Cannot broadcast: Hub is disconnected.");
+        }
     }
 }
